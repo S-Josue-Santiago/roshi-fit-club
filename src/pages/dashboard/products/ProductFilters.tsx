@@ -1,5 +1,5 @@
 // roshi_fit/src/pages/dashboard/products/ProductFilters.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fetchCategories } from '../../../api/categoryApi';
 import { type Category } from '../../../types/Category';
 
@@ -19,8 +19,17 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ onFilterChange, onAddPr
   const [categories, setCategories] = useState<Category[]>([]);
 
   // Cargar categorías al montar
-  React.useEffect(() => {
-    fetchCategories().then(setCategories).catch(console.error);
+  useEffect(() => {
+    // Proporcionar un objeto filters vacío o con valores por defecto
+    const filters = {
+      // Aquí incluye los filtros que requiere la función
+      // Por ejemplo:
+      search: '',
+      estado: 'activo'
+      // Ajusta según lo que necesite tu API
+    };
+    
+    fetchCategories(filters).then(setCategories).catch(console.error);
   }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
