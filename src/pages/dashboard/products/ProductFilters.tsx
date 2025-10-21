@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/products/ProductFilters.tsx
 import React, { useState } from 'react';
-import { fetchCategories } from '../../../api/categoryApi';
+import { fetchCategoriesProducts } from '../../../api/categoryApi';
 import { type Category } from '../../../types/Category';
 
 interface ProductFiltersProps {
@@ -20,7 +20,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ onFilterChange, onAddPr
 
   // Cargar categorías al montar
   React.useEffect(() => {
-    fetchCategories().then(setCategories).catch(console.error);
+    fetchCategoriesProducts().then(setCategories).catch(console.error);
   }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
