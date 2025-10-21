@@ -1,0 +1,1129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model actividad_usuarios {
+  id                                                   Int                        @id @default(autoincrement())
+  usuario_id                                           Int
+  accion                                               String                     @db.VarChar(100)
+  detalle                                              String?                    @db.Text
+  ip_address                                           String?                    @db.VarChar(45)
+  user_agent                                           String?                    @db.Text
+  creacion_fecha                                       DateTime?                  @default(now()) @db.DateTime(0)
+  modificacion_fecha                                   DateTime?                  @default(now()) @db.DateTime(0)
+  modificado_por                                       Int?
+  estado                                               actividad_usuarios_estado? @default(activo)
+  usuarios_actividad_usuarios_usuario_idTousuarios     usuarios                   @relation("actividad_usuarios_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "actividad_usuarios_ibfk_1")
+  usuarios_actividad_usuarios_modificado_porTousuarios usuarios?                  @relation("actividad_usuarios_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "actividad_usuarios_ibfk_2")
+
+  @@index([modificado_por], map: "modificado_por")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model auditoria {
+  id               Int              @id @default(autoincrement())
+  tabla_afectada   String           @db.VarChar(100)
+  registro_id      Int
+  accion           auditoria_accion
+  datos_anteriores Json?
+  datos_nuevos     Json?
+  usuario_id       Int?
+  ip_address       String?          @db.VarChar(45)
+  creacion_fecha   DateTime?        @default(now()) @db.DateTime(0)
+  usuarios         usuarios?        @relation(fields: [usuario_id], references: [id], onUpdate: NoAction, map: "auditoria_ibfk_1")
+
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model carrito_compras {
+  id                                                Int                     @id @default(autoincrement())
+  usuario_id                                        Int
+  producto_id                                       Int
+  cantidad                                          Int                     @default(1)
+  creacion_fecha                                    DateTime?               @default(now()) @db.DateTime(0)
+  modificacion_fecha                                DateTime?               @default(now()) @db.DateTime(0)
+  modificado_por                                    Int?
+  estado                                            carrito_compras_estado? @default(activo)
+  usuarios_carrito_compras_usuario_idTousuarios     usuarios                @relation("carrito_compras_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "carrito_compras_ibfk_1")
+  productos                                         productos               @relation(fields: [producto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "carrito_compras_ibfk_2")
+  usuarios_carrito_compras_modificado_porTousuarios usuarios?               @relation("carrito_compras_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "carrito_compras_ibfk_3")
+
+  @@index([modificado_por], map: "modificado_por")
+  @@index([producto_id], map: "producto_id")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model categorias_producto {
+  id                 Int                         @id @default(autoincrement())
+  nombre             String                      @unique(map: "nombre") @db.VarChar(100)
+  descripcion        String?                     @db.Text
+  imagen             String?                     @db.VarChar(255)
+  creacion_fecha     DateTime?                   @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?                   @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             categorias_producto_estado? @default(activo)
+  usuarios           usuarios?                   @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "categorias_producto_ibfk_1")
+  productos          productos[]
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model clases_grupales {
+  id                                                Int                     @id @default(autoincrement())
+  nombre                                            String                  @db.VarChar(100)
+  descripcion                                       String?                 @db.Text
+  instructor_id                                     Int?
+  capacidad_max                                     Int?                    @default(20)
+  duracion_minutos                                  Int?
+  imagen                                            String?                 @db.VarChar(255)
+  creacion_fecha                                    DateTime?               @default(now()) @db.DateTime(0)
+  modificacion_fecha                                DateTime?               @default(now()) @db.DateTime(0)
+  modificado_por                                    Int?
+  estado                                            clases_grupales_estado? @default(activo)
+  usuarios_clases_grupales_instructor_idTousuarios  usuarios?               @relation("clases_grupales_instructor_idTousuarios", fields: [instructor_id], references: [id], onUpdate: NoAction, map: "clases_grupales_ibfk_1")
+  usuarios_clases_grupales_modificado_porTousuarios usuarios?               @relation("clases_grupales_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "clases_grupales_ibfk_2")
+  reservas_clases                                   reservas_clases[]
+
+  @@index([instructor_id], map: "instructor_id")
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model configuracion_sitio {
+  id                 Int                         @id @default(autoincrement())
+  clave              String                      @unique(map: "clave") @db.VarChar(50)
+  valor              String?                     @db.Text
+  descripcion        String?                     @db.VarChar(255)
+  creacion_fecha     DateTime?                   @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?                   @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             configuracion_sitio_estado? @default(activo)
+  usuarios           usuarios?                   @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "configuracion_sitio_ibfk_1")
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model contenido_sitio {
+  id                 Int                     @id @default(autoincrement())
+  seccion            String                  @unique(map: "seccion") @db.VarChar(50)
+  titulo             String?                 @db.VarChar(150)
+  subtitulo          String?                 @db.VarChar(255)
+  contenido          String?                 @db.Text
+  imagen             String?                 @db.VarChar(255)
+  boton_texto        String?                 @db.VarChar(50)
+  boton_url          String?                 @db.VarChar(255)
+  orden_visual       Int?                    @default(0)
+  creacion_fecha     DateTime?               @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?               @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             contenido_sitio_estado? @default(activo)
+  usuarios           usuarios?               @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "contenido_sitio_ibfk_1")
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model cupones_descuento {
+  id                 Int                              @id @default(autoincrement())
+  codigo             String                           @unique(map: "codigo") @db.VarChar(50)
+  descripcion        String?                          @db.VarChar(150)
+  tipo_descuento     cupones_descuento_tipo_descuento
+  valor_descuento    Decimal                          @db.Decimal(10, 2)
+  uso_maximo         Int?                             @default(1)
+  usos_actuales      Int?                             @default(0)
+  fecha_inicio       DateTime?                        @db.Date
+  fecha_expiracion   DateTime?                        @db.Date
+  aplicable_a        cupones_descuento_aplicable_a?   @default(todos)
+  minimo_compra_q    Decimal?                         @default(0.00) @db.Decimal(10, 2)
+  activo             Boolean?                         @default(true)
+  creacion_fecha     DateTime?                        @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?                        @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             cupones_descuento_estado?        @default(activo)
+  usuarios           usuarios?                        @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "cupones_descuento_ibfk_1")
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model datos_consumidor_invitado {
+  id                 Int                               @id @default(autoincrement())
+  nombre_completo    String                            @db.VarChar(100)
+  email              String                            @db.VarChar(100)
+  telefono           String?                           @db.VarChar(20)
+  direccion          String?                           @db.Text
+  creacion_fecha     DateTime?                         @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?                         @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             datos_consumidor_invitado_estado? @default(activo)
+  usuarios           usuarios?                         @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "datos_consumidor_invitado_ibfk_1")
+  ordenes            ordenes[]
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model detalles_orden {
+  id                 Int                    @id @default(autoincrement())
+  orden_id           Int
+  producto_id        Int
+  cantidad           Int
+  precio_unitario_q  Decimal                @db.Decimal(10, 2)
+  subtotal_q         Decimal                @db.Decimal(12, 2)
+  creacion_fecha     DateTime?              @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?              @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             detalles_orden_estado? @default(activo)
+  ordenes            ordenes                @relation(fields: [orden_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "detalles_orden_ibfk_1")
+  productos          productos              @relation(fields: [producto_id], references: [id], onUpdate: NoAction, map: "detalles_orden_ibfk_2")
+  usuarios           usuarios?              @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "detalles_orden_ibfk_3")
+
+  @@index([modificado_por], map: "modificado_por")
+  @@index([orden_id], map: "orden_id")
+  @@index([producto_id], map: "producto_id")
+}
+
+model ejercicios {
+  id                     Int                      @id @default(autoincrement())
+  nombre                 String                   @db.VarChar(100)
+  descripcion            String?                  @db.Text
+  tipo_musculo           String?                  @db.VarChar(100)
+  dificultad             ejercicios_dificultad?
+  video_url              String?                  @db.VarChar(255)
+  imagen                 String?                  @db.VarChar(255)
+  creacion_fecha         DateTime?                @default(now()) @db.DateTime(0)
+  modificacion_fecha     DateTime?                @default(now()) @db.DateTime(0)
+  modificado_por         Int?
+  estado                 ejercicios_estado?       @default(activo)
+  usuarios               usuarios?                @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "ejercicios_ibfk_1")
+  plan_ejercicios        plan_ejercicios[]
+  sesiones_entrenamiento sesiones_entrenamiento[]
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model equipos {
+  id                 Int                    @id @default(autoincrement())
+  nombre             String                 @db.VarChar(100)
+  tipo               String?                @db.VarChar(50)
+  marca              String?                @db.VarChar(50)
+  modelo             String?                @db.VarChar(50)
+  numero_serie       String?                @unique(map: "numero_serie") @db.VarChar(100)
+  ubicacion          String?                @db.VarChar(100)
+  estado_equipo      equipos_estado_equipo? @default(funcional)
+  ultima_revision    DateTime?              @db.Date
+  proxima_revision   DateTime?              @db.Date
+  imagen             String?                @db.VarChar(255)
+  creacion_fecha     DateTime?              @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?              @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             equipos_estado?        @default(activo)
+  usuarios           usuarios?              @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "equipos_ibfk_1")
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model evaluaciones_fisicas {
+  id                                                     Int                          @id @default(autoincrement())
+  usuario_id                                             Int
+  entrenador_id                                          Int?
+  fecha_evaluacion                                       DateTime                     @db.Date
+  peso_kg                                                Decimal?                     @db.Decimal(5, 2)
+  altura_cm                                              Decimal?                     @db.Decimal(5, 1)
+  imc                                                    Decimal?                     @db.Decimal(4, 2)
+  porcentaje_grasa                                       Decimal?                     @db.Decimal(4, 2)
+  circunferencia_cintura_cm                              Decimal?                     @db.Decimal(5, 1)
+  circunferencia_cadera_cm                               Decimal?                     @db.Decimal(5, 1)
+  observaciones                                          String?                      @db.Text
+  creacion_fecha                                         DateTime?                    @default(now()) @db.DateTime(0)
+  modificacion_fecha                                     DateTime?                    @default(now()) @db.DateTime(0)
+  modificado_por                                         Int?
+  estado                                                 evaluaciones_fisicas_estado? @default(activo)
+  usuarios_evaluaciones_fisicas_usuario_idTousuarios     usuarios                     @relation("evaluaciones_fisicas_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "evaluaciones_fisicas_ibfk_1")
+  usuarios_evaluaciones_fisicas_entrenador_idTousuarios  usuarios?                    @relation("evaluaciones_fisicas_entrenador_idTousuarios", fields: [entrenador_id], references: [id], onUpdate: NoAction, map: "evaluaciones_fisicas_ibfk_2")
+  usuarios_evaluaciones_fisicas_modificado_porTousuarios usuarios?                    @relation("evaluaciones_fisicas_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "evaluaciones_fisicas_ibfk_3")
+
+  @@index([entrenador_id], map: "entrenador_id")
+  @@index([modificado_por], map: "modificado_por")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model facturas {
+  id                    Int                      @id @default(autoincrement())
+  orden_id              Int?
+  suscripcion_id        Int?
+  numero_factura        String                   @unique(map: "numero_factura") @db.VarChar(50)
+  fecha_emision         DateTime                 @db.Date
+  total_q               Decimal                  @db.Decimal(12, 2)
+  tipo                  facturas_tipo
+  estado_factura        facturas_estado_factura? @default(emitida)
+  creacion_fecha        DateTime?                @default(now()) @db.DateTime(0)
+  modificacion_fecha    DateTime?                @default(now()) @db.DateTime(0)
+  modificado_por        Int?
+  estado                facturas_estado?         @default(activo)
+  ordenes               ordenes?                 @relation(fields: [orden_id], references: [id], onUpdate: NoAction, map: "facturas_ibfk_1")
+  suscripciones_usuario suscripciones_usuario?   @relation(fields: [suscripcion_id], references: [id], onUpdate: NoAction, map: "facturas_ibfk_2")
+  usuarios              usuarios?                @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "facturas_ibfk_3")
+  facturas_detalle      facturas_detalle[]
+
+  @@index([modificado_por], map: "modificado_por")
+  @@index([orden_id], map: "orden_id")
+  @@index([suscripcion_id], map: "suscripcion_id")
+}
+
+model facturas_detalle {
+  id                 Int                        @id @default(autoincrement())
+  factura_id         Int
+  descripcion        String                     @db.VarChar(255)
+  cantidad           Int
+  precio_unitario_q  Decimal                    @db.Decimal(10, 2)
+  subtotal_q         Decimal                    @db.Decimal(12, 2)
+  tipo_item          facturas_detalle_tipo_item
+  item_id            Int?
+  creacion_fecha     DateTime?                  @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?                  @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             facturas_detalle_estado?   @default(activo)
+  facturas           facturas                   @relation(fields: [factura_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "facturas_detalle_ibfk_1")
+  usuarios           usuarios?                  @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "facturas_detalle_ibfk_2")
+
+  @@index([factura_id], map: "factura_id")
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model galeria {
+  id                 Int             @id @default(autoincrement())
+  titulo             String?         @db.VarChar(100)
+  descripcion        String?         @db.Text
+  categoria          String?         @db.VarChar(50)
+  imagen_url         String          @db.VarChar(255)
+  orden_visual       Int?            @default(0)
+  creacion_fecha     DateTime?       @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?       @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             galeria_estado? @default(activo)
+  usuarios           usuarios?       @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "galeria_ibfk_1")
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model guias_envio {
+  id                     Int                       @id @default(autoincrement())
+  orden_id               Int
+  numero_guia            String                    @unique(map: "numero_guia") @db.VarChar(100)
+  empresa_envio          String?                   @db.VarChar(100)
+  estado_envio           guias_envio_estado_envio? @default(preparando)
+  fecha_estimada_entrega DateTime?                 @db.Date
+  fecha_entrega_real     DateTime?                 @db.Date
+  tracking_url           String?                   @db.VarChar(255)
+  creacion_fecha         DateTime?                 @default(now()) @db.DateTime(0)
+  modificacion_fecha     DateTime?                 @default(now()) @db.DateTime(0)
+  modificado_por         Int?
+  estado                 guias_envio_estado?       @default(activo)
+  ordenes                ordenes                   @relation(fields: [orden_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "guias_envio_ibfk_1")
+  usuarios               usuarios?                 @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "guias_envio_ibfk_2")
+
+  @@index([modificado_por], map: "modificado_por")
+  @@index([orden_id], map: "orden_id")
+}
+
+model horarios_servicio {
+  id                                                  Int                          @id @default(autoincrement())
+  servicio_id                                         Int
+  dia_semana                                          horarios_servicio_dia_semana
+  hora_inicio                                         DateTime                     @db.Time(0)
+  hora_fin                                            DateTime                     @db.Time(0)
+  ubicacion                                           String?                      @db.VarChar(100)
+  instructor_id                                       Int?
+  capacidad_max                                       Int?                         @default(20)
+  creacion_fecha                                      DateTime?                    @default(now()) @db.DateTime(0)
+  modificacion_fecha                                  DateTime?                    @default(now()) @db.DateTime(0)
+  modificado_por                                      Int?
+  estado                                              horarios_servicio_estado?    @default(activo)
+  servicios                                           servicios                    @relation(fields: [servicio_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "horarios_servicio_ibfk_1")
+  usuarios_horarios_servicio_instructor_idTousuarios  usuarios?                    @relation("horarios_servicio_instructor_idTousuarios", fields: [instructor_id], references: [id], onUpdate: NoAction, map: "horarios_servicio_ibfk_2")
+  usuarios_horarios_servicio_modificado_porTousuarios usuarios?                    @relation("horarios_servicio_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "horarios_servicio_ibfk_3")
+  reservas_clases                                     reservas_clases[]
+
+  @@index([instructor_id], map: "instructor_id")
+  @@index([modificado_por], map: "modificado_por")
+  @@index([servicio_id], map: "servicio_id")
+}
+
+model metodos_pago {
+  id                 Int                  @id @default(autoincrement())
+  nombre             String               @unique(map: "nombre") @db.VarChar(50)
+  descripcion        String?              @db.Text
+  activo_en_checkout Boolean?             @default(true)
+  creacion_fecha     DateTime?            @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?            @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             metodos_pago_estado? @default(activo)
+  usuarios           usuarios?            @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "metodos_pago_ibfk_1")
+  ordenes            ordenes[]
+  transacciones_pago transacciones_pago[]
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model notificaciones {
+  id                                               Int                    @id @default(autoincrement())
+  usuario_id                                       Int
+  titulo                                           String                 @db.VarChar(100)
+  mensaje                                          String                 @db.Text
+  tipo                                             notificaciones_tipo?   @default(sistema)
+  leido                                            Boolean?               @default(false)
+  enlace                                           String?                @db.VarChar(255)
+  creacion_fecha                                   DateTime?              @default(now()) @db.DateTime(0)
+  modificacion_fecha                               DateTime?              @default(now()) @db.DateTime(0)
+  modificado_por                                   Int?
+  estado                                           notificaciones_estado? @default(activo)
+  usuarios_notificaciones_usuario_idTousuarios     usuarios               @relation("notificaciones_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "notificaciones_ibfk_1")
+  usuarios_notificaciones_modificado_porTousuarios usuarios?              @relation("notificaciones_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "notificaciones_ibfk_2")
+
+  @@index([modificado_por], map: "modificado_por")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model ordenes {
+  id                                                            Int                        @id @default(autoincrement())
+  usuario_id                                                    Int?
+  datos_invitado_id                                             Int?
+  total_q                                                       Decimal                    @db.Decimal(12, 2)
+  estado_orden                                                  ordenes_estado_orden?      @default(pendiente)
+  tipo_entrega                                                  ordenes_tipo_entrega?      @default(retiro)
+  direccion_entrega                                             String?                    @db.Text
+  cupon_aplicado                                                String?                    @db.VarChar(50)
+  descuento_aplicado_q                                          Decimal?                   @default(0.00) @db.Decimal(10, 2)
+  metodo_pago_id                                                Int?
+  transaccion_id                                                Int?
+  creacion_fecha                                                DateTime?                  @default(now()) @db.DateTime(0)
+  modificacion_fecha                                            DateTime?                  @default(now()) @db.DateTime(0)
+  modificado_por                                                Int?
+  estado                                                        ordenes_estado?            @default(activo)
+  detalles_orden                                                detalles_orden[]
+  facturas                                                      facturas[]
+  guias_envio                                                   guias_envio[]
+  usuarios_ordenes_usuario_idTousuarios                         usuarios?                  @relation("ordenes_usuario_idTousuarios", fields: [usuario_id], references: [id], onUpdate: NoAction, map: "ordenes_ibfk_1")
+  datos_consumidor_invitado                                     datos_consumidor_invitado? @relation(fields: [datos_invitado_id], references: [id], onUpdate: NoAction, map: "ordenes_ibfk_2")
+  metodos_pago                                                  metodos_pago?              @relation(fields: [metodo_pago_id], references: [id], onUpdate: NoAction, map: "ordenes_ibfk_3")
+  transacciones_pago_ordenes_transaccion_idTotransacciones_pago transacciones_pago?        @relation("ordenes_transaccion_idTotransacciones_pago", fields: [transaccion_id], references: [id], onUpdate: NoAction, map: "ordenes_ibfk_4")
+  usuarios_ordenes_modificado_porTousuarios                     usuarios?                  @relation("ordenes_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "ordenes_ibfk_5")
+  transacciones_pago_transacciones_pago_orden_idToordenes       transacciones_pago[]       @relation("transacciones_pago_orden_idToordenes")
+
+  @@index([datos_invitado_id], map: "datos_invitado_id")
+  @@index([metodo_pago_id], map: "metodo_pago_id")
+  @@index([modificado_por], map: "modificado_por")
+  @@index([transaccion_id], map: "transaccion_id")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model plan_ejercicios {
+  id                   Int                         @id @default(autoincrement())
+  plan_id              Int
+  ejercicio_id         Int
+  dia_semana           plan_ejercicios_dia_semana?
+  series               Int?
+  repeticiones         Int?
+  descanso_segundos    Int?
+  notas                String?                     @db.Text
+  creacion_fecha       DateTime?                   @default(now()) @db.DateTime(0)
+  modificacion_fecha   DateTime?                   @default(now()) @db.DateTime(0)
+  modificado_por       Int?
+  estado               plan_ejercicios_estado?     @default(activo)
+  planes_entrenamiento planes_entrenamiento        @relation(fields: [plan_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "plan_ejercicios_ibfk_1")
+  ejercicios           ejercicios                  @relation(fields: [ejercicio_id], references: [id], onUpdate: NoAction, map: "plan_ejercicios_ibfk_2")
+  usuarios             usuarios?                   @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "plan_ejercicios_ibfk_3")
+
+  @@index([ejercicio_id], map: "ejercicio_id")
+  @@index([modificado_por], map: "modificado_por")
+  @@index([plan_id], map: "plan_id")
+}
+
+model planes_entrenamiento {
+  id                                                     Int                          @id @default(autoincrement())
+  nombre                                                 String                       @db.VarChar(100)
+  usuario_id                                             Int
+  entrenador_id                                          Int
+  objetivo                                               String?                      @db.Text
+  duracion_semanas                                       Int?
+  fecha_inicio                                           DateTime?                    @db.Date
+  fecha_fin                                              DateTime?                    @db.Date
+  activo                                                 Boolean?                     @default(true)
+  creacion_fecha                                         DateTime?                    @default(now()) @db.DateTime(0)
+  modificacion_fecha                                     DateTime?                    @default(now()) @db.DateTime(0)
+  modificado_por                                         Int?
+  estado                                                 planes_entrenamiento_estado? @default(activo)
+  plan_ejercicios                                        plan_ejercicios[]
+  usuarios_planes_entrenamiento_usuario_idTousuarios     usuarios                     @relation("planes_entrenamiento_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "planes_entrenamiento_ibfk_1")
+  usuarios_planes_entrenamiento_entrenador_idTousuarios  usuarios                     @relation("planes_entrenamiento_entrenador_idTousuarios", fields: [entrenador_id], references: [id], onUpdate: NoAction, map: "planes_entrenamiento_ibfk_2")
+  usuarios_planes_entrenamiento_modificado_porTousuarios usuarios?                    @relation("planes_entrenamiento_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "planes_entrenamiento_ibfk_3")
+  sesiones_entrenamiento                                 sesiones_entrenamiento[]
+
+  @@index([entrenador_id], map: "entrenador_id")
+  @@index([modificado_por], map: "modificado_por")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model planes_suscripcion {
+  id                    Int                        @id @default(autoincrement())
+  nombre                String                     @db.VarChar(100)
+  descripcion           String?                    @db.Text
+  precio_q              Decimal                    @db.Decimal(10, 2)
+  duracion_dias         Int
+  beneficios            Json?
+  imagen                String?                    @db.VarChar(255)
+  creacion_fecha        DateTime?                  @default(now()) @db.DateTime(0)
+  modificacion_fecha    DateTime?                  @default(now()) @db.DateTime(0)
+  modificado_por        Int?
+  estado                planes_suscripcion_estado? @default(activo)
+  usuarios              usuarios?                  @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "planes_suscripcion_ibfk_1")
+  suscripciones_usuario suscripciones_usuario[]
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model producto_proveedores {
+  id                  Int                          @id @default(autoincrement())
+  producto_id         Int
+  proveedor_id        Int
+  precio_costo_q      Decimal                      @db.Decimal(10, 2)
+  fecha_actualizacion DateTime?                    @db.Date
+  creacion_fecha      DateTime?                    @default(now()) @db.DateTime(0)
+  modificacion_fecha  DateTime?                    @default(now()) @db.DateTime(0)
+  modificado_por      Int?
+  estado              producto_proveedores_estado? @default(activo)
+  productos           productos                    @relation(fields: [producto_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "producto_proveedores_ibfk_1")
+  proveedores         proveedores                  @relation(fields: [proveedor_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "producto_proveedores_ibfk_2")
+  usuarios            usuarios?                    @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "producto_proveedores_ibfk_3")
+
+  @@unique([producto_id, proveedor_id], map: "unique_producto_proveedor")
+  @@index([modificado_por], map: "modificado_por")
+  @@index([proveedor_id], map: "proveedor_id")
+}
+
+model productos {
+  id                   Int                    @id @default(autoincrement())
+  nombre               String                 @db.VarChar(150)
+  descripcion          String?                @db.Text
+  categoria_id         Int
+  sku                  String?                @unique(map: "sku") @db.VarChar(50)
+  precio_venta_q       Decimal                @db.Decimal(10, 2)
+  stock                Int?                   @default(0)
+  stock_minimo         Int?                   @default(5)
+  imagen_principal     String?                @db.VarChar(255)
+  imagenes_secundarias Json?
+  peso_kg              Decimal?               @db.Decimal(6, 2)
+  dimensiones_cm       String?                @db.VarChar(50)
+  destacado            Boolean?               @default(false)
+  creacion_fecha       DateTime?              @default(now()) @db.DateTime(0)
+  modificacion_fecha   DateTime?              @default(now()) @db.DateTime(0)
+  modificado_por       Int?
+  estado               productos_estado?      @default(activo)
+  carrito_compras      carrito_compras[]
+  detalles_orden       detalles_orden[]
+  producto_proveedores producto_proveedores[]
+  categorias_producto  categorias_producto    @relation(fields: [categoria_id], references: [id], onUpdate: NoAction, map: "productos_ibfk_1")
+  usuarios             usuarios?              @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "productos_ibfk_2")
+
+  @@index([categoria_id], map: "categoria_id")
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model progreso_usuarios {
+  id                                                  Int                       @id @default(autoincrement())
+  usuario_id                                          Int
+  fecha_registro                                      DateTime                  @db.Date
+  peso_kg                                             Decimal?                  @db.Decimal(5, 2)
+  medidas                                             Json?
+  foto_frente                                         String?                   @db.VarChar(255)
+  foto_perfil                                         String?                   @db.VarChar(255)
+  notas                                               String?                   @db.Text
+  creacion_fecha                                      DateTime?                 @default(now()) @db.DateTime(0)
+  modificacion_fecha                                  DateTime?                 @default(now()) @db.DateTime(0)
+  modificado_por                                      Int?
+  estado                                              progreso_usuarios_estado? @default(activo)
+  usuarios_progreso_usuarios_usuario_idTousuarios     usuarios                  @relation("progreso_usuarios_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "progreso_usuarios_ibfk_1")
+  usuarios_progreso_usuarios_modificado_porTousuarios usuarios?                 @relation("progreso_usuarios_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "progreso_usuarios_ibfk_2")
+
+  @@index([modificado_por], map: "modificado_por")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model proveedores {
+  id                   Int                    @id @default(autoincrement())
+  nombre_empresa       String                 @db.VarChar(150)
+  contacto_nombre      String?                @db.VarChar(100)
+  email                String?                @db.VarChar(100)
+  telefono             String?                @db.VarChar(20)
+  direccion            String?                @db.Text
+  rfc_nit              String?                @db.VarChar(50)
+  creacion_fecha       DateTime?              @default(now()) @db.DateTime(0)
+  modificacion_fecha   DateTime?              @default(now()) @db.DateTime(0)
+  modificado_por       Int?
+  estado               proveedores_estado?    @default(activo)
+  producto_proveedores producto_proveedores[]
+  usuarios             usuarios?              @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "proveedores_ibfk_1")
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+model reservas_clases {
+  id                                                Int                             @id @default(autoincrement())
+  clase_id                                          Int
+  usuario_id                                        Int
+  fecha_reserva                                     DateTime                        @db.Date
+  horario_servicio_id                               Int?
+  estado_reserva                                    reservas_clases_estado_reserva? @default(confirmada)
+  asistio                                           Boolean?                        @default(false)
+  creacion_fecha                                    DateTime?                       @default(now()) @db.DateTime(0)
+  modificacion_fecha                                DateTime?                       @default(now()) @db.DateTime(0)
+  modificado_por                                    Int?
+  estado                                            reservas_clases_estado?         @default(activo)
+  clases_grupales                                   clases_grupales                 @relation(fields: [clase_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "reservas_clases_ibfk_1")
+  usuarios_reservas_clases_usuario_idTousuarios     usuarios                        @relation("reservas_clases_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "reservas_clases_ibfk_2")
+  horarios_servicio                                 horarios_servicio?              @relation(fields: [horario_servicio_id], references: [id], onUpdate: NoAction, map: "reservas_clases_ibfk_3")
+  usuarios_reservas_clases_modificado_porTousuarios usuarios?                       @relation("reservas_clases_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "reservas_clases_ibfk_4")
+
+  @@index([clase_id], map: "clase_id")
+  @@index([horario_servicio_id], map: "horario_servicio_id")
+  @@index([modificado_por], map: "modificado_por")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model roles {
+  id                                      Int           @id @default(autoincrement())
+  nombre                                  String        @unique(map: "nombre") @db.VarChar(50)
+  descripcion                             String?       @db.Text
+  permisos                                Json?
+  creacion_fecha                          DateTime?     @default(now()) @db.DateTime(0)
+  modificacion_fecha                      DateTime?     @default(now()) @db.DateTime(0)
+  modificado_por                          Int?
+  estado                                  roles_estado? @default(activo)
+  usuarios_roles_modificado_porTousuarios usuarios?     @relation("roles_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "fk_roles_modificado")
+  usuarios_usuarios_rol_idToroles         usuarios[]    @relation("usuarios_rol_idToroles")
+
+  @@index([modificado_por], map: "fk_roles_modificado")
+}
+
+model servicios {
+  id                 Int                 @id @default(autoincrement())
+  nombre             String              @db.VarChar(100)
+  descripcion        String?             @db.Text
+  icono              String?             @db.VarChar(100)
+  duracion_minutos   Int?
+  precio_q           Decimal?            @db.Decimal(10, 2)
+  imagen             String?             @db.VarChar(255)
+  creacion_fecha     DateTime?           @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?           @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             servicios_estado?   @default(activo)
+  horarios_servicio  horarios_servicio[]
+  usuarios           usuarios?           @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "servicios_ibfk_1")
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model sesiones_entrenamiento {
+  id                                                       Int                            @id @default(autoincrement())
+  usuario_id                                               Int
+  plan_id                                                  Int?
+  ejercicio_id                                             Int?
+  fecha_sesion                                             DateTime                       @db.Date
+  series_completadas                                       Int?
+  repeticiones_totales                                     Int?
+  peso_usado_kg                                            Decimal?                       @db.Decimal(6, 2)
+  duracion_minutos                                         Int?
+  observaciones                                            String?                        @db.Text
+  creacion_fecha                                           DateTime?                      @default(now()) @db.DateTime(0)
+  modificacion_fecha                                       DateTime?                      @default(now()) @db.DateTime(0)
+  modificado_por                                           Int?
+  estado                                                   sesiones_entrenamiento_estado? @default(activo)
+  usuarios_sesiones_entrenamiento_usuario_idTousuarios     usuarios                       @relation("sesiones_entrenamiento_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "sesiones_entrenamiento_ibfk_1")
+  planes_entrenamiento                                     planes_entrenamiento?          @relation(fields: [plan_id], references: [id], onUpdate: NoAction, map: "sesiones_entrenamiento_ibfk_2")
+  ejercicios                                               ejercicios?                    @relation(fields: [ejercicio_id], references: [id], onUpdate: NoAction, map: "sesiones_entrenamiento_ibfk_3")
+  usuarios_sesiones_entrenamiento_modificado_porTousuarios usuarios?                      @relation("sesiones_entrenamiento_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "sesiones_entrenamiento_ibfk_4")
+
+  @@index([ejercicio_id], map: "ejercicio_id")
+  @@index([modificado_por], map: "modificado_por")
+  @@index([plan_id], map: "plan_id")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model suscripciones_usuario {
+  id                                                      Int                                       @id @default(autoincrement())
+  usuario_id                                              Int
+  plan_id                                                 Int
+  fecha_inicio                                            DateTime                                  @db.Date
+  fecha_fin                                               DateTime                                  @db.Date
+  estado_suscripcion                                      suscripciones_usuario_estado_suscripcion? @default(activa)
+  creacion_fecha                                          DateTime?                                 @default(now()) @db.DateTime(0)
+  modificacion_fecha                                      DateTime?                                 @default(now()) @db.DateTime(0)
+  modificado_por                                          Int?
+  estado                                                  suscripciones_usuario_estado?             @default(activo)
+  facturas                                                facturas[]
+  usuarios_suscripciones_usuario_usuario_idTousuarios     usuarios                                  @relation("suscripciones_usuario_usuario_idTousuarios", fields: [usuario_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "suscripciones_usuario_ibfk_1")
+  planes_suscripcion                                      planes_suscripcion                        @relation(fields: [plan_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "suscripciones_usuario_ibfk_2")
+  usuarios_suscripciones_usuario_modificado_porTousuarios usuarios?                                 @relation("suscripciones_usuario_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "suscripciones_usuario_ibfk_3")
+
+  @@index([modificado_por], map: "modificado_por")
+  @@index([plan_id], map: "plan_id")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model testimonios {
+  id                                            Int                 @id @default(autoincrement())
+  usuario_id                                    Int?
+  nombre_mostrar                                String?             @db.VarChar(100)
+  avatar                                        String?             @db.VarChar(255)
+  testimonio                                    String              @db.Text
+  rating                                        Int?
+  foto_antes                                    String?             @db.VarChar(255)
+  foto_despues                                  String?             @db.VarChar(255)
+  visible                                       Boolean?            @default(true)
+  creacion_fecha                                DateTime?           @default(now()) @db.DateTime(0)
+  modificacion_fecha                            DateTime?           @default(now()) @db.DateTime(0)
+  modificado_por                                Int?
+  estado                                        testimonios_estado? @default(activo)
+  usuarios_testimonios_usuario_idTousuarios     usuarios?           @relation("testimonios_usuario_idTousuarios", fields: [usuario_id], references: [id], onUpdate: NoAction, map: "testimonios_ibfk_1")
+  usuarios_testimonios_modificado_porTousuarios usuarios?           @relation("testimonios_modificado_porTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "testimonios_ibfk_2")
+
+  @@index([modificado_por], map: "modificado_por")
+  @@index([usuario_id], map: "usuario_id")
+}
+
+model transacciones_pago {
+  id                                                 Int                                    @id @default(autoincrement())
+  orden_id                                           Int?
+  metodo_pago_id                                     Int
+  monto_q                                            Decimal                                @db.Decimal(12, 2)
+  estado_transaccion                                 transacciones_pago_estado_transaccion? @default(pendiente)
+  referencia_externa                                 String?                                @db.VarChar(100)
+  detalles                                           Json?
+  creacion_fecha                                     DateTime?                              @default(now()) @db.DateTime(0)
+  modificacion_fecha                                 DateTime?                              @default(now()) @db.DateTime(0)
+  modificado_por                                     Int?
+  estado                                             transacciones_pago_estado?             @default(activo)
+  ordenes_ordenes_transaccion_idTotransacciones_pago ordenes[]                              @relation("ordenes_transaccion_idTotransacciones_pago")
+  ordenes_transacciones_pago_orden_idToordenes       ordenes?                               @relation("transacciones_pago_orden_idToordenes", fields: [orden_id], references: [id], onUpdate: NoAction, map: "fk_transaccion_orden")
+  metodos_pago                                       metodos_pago                           @relation(fields: [metodo_pago_id], references: [id], onUpdate: NoAction, map: "transacciones_pago_ibfk_1")
+  usuarios                                           usuarios?                              @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "transacciones_pago_ibfk_2")
+
+  @@index([orden_id], map: "fk_transaccion_orden")
+  @@index([metodo_pago_id], map: "metodo_pago_id")
+  @@index([modificado_por], map: "modificado_por")
+}
+ 
+model usuarios {
+  id                                                                     Int                         @id @default(autoincrement())
+  nombre_completo                                                        String                      @db.VarChar(100)
+  email                                                                  String                      @unique(map: "email") @db.VarChar(100)
+  telefono                                                               String?                     @db.VarChar(20)
+  password_hash                                                          String                      @db.VarChar(255)
+  tipo_usuario                                                           usuarios_tipo_usuario
+  rol_id                                                                 Int?
+  foto_perfil                                                            String?                     @db.VarChar(255)
+  fecha_nacimiento                                                       DateTime?                   @db.Date
+  direccion                                                              String?                     @db.Text
+  genero                                                                 usuarios_genero?
+  ultimo_login                                                           DateTime?                   @db.DateTime(0)
+  creacion_fecha                                                         DateTime?                   @default(now()) @db.DateTime(0)
+  modificacion_fecha                                                     DateTime?                   @default(now()) @db.DateTime(0)
+  modificado_por                                                         Int?
+  estado                                                                 usuarios_estado?            @default(activo)
+  actividad_usuarios_actividad_usuarios_usuario_idTousuarios             actividad_usuarios[]        @relation("actividad_usuarios_usuario_idTousuarios")
+  actividad_usuarios_actividad_usuarios_modificado_porTousuarios         actividad_usuarios[]        @relation("actividad_usuarios_modificado_porTousuarios")
+  auditoria                                                              auditoria[]
+  carrito_compras_carrito_compras_usuario_idTousuarios                   carrito_compras[]           @relation("carrito_compras_usuario_idTousuarios")
+  carrito_compras_carrito_compras_modificado_porTousuarios               carrito_compras[]           @relation("carrito_compras_modificado_porTousuarios")
+  categorias_producto                                                    categorias_producto[]
+  clases_grupales_clases_grupales_instructor_idTousuarios                clases_grupales[]           @relation("clases_grupales_instructor_idTousuarios")
+  clases_grupales_clases_grupales_modificado_porTousuarios               clases_grupales[]           @relation("clases_grupales_modificado_porTousuarios")
+  configuracion_sitio                                                    configuracion_sitio[]
+  contenido_sitio                                                        contenido_sitio[]
+  cupones_descuento                                                      cupones_descuento[]
+  datos_consumidor_invitado                                              datos_consumidor_invitado[]
+  detalles_orden                                                         detalles_orden[]
+  ejercicios                                                             ejercicios[]
+  equipos                                                                equipos[]
+  evaluaciones_fisicas_evaluaciones_fisicas_usuario_idTousuarios         evaluaciones_fisicas[]      @relation("evaluaciones_fisicas_usuario_idTousuarios")
+  evaluaciones_fisicas_evaluaciones_fisicas_entrenador_idTousuarios      evaluaciones_fisicas[]      @relation("evaluaciones_fisicas_entrenador_idTousuarios")
+  evaluaciones_fisicas_evaluaciones_fisicas_modificado_porTousuarios     evaluaciones_fisicas[]      @relation("evaluaciones_fisicas_modificado_porTousuarios")
+  facturas                                                               facturas[]
+  facturas_detalle                                                       facturas_detalle[]
+  galeria                                                                galeria[]
+  guias_envio                                                            guias_envio[]
+  horarios_servicio_horarios_servicio_instructor_idTousuarios            horarios_servicio[]         @relation("horarios_servicio_instructor_idTousuarios")
+  horarios_servicio_horarios_servicio_modificado_porTousuarios           horarios_servicio[]         @relation("horarios_servicio_modificado_porTousuarios")
+  metodos_pago                                                           metodos_pago[]
+  notificaciones_notificaciones_usuario_idTousuarios                     notificaciones[]            @relation("notificaciones_usuario_idTousuarios")
+  notificaciones_notificaciones_modificado_porTousuarios                 notificaciones[]            @relation("notificaciones_modificado_porTousuarios")
+  ordenes_ordenes_usuario_idTousuarios                                   ordenes[]                   @relation("ordenes_usuario_idTousuarios")
+  ordenes_ordenes_modificado_porTousuarios                               ordenes[]                   @relation("ordenes_modificado_porTousuarios")
+  plan_ejercicios                                                        plan_ejercicios[]
+  planes_entrenamiento_planes_entrenamiento_usuario_idTousuarios         planes_entrenamiento[]      @relation("planes_entrenamiento_usuario_idTousuarios")
+  planes_entrenamiento_planes_entrenamiento_entrenador_idTousuarios      planes_entrenamiento[]      @relation("planes_entrenamiento_entrenador_idTousuarios")
+  planes_entrenamiento_planes_entrenamiento_modificado_porTousuarios     planes_entrenamiento[]      @relation("planes_entrenamiento_modificado_porTousuarios")
+  planes_suscripcion                                                     planes_suscripcion[]
+  producto_proveedores                                                   producto_proveedores[]
+  productos                                                              productos[]
+  progreso_usuarios_progreso_usuarios_usuario_idTousuarios               progreso_usuarios[]         @relation("progreso_usuarios_usuario_idTousuarios")
+  progreso_usuarios_progreso_usuarios_modificado_porTousuarios           progreso_usuarios[]         @relation("progreso_usuarios_modificado_porTousuarios")
+  proveedores                                                            proveedores[]
+  reservas_clases_reservas_clases_usuario_idTousuarios                   reservas_clases[]           @relation("reservas_clases_usuario_idTousuarios")
+  reservas_clases_reservas_clases_modificado_porTousuarios               reservas_clases[]           @relation("reservas_clases_modificado_porTousuarios")
+  roles_roles_modificado_porTousuarios                                   roles[]                     @relation("roles_modificado_porTousuarios")
+  servicios                                                              servicios[]
+  sesiones_entrenamiento_sesiones_entrenamiento_usuario_idTousuarios     sesiones_entrenamiento[]    @relation("sesiones_entrenamiento_usuario_idTousuarios")
+  sesiones_entrenamiento_sesiones_entrenamiento_modificado_porTousuarios sesiones_entrenamiento[]    @relation("sesiones_entrenamiento_modificado_porTousuarios")
+  suscripciones_usuario_suscripciones_usuario_usuario_idTousuarios       suscripciones_usuario[]     @relation("suscripciones_usuario_usuario_idTousuarios")
+  suscripciones_usuario_suscripciones_usuario_modificado_porTousuarios   suscripciones_usuario[]     @relation("suscripciones_usuario_modificado_porTousuarios")
+  testimonios_testimonios_usuario_idTousuarios                           testimonios[]               @relation("testimonios_usuario_idTousuarios")
+  testimonios_testimonios_modificado_porTousuarios                       testimonios[]               @relation("testimonios_modificado_porTousuarios")
+  transacciones_pago                                                     transacciones_pago[]
+  usuarios                                                               usuarios?                   @relation("usuariosTousuarios", fields: [modificado_por], references: [id], onUpdate: NoAction, map: "fk_usuarios_modificado")
+  other_usuarios                                                         usuarios[]                  @relation("usuariosTousuarios")
+  roles_usuarios_rol_idToroles                                           roles?                      @relation("usuarios_rol_idToroles", fields: [rol_id], references: [id], onUpdate: NoAction, map: "fk_usuarios_rol")
+
+  @@index([modificado_por], map: "fk_usuarios_modificado")
+  @@index([rol_id], map: "fk_usuarios_rol")
+}
+
+enum horarios_servicio_dia_semana {
+  lunes
+  martes
+  miercoles
+  jueves
+  viernes
+  sabado
+  domingo
+}
+
+enum auditoria_accion {
+  INSERT
+  UPDATE
+  DELETE
+}
+
+enum cupones_descuento_tipo_descuento {
+  porcentaje
+  monto_fijo
+}
+
+enum plan_ejercicios_dia_semana {
+  lunes
+  martes
+  miercoles
+  jueves
+  viernes
+  sabado
+  domingo
+}
+
+enum ejercicios_dificultad {
+  principiante
+  intermedio
+  avanzado
+}
+
+enum guias_envio_estado_envio {
+  preparando
+  enviado
+  entregado
+  devuelto
+}
+
+enum notificaciones_tipo {
+  pago
+  reserva
+  promocion
+  sistema
+}
+
+enum ordenes_estado_orden {
+  pendiente
+  pagada
+  enviada
+  cancelada
+  completada
+}
+
+enum transacciones_pago_estado_transaccion {
+  exitosa
+  fallida
+  pendiente
+  reembolsada
+}
+
+enum ordenes_tipo_entrega {
+  retiro
+  domicilio
+}
+
+enum reservas_clases_estado_reserva {
+  confirmada
+  cancelada
+  pendiente
+}
+
+enum suscripciones_usuario_estado_suscripcion {
+  activa
+  vencida
+  cancelada
+  suspendida
+}
+
+enum usuarios_tipo_usuario {
+  admin
+  cliente
+  entrenador
+  staff
+}
+
+enum facturas_tipo {
+  venta
+  suscripcion
+}
+
+enum facturas_detalle_tipo_item {
+  producto
+  suscripcion
+  envio
+}
+
+enum carrito_compras_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum categorias_producto_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum configuracion_sitio_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum equipos_estado_equipo {
+  funcional
+  en_mantenimiento
+  fuera_de_servicio
+}
+
+enum facturas_estado_factura {
+  emitida
+  anulada
+  pendiente
+}
+
+enum metodos_pago_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum roles_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum datos_consumidor_invitado_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum producto_proveedores_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum actividad_usuarios_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum cupones_descuento_aplicable_a {
+  todos
+  productos
+  suscripciones
+}
+
+enum detalles_orden_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum galeria_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum suscripciones_usuario_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum clases_grupales_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum ejercicios_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum notificaciones_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum planes_suscripcion_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum proveedores_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum reservas_clases_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum servicios_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum transacciones_pago_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum usuarios_genero {
+  masculino
+  femenino
+  otro
+}
+
+enum facturas_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum facturas_detalle_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum guias_envio_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum horarios_servicio_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum plan_ejercicios_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum progreso_usuarios_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum contenido_sitio_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum planes_entrenamiento_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum testimonios_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum sesiones_entrenamiento_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum equipos_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum evaluaciones_fisicas_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum ordenes_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum cupones_descuento_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum usuarios_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+enum productos_estado {
+  activo
+  inactivo
+  desabilitado
+}

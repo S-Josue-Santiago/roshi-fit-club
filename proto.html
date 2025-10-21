@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roshi Fit Club - Sistema Completo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root[data-theme="original"] {
+            --primary: #ff6b35;
+            --secondary: #1a1a2e;
+            --accent: #16213e;
+            --gold: #f5a623;
+            --text-light: #ffffff;
+            --text-gray: #cccccc;
+            --dark-bg: #0f0f23;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #f44336;
+        }
+
+        :root[data-theme="futuristic"] {
+            --primary: #00d4ff;
+            --secondary: #0a0e27;
+            --accent: #1a1f3a;
+            --gold: #00bcd4;
+            --text-light: #ffffff;
+            --text-gray: #b0bec5;
+            --dark-bg: #0a0e27;
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --danger: #ff0055;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* HEADER */
+        .header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--accent);
+            border: 1px solid var(--primary);
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        /* MAIN CONTENT PAGES */
+        .page {
+            display: none;
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* HOME PAGE */
+        .hero {
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23111" width="1200" height="600"/></svg>');
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-gray);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* GRID LAYOUTS */
+        .grid {
+            display: grid;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+        /* CARDS */
+        .card {
+            background: linear-gradient(145deg, var(--accent) 0%, var(--secondary) 100%);
+            border: 1px solid var(--accent);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.3);
+            border-color: var(--primary);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .card-price {
+            font-size: 2rem;
+            color: var(--gold);
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, var(--accent) 0%, var(--secondary) 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            border: 1px solid var(--accent);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--text-gray);
+        }
+
+        .modal-close:hover {
+            color: var(--primary);
+        }
+
+        /* FORM */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-gray);
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            background: var(--dark-bg);
+            color: var(--text-light);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* DASHBOARD */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .dashboard-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+        }
+
+        /* TABLE */
+        .table-container {
+            background: linear-gradient(145deg, var(--accent) 0%, var(--secondary) 100%);
+            border: 1px solid var(--accent);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead {
+            background: var(--accent);
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--accent);
+        }
+
+        .table th {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .table tr:hover {
+            background: rgba(255, 107, 53, 0.1);
+        }
+
+        .badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .badge-success { background: var(--success); color: white; }
+        .badge-warning { background: var(--warning); color: white; }
+        .badge-danger { background: var(--danger); color: white; }
+        .badge-primary { background: var(--primary); color: white; }
+
+        /* CART */
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+
+        /* PRODUCT CARD */
+        .product-card {
+            position: relative;
+        }
+
+        .product-image {
+            height: 200px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            border-radius: 15px 15px 0 0;
+            margin: -2rem -2rem 1rem -2rem;
+        }
+
+        .product-stock {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--success);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .product-stock.low {
+            background: var(--warning);
+        }
+
+        .product-stock.out {
+            background: var(--danger);
+        }
+
+        /* SECTION */
+        .section {
+            padding: 4rem 0;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--primary);
+        }
+
+        /* NOTIFICATION */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(145deg, var(--accent) 0%, var(--secondary) 100%);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--primary);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification.active {
+            display: flex;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .tab {
+            background: transparent;
+            border: none;
+            color: var(--text-gray);
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* FILTERS */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--accent);
+            border: 1px solid var(--primary);
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+        }
+
+        /* PROGRESS BAR */
+        .progress-bar {
+            background: var(--accent);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--gold));
+            transition: width 0.3s;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+        }
+
+        /* TIMELINE */
+        .timeline {
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 0;
+            width: 15px;
+            height: 15px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -2.44rem;
+            top: 15px;
+            width: 2px;
+            height: calc(100% - 15px);
+            background: var(--accent);
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        /* CHAT */
+        .chat-container {
+            background: var(--accent);
+            border-radius: 15px;
+            padding: 1rem;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .chat-message {
+            background: var(--secondary);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .chat-message.sent {
+            background: var(--primary);
+            margin-left: auto;
+            max-width: 70%;
+        }
+
+        /* CALENDAR */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background: var(--primary);
+        }
+
+        .calendar-day.selected {
+            background: var(--primary);
+        }
+
+        /* RATING */
+        .rating {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .star {
+            color: var(--gold);
+            font-size: 1.2rem;
+        }
+
+        .star.empty {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo" onclick="showPage('home')">🥋 Roshi Fit Club</div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="#" onclick="showPage('home')">Inicio</a></li>
+                    <li><a href="#" onclick="showPage('services')">Servicios</a></li>
+                    <li><a href="#" onclick="showPage('plans')">Planes</a></li>
+                    <li><a href="#" onclick="showPage('shop')">Tienda</a></li>
+                    <li><a href="#" onclick="showPage('classes')">Clases</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-adjust"></i> Tema
+                </button>
+                <div class="cart-icon" onclick="openModal('cartModal')">
+                    <i class="fas fa-shopping-cart" style="font-size: 1.5rem; color: var(--primary);"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+                <button class="btn btn-secondary" onclick="openModal('loginModal')">Ingresar</button>
+                <button class="btn btn-primary" onclick="openModal('registerModal')">Registrarse</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATION -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText"></span>
+    </div>
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="home">
+        <section class="hero">
+            <div>
+                <h1>Roshi Fit Club</h1>
+                <p>Desata tu poder interior con el Maestro Roshi</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="openModal('registerModal')">Únete Ahora</button>
+                    <button class="btn btn-secondary" onclick="showPage('plans')">Ver Planes</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Estadísticas</h2>
+                <div class="dashboard-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">1,247</span>
+                        <span class="stat-label">Miembros Activos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">10+</span>
+                        <span class="stat-label">Años de Experiencia</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Disponible</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">89%</span>
+                        <span class="stat-label">Satisfacción</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Servicios Destacados</h2>
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div class="card-icon">💪</div>
+                        <h3>Entrenamiento de Fuerza</h3>
+                        <p>Desarrolla tu poder como un guerrero</p>
+                        <ul>
+                            <li>Máquinas profesionales</li>
+                            <li>Pesas libres completas</li>
+                            <li>Instructores certificados</li>
+                        </ul>
+                        <p style="color: var(--text-gray); margin-top: 1rem;">
+                            <strong>Horarios:</strong> Lun-Vie 6:00-22:00
+                        </p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🧘</div>
+                        <h3>Yoga & Meditación</h3>
+                        <p>Equilibra tu mente y cuerpo</p>
+                        <ul>
+                            <li>Yoga Hatha y Vinyasa</li>
+                            <li>Meditación guiada</li>
+                            <li>Clases de relajación</li>
+                        </ul>
+                        <p style="color: var(--text-gray); margin-top: 1rem;">
+                            <strong>Horarios:</strong> Lun-Mié-Vie 19:00
+                        </p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🥋</div>
+                        <h3>Artes Marciales</h3>
+                        <p>Aprende las técnicas del Maestro Roshi</p>
+                        <ul>
+                            <li>Karate tradicional</li>
+                            <li>Kickboxing</li>
+                            <li>Defensa personal</li>
+                        </ul>
+                        <p style="color: var(--text-gray); margin-top: 1rem;">
+                            <strong>Horarios:</strong> Mar-Jue 18:00-20:00
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <h2>Testimonios</h2>
+                <div class="grid grid-2">
+                    <div class="card">
+                        <div class="rating">
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                        </div>
+                        <p style="margin: 1rem 0;">"Roshi Fit Club cambió mi vida. En 6 meses perdí 15kg y gané mucha fuerza."</p>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="font-size: 3rem;">👨‍💼</div>
+                            <div>
+                                <h4 style="color: var(--primary);">Carlos Mendoza</h4>
+                                <span style="color: var(--text-gray);">Miembro desde 2022</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="rating">
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                            <i class="fas fa-star star"></i>
+                        </div>
+                        <p style="margin: 1rem 0;">"El ambiente es increíble y los equipos son de primera calidad."</p>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="font-size: 3rem;">👩‍💼</div>
+                            <div>
+                                <h4 style="color: var(--primary);">María González</h4>
+                                <span style="color: var(--text-gray);">Miembro VIP</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SERVICES PAGE -->
+    <div class="page" id="services">
+        <section class="section">
+            <div class="container">
+                <h2>Todos Nuestros Servicios</h2>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('all-services')">Todos</button>
+                    <button class="tab" onclick="showTab('strength')">Fuerza</button>
+                    <button class="tab" onclick="showTab('cardio')">Cardio</button>
+                    <button class="tab" onclick="showTab('wellness')">Bienestar</button>
+                </div>
+
+                <div class="tab-content active" id="all-services">
+                    <div class="grid grid-3">
+                        <div class="card">
+                            <div class="card-icon">💪</div>
+                            <h3>Entrenamiento de Fuerza</h3>
+                            <p>Desarrolla tu poder</p>
+                            <div class="badge badge-primary">Fuerza</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon">🏃</div>
+                            <h3>Entrenamiento Cardio</h3>
+                            <p>Mejora tu resistencia</p>
+                            <div class="badge badge-warning">Cardio</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon">🧘</div>
+                            <h3>Yoga & Meditación</h3>
+                            <p>Equilibra mente y cuerpo</p>
+                            <div class="badge badge-success">Bienestar</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon">🥋</div>
+                            <h3>Artes Marciales</h3>
+                            <p>Técnicas del Maestro Roshi</p>
+                            <div class="badge badge-danger">Combate</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon">🏊</div>
+                            <h3>Natación</h3>
+                            <p>Entrenamiento acuático</p>
+                            <div class="badge badge-primary">Cardio</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon">🤸</div>
+                            <h3>CrossFit</h3>
+                            <p>Entrenamiento funcional</p>
+                            <div class="badge badge-warning">Intensivo</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Horarios de Servicios</h2>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td>🥋 Artes Marciales</td>
+                                    <td>Mar-Jue</td>
+                                    <td>18:00-20:00</td>
+                                    <td>Dojo</td>
+                                    <td><span class="badge badge-warning">15 personas</span></td>
+                                </tr>
+                                <tr>
+                                    <td>🏊 Natación</td>
+                                    <td>Lun-Dom</td>
+                                    <td>6:00-21:00</td>
+                                    <td>Piscina Olímpica</td>
+                                    <td><span class="badge badge-success">30 personas</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- PLANS PAGE -->
+    <div class="page" id="plans">
+        <section class="section">
+            <div class="container">
+                <h2>Planes de Suscripción</h2>
+                <div class="grid grid-3">
+                    <div class="card">
+                        <h3>Plan Básico</h3>
+                        <div class="card-price">Q100.00<span style="font-size: 1rem; color: var(--text-gray);">/mes</span></div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Acceso equipos básicos</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Horario 6:00-22:00</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Área de cardio</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Vestuarios y duchas</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-times" style="color: var(--danger);"></i> Clases grupales</li>
+                        </ul>
+                        <button class="btn btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="selectPlan('basico')">Seleccionar</button>
+                    </div>
+                    <div class="card" style="border: 2px solid var(--primary); transform: scale(1.05);">
+                        <div class="badge badge-warning" style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%);">Más Popular</div>
+                        <h3>Plan Premium</h3>
+                        <div class="card-price">Q150.00<span style="font-size: 1rem; color: var(--text-gray);">/mes</span></div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Acceso completo</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Acceso 24/7</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Clases grupales ilimitadas</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> 2 sesiones entrenador personal</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Spa y sauna</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="selectPlan('premium')">Seleccionar</button>
+                    </div>
+                    <div class="card">
+                        <h3>Plan VIP</h3>
+                        <div class="card-price">Q200.00<span style="font-size: 1rem; color: var(--text-gray);">/mes</span></div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Todo lo de Premium</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Área VIP exclusiva</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Entrenador personal ilimitado</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Plan nutricional personalizado</li>
+                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: var(--success);"></i> Masajes terapéuticos</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="selectPlan('vip')">Seleccionar</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Comparación de Planes</h2>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Beneficio</th>
+                                    <th>Básico</th>
+                                    <th>Premium</th>
+                                    <th>VIP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Acceso a equipos</td>
+                                    <td><i class="fas fa-check" style="color: var(--success);"></i></td>
+                                    <td><i class="fas fa-check" style="color: var(--success);"></i></td>
+                                    <td><i class="fas fa-check" style="color: var(--success);"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Acceso 24/7</td>
+                                    <td><i class="fas fa-times" style="color: var(--danger);"></i></td>
+                                    <td><i class="fas fa-check" style="color: var(--success);"></i></td>
+                                    <td><i class="fas fa-check" style="color: var(--success);"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Clases grupales</td>
+                                    <td><i class="fas fa-times" style="color: var(--danger);"></i></td>
+                                    <td><i class="fas fa-check" style="color: var(--success);"></i></td>
+                                    <td><i class="fas fa-check" style="color: var(--success);"></i></td>
+                                </tr>
+                                <tr>
+                                    <td>Entrenador personal</td>
+                                    <td><i class="fas fa-times" style="color: var(--danger);"></i></td>
+                                    <td>2 sesiones/mes</td>
+                                    <td>Ilimitado</td>
+                                </tr>
+                                <tr>
+                                    <td>Área VIP</td>
+                                    <td><i class="fas fa-times" style="color: var(--danger);"></i></td>
+                                    <td><i class="fas fa-times" style="color: var(--danger);"></i></td>
+                                    <td><i class="fas fa-check" style="color: var(--success);"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SHOP PAGE -->
+    <div class="page" id="shop">
+        <section class="section">
+            <div class="container">
+                <h2>Tienda de Productos</h2>
+                
+                <div class="filters">
+                    <button class="filter-btn active" onclick="filterProducts('all')">Todos</button>
+                    <button class="filter-btn" onclick="filterProducts('proteinas')">Proteínas</button>
+                    <button class="filter-btn" onclick="filterProducts('preentrenos')">Pre-entrenos</button>
+                    <button class="filter-btn" onclick="filterProducts('ropa')">Ropa Deportiva</button>
+                    <button class="filter-btn" onclick="filterProducts('accesorios')">Accesorios</button>
+                </div>
+
+                <div class="grid grid-4" id="productsGrid">
+                    <div class="card product-card" data-category="proteinas">
+                        <div class="product-image">🥤</div>
+                        <div class="product-stock">45 en stock</div>
+                        <h3>Proteína Roshi Power</h3>
+                        <p style="color: var(--text-gray);">Whey premium sabor vainilla</p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0;">
+                            <div class="badge badge-primary">SKU: PRP001</div>
+                            <div class="badge badge-success">Proteínas</div>
+                        </div>
+                        <div class="card-price">Q459.99</div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Proteína Roshi Power', 459.99)">Agregar al Carrito</button>
+                    </div>
+
+                    <div class="card product-card" data-category="proteinas">
+                        <div class="product-image">🥤</div>
+                        <div class="product-stock low">12 en stock</div>
+                        <h3>Proteína Turtle Strength</h3>
+                        <p style="color: var(--text-gray);">Caseína sabor chocolate</p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0;">
+                            <div class="badge badge-primary">SKU: PTS001</div>
+                            <div class="badge badge-success">Proteínas</div>
+                        </div>
+                        <div class="card-price">Q519.99</div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Proteína Turtle Strength', 519.99)">Agregar al Carrito</button>
+                    </div>
+
+                    <div class="card product-card" data-category="preentrenos">
+                        <div class="product-image">⚡</div>
+                        <div class="product-stock">23 en stock</div>
+                        <h3>Pre-Entreno Kamehameha</h3>
+                        <p style="color: var(--text-gray);">Energía explosiva para entrenamientos</p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0;">
+                            <div class="badge badge-primary">SKU: PEK001</div>
+                            <div class="badge badge-warning">Pre-entrenos</div>
+                        </div>
+                        <div class="card-price">Q319.99</div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Pre-Entreno Kamehameha', 319.99)">Agregar al Carrito</button>
+                    </div>
+
+                    <div class="card product-card" data-category="ropa">
+                        <div class="product-image">👕</div>
+                        <div class="product-stock">87 en stock</div>
+                        <h3>Camiseta Roshi Training</h3>
+                        <p style="color: var(--text-gray);">Camiseta técnica respirable</p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0;">
+                            <div class="badge badge-primary">SKU: CRT001</div>
+                            <div class="badge badge-danger">Ropa</div>
+                        </div>
+                        <div class="card-price">Q199.99</div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Camiseta Roshi Training', 199.99)">Agregar al Carrito</button>
+                    </div>
+
+                    <div class="card product-card" data-category="accesorios">
+                        <div class="product-image">🧤</div>
+                        <div class="product-stock">34 en stock</div>
+                        <h3>Guantes de Entrenamiento</h3>
+                        <p style="color: var(--text-gray);">Protección y agarre superior</p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0;">
+                            <div class="badge badge-primary">SKU: GUE001</div>
+                            <div class="badge badge-primary">Accesorios</div>
+                        </div>
+                        <div class="card-price">Q279.99</div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addToCart('Guantes de Entrenamiento', 279.99)">Agregar al Carrito</button>
+                    </div>
+
+                    <div class="card product-card" data-category="accesorios">
+                        <div class="product-image">🥤</div>
+                        <div class="product-stock out">0 en stock</div>
+                        <h3>Shaker Roshi Fit</h3>
+                        <p style="color: var(--text-gray);">Botella mezcladora con compartimientos</p>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0;">
+                            <div class="badge badge-primary">SKU: SRF001</div>
+                            <div class="badge badge-primary">Accesorios</div>
+                        </div>
+                        <div class="card-price">Q159.99</div>
+                        <button class="btn btn-secondary" style="width: 100%;" disabled>Agotado</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Información de Proveedores</h2>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Proveedor</th>
+                                    <th>Productos</th>
+                                    <th>Contacto</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>NutriPower Guatemala</strong></td>
+                                    <td>Proteínas, Suplementos</td>
+                                    <td>info@nutripower.gt</td>
+                                    <td><span class="badge badge-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SportWear GT</strong></td>
+                                    <td>Ropa Deportiva</td>
+                                    <td>ventas@sportwear.com</td>
+                                    <td><span class="badge badge-success">Activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>FitGear Supplies</strong></td>
+                                    <td>Accesorios, Equipos</td>
+                                    <td>contacto@fitgear.gt</td>
+                                    <td><span class="badge badge-warning">Pendiente</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- CLASSES PAGE -->
+    <div class="page" id="classes">
+        <section class="section">
+            <div class="container">
+                <h2>Clases Grupales</h2>
+                <p style="text-align: center; color: var(--text-gray); margin-bottom: 2rem;">Reserva tu lugar en nuestras clases grupales</p>
+
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div class="card-icon">🧘</div>
+                        <h3>Yoga Vinyasa</h3>
+                        <p style="color: var(--text-gray);">Instructor: María González</p>
+                        <div style="margin: 1rem 0;">
+                            <p><strong>Horario:</strong> Lun-Mié-Vie 19:00-20:00</p>
+                            <p><strong>Duración:</strong> 60 minutos</p>
+                            <p><strong>Ubicación:</strong> Sala Zen</p>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%;"></div>
+                        </div>
+                        <p style="color: var(--text-gray); font-size: 0.9rem; margin-top: 0.5rem;">15/20 cupos ocupados</p>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="reserveClass('Yoga Vinyasa')">Reservar Clase</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">🥊</div>
+                        <h3>Boxeo Funcional</h3>
+                        <p style="color: var(--text-gray);">Instructor: Roberto Silva</p>
+                        <div style="margin: 1rem 0;">
+                            <p><strong>Horario:</strong> Mar-Jue 18:00-19:00</p>
+                            <p><strong>Duración:</strong> 60 minutos</p>
+                            <p><strong>Ubicación:</strong> Ring Principal</p>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 93%;"></div>
+                        </div>
+                        <p style="color: var(--text-gray); font-size: 0.9rem; margin-top: 0.5rem;">14/15 cupos ocupados</p>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="reserveClass('Boxeo Funcional')">Reservar Clase</button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-icon">🤸</div>
+                        <h3>CrossFit Intensivo</h3>
+                        <p style="color: var(--text-gray);">Instructor: Diego Herrera</p>
+                        <div style="margin: 1rem 0;">
+                            <p><strong>Horario:</strong> Lun-Vie 6:00-7:00</p>
+                            <p><strong>Duración:</strong> 60 minutos</p>
+                            <p><strong>Ubicación:</strong> CrossFit Box</p>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50%;"></div>
+                        </div>
+                        <p style="color: var(--text-gray); font-size: 0.9rem; margin-top: 0.5rem;">10/20 cupos ocupados</p>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="reserveClass('CrossFit Intensivo')">Reservar Clase</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Calendario de Clases</h2>
+                    <div class="card">
+                        <div class="calendar" id="calendar">
+                            <!-- Days will be generated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Mis Reservas</h2>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Clase</th>
+                                    <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Instructor</th>
+                                    <th>Estado</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Yoga Vinyasa</td>
+                                    <td>15 Oct 2025</td>
+                                    <td>19:00</td>
+                                    <td>María González</td>
+                                    <td><span class="badge badge-success">Confirmada</span></td>
+                                    <td><button class="btn btn-danger" style="padding: 0.3rem 0.8rem;">Cancelar</button></td>
+                                </tr>
+                                <tr>
+                                    <td>CrossFit Intensivo</td>
+                                    <td>16 Oct 2025</td>
+                                    <td>6:00</td>
+                                    <td>Diego Herrera</td>
+                                    <td><span class="badge badge-warning">Pendiente</span></td>
+                                    <td><button class="btn btn-danger" style="padding: 0.3rem 0.8rem;">Cancelar</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- CLIENT DASHBOARD -->
+    <div class="page" id="clientDashboard">
+        <section class="section">
+            <div class="container">
+                <div class="dashboard-header">
+                    <h1>Bienvenido, Juan Cliente 🥋</h1>
+                    <p>Tu panel de control personal del Maestro Roshi</p>
+                    <div class="dashboard-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">15</span>
+                            <span class="stat-label">Días Activos</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">Premium</span>
+                            <span class="stat-label">Plan Actual</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">28</span>
+                            <span class="stat-label">Días Restantes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 2rem;">Acciones Rápidas</h2>
+                <div class="grid grid-4">
+                    <div class="card" style="cursor: pointer;" onclick="openModal('profileModal')">
+                        <div class="card-icon"><i class="fas fa-user-edit"></i></div>
+                        <h3>Editar Perfil</h3>
+                    </div>
+                    <div class="card" style="cursor: pointer;" onclick="openModal('subscriptionModal')">
+                        <div class="card-icon"><i class="fas fa-credit-card"></i></div>
+                        <h3>Mi Suscripción</h3>
+                    </div>
+                    <div class="card" style="cursor: pointer;" onclick="showPage('shop')">
+                        <div class="card-icon"><i class="fas fa-shopping-bag"></i></div>
+                        <h3>Tienda</h3>
+                    </div>
+                    <div class="card" style="cursor: pointer;" onclick="openModal('workoutModal')">
+                        <div class="card-icon"><i class="fas fa-dumbbell"></i></div>
+                        <h3>Mi Entrenamiento</h3>
+                    </div>
+                </div>
+
+                <div class="grid grid-2" style="margin-top: 2rem;">
+                    <div>
+                        <h2>Mi Progreso</h2>
+                        <div class="grid grid-2">
+                            <div class="card">
+                                <div class="card-icon">💪</div>
+                                <h3>Entrenamientos</h3>
+                                <div class="stat-number">24</div>
+                                <p style="color: var(--success);">+3 esta semana</p>
+                            </div>
+                            <div class="card">
+                                <div class="card-icon">⚖️</div>
+                                <h3>Peso</h3>
+                                <div class="stat-number">75.2 kg</div>
+                                <p style="color: var(--success);">-2.1 kg este mes</p>
+                            </div>
+                            <div class="card">
+                                <div class="card-icon">🏃</div>
+                                <h3>Distancia</h3>
+                                <div class="stat-number">45.6 km</div>
+                                <p style="color: var(--success);">+8.2 km esta semana</p>
+                            </div>
+                            <div class="card">
+                                <div class="card-icon">🔥</div>
+                                <h3>Calorías</h3>
+                                <div class="stat-number">12,450</div>
+                                <p style="color: var(--success);">+1,200 esta semana</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2>Actividad Reciente</h2>
+                        <div class="card">
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div style="display: flex; gap: 1rem; align-items: center;">
+                                        <div style="font-size: 2rem;">💪</div>
+                                        <div>
+                                            <h4 style="color: var(--primary);">Entrenamiento de Fuerza</h4>
+                                            <p style="color: var(--text-gray);">Completado - 45 minutos</p>
+                                            <small style="color: var(--text-gray);">Hace 2 horas</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div style="display: flex; gap: 1rem; align-items: center;">
+                                        <div style="font-size: 2rem;">🛒</div>
+                                        <div>
+                                            <h4 style="color: var(--primary);">Compra Realizada</h4>
+                                            <p style="color: var(--text-gray);">Proteína Roshi Power - Q459.99</p>
+                                            <small style="color: var(--text-gray);">Ayer</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div style="display: flex; gap: 1rem; align-items: center;">
+                                        <div style="font-size: 2rem;">🧘</div>
+                                        <div>
+                                            <h4 style="color: var(--primary);">Clase de Yoga</h4>
+                                            <p style="color: var(--text-gray);">Asistida - 60 minutos</p>
+                                            <small style="color: var(--text-gray);">Hace 2 días</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 2rem;">Historial de Compras</h2>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Orden</th>
+                                <th>Producto</th>
+                                <th>Fecha</th>
+                                <th>Precio</th>
+                                <th>Estado</th>
+                                <th>Factura</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#ORD-001</td>
+                                <td>Proteína Roshi Power</td>
+                                <td>15 Oct 2025</td>
+                                <td>Q459.99</td>
+                                <td><span class="badge badge-success">Entregado</span></td>
+                                <td><button class="btn btn-secondary" style="padding: 0.3rem 0.8rem;">Ver Factura</button></td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-002</td>
+                                <td>Camiseta Roshi Training</td>
+                                <td>10 Oct 2025</td>
+                                <td>Q199.99</td>
+                                <td><span class="badge badge-success">Entregado</span></td>
+                                <td><button class="btn btn-secondary" style="padding: 0.3rem 0.8rem;">Ver Factura</button></td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-003</td>
+                                <td>Pre-Entreno Kamehameha</td>
+                                <td>05 Oct 2025</td>
+                                <td>Q319.99</td>
+                                <td><span class="badge badge-warning">En Proceso</span></td>
+                                <td><button class="btn btn-secondary" style="padding: 0.3rem 0.8rem;">Ver Factura</button></td>
+                            </tr<th>Servicio</th>
+                                    <th>Días</th>
+                                    <th>Horario</th>
+                                    <th>Ubicación</th>
+                                    <th>Capacidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>💪 Entrenamiento de Fuerza</td>
+                                    <td>Lun-Vie</td>
+                                    <td>6:00-22:00</td>
+                                    <td>Área de Pesas</td>
+                                    <td><span class="badge badge-success">Ilimitada</span></td>
+                                </tr>
+                                <tr>
+                                    <td>🧘 Yoga</td>
+                                    <td>Lun-Mié-Vie</td>
+                                    <td>19:00-20:00</td>
+                                    <td>Sala Zen</td>
+                                    <td><span class="badge badge-warning">20 personas</span></td>
+                                </tr>
+                                <tr>

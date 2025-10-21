@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* Estilos personalizados mínimos */
+.section {
+  min-height: 100vh;
+  padding: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}

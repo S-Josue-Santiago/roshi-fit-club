@@ -1,0 +1,196 @@
+// roshi_fit/src/pages/dashboard/subscriptions/EditPlanModal.tsx
+import React, { useState, useEffect } from 'react';
+import { fetchPlanById, updatePlan } from '../../../api/planApi';
+import { uploadProductImage } from '../../../api/uploadApi';
+
+interface EditPlanModalProps {
+  planId: number;
+  onClose: () => void;
+  onUpdate: () => void;
+}
+
+const EditPlanModal: React.FC<EditPlanModalProps> = ({ planId, onClose, onUpdate }) => {
+  const [formData, setFormData] = useState({
+    nombre: '',
+    descripcion: '',
+    precio_q: '',
+    duracion_dias: '',
+    beneficios: '',
+  });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadPlan = async () => {
+      try {
+        const plan = await fetchPlanById(planId);
+        setFormData({
+          nombre: plan.nombre,
+          descripcion: plan.descripcion || '',
+          precio_q: plan.precio_q.toString(),
+          duracion_dias: plan.duracion_dias.toString(),
+          beneficios: plan.beneficios ? JSON.stringify(plan.beneficios) : '',
+        });
+        setCurrentImage(plan.imagen);
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Error al cargar el plan.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPlan();
+  }, [planId]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      let imagen = currentImage;
+
+      if (imageFile) {
+        imagen = await uploadProductImage(imageFile);
+      }
+
+      await updatePlan(planId, {
+        nombre: formData.nombre,
+        descripcion: formData.descripcion || undefined,
+        precio_q: parseFloat(formData.precio_q),
+        duracion_dias: parseInt(formData.duracion_dias),
+        imagen: imagen || undefined,
+        beneficios: formData.beneficios || undefined,
+      });
+
+      onUpdate();
+      onClose();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Error al actualizar el plan.';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
+        <div className="bg-dashboard-accent/90 p-6 rounded-xl w-full max-w-md border border-dashboard-accent">
+          <p className="text-dashboard-text">Cargando plan...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
+      <div
+        className="bg-dashboard-accent/90 p-6 rounded-xl shadow-2xl w-full max-w-md border border-dashboard-accent"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4 border-b border-dashboard-accent pb-2">
+          <h2 className="text-xl font-bold text-dashboard-text">Editar Plan</h2>
+          <button onClick={onClose} className="text-dashboard-text hover:text-dashboard-primary text-2xl">
+            &times;
+          </button>
+        </div>
+
+        {error && <div className="bg-red-800/50 text-red-200 p-2 rounded mb-4">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="nombre"
+            placeholder="Nombre del plan *"
+            value={formData.nombre}
+            onChange={handleChange}
+            required
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <textarea
+            name="descripcion"
+            placeholder="Descripción"
+            value={formData.descripcion}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="precio_q"
+            type="number"
+            step="0.01"
+            placeholder="Precio (Q) *"
+            value={formData.precio_q}
+            onChange={handleChange}
+            required
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="duracion_dias"
+            type="number"
+            placeholder="Duración en días *"
+            value={formData.duracion_dias}
+            onChange={handleChange}
+            required
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <textarea
+            name="beneficios"
+            placeholder='Beneficios (JSON: ["Acceso 24/7", "Clases ilimitadas"])'
+            value={formData.beneficios}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          {currentImage && (
+            <div className="mb-2">
+              <label className="block text-sm text-dashboard-text-secondary mb-1">
+                Imagen actual
+              </label>
+              <img
+                src={`/assets/products/${currentImage}`}
+                alt="Imagen actual"
+                className="w-24 h-24 object-cover rounded border border-dashboard-accent"
+              />
+            </div>
+          )}
+          <div>
+            <label className="block text-sm text-dashboard-text-secondary mb-1">
+              Nueva imagen (opcional)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-2">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-dashboard-text hover:text-dashboard-primary">
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded hover:bg-dashboard-secondary transition-colors"
+            >
+              {loading ? 'Guardando...' : 'Guardar Cambios'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default EditPlanModal;

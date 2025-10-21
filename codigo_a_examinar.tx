@@ -1,0 +1,1098 @@
+// roshi_fit/backend/src/controllers/equipmentController.ts
+import { Request, Response } from 'express';
+import { prisma } from '../app';
+
+export const getActiveEquipment = async (_req: Request, res: Response) => {
+  try {
+    const equipment = await prisma.equipos.findMany({
+      where: { estado: 'activo' },
+      select: {
+        id: true,
+        nombre: true,
+        tipo: true,
+        marca: true,
+        modelo: true,
+        numero_serie: true,
+        ubicacion: true,
+        estado_equipo: true,
+        ultima_revision: true,
+        proxima_revision: true,
+        imagen: true,
+      },
+      orderBy: { nombre: 'asc' },
+    });
+
+    res.status(200).json(equipment);
+  } catch (error) {
+    console.error('Error al obtener equipos:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// roshi_fit/backend/src/controllers/equipmentController.ts
+
+
+// 1. LISTAR EQUIPOS
+export const getEquipments = async (req: Request, res: Response) => {
+  try {
+    const { search, tipo, estado_equipo } = req.query;
+
+ // En getEquipments, reemplaza el bloque de where por:
+const where: any = {
+  estado: 'activo' // ← ¡Filtrar solo equipos activos!
+};
+
+if (tipo) where.tipo = String(tipo);
+if (estado_equipo) where.estado_equipo = String(estado_equipo);
+
+if (search && String(search).trim() !== '') {
+  const term = String(search).trim();
+  where.OR = [
+    { nombre: { contains: term } },
+    { marca: { contains: term } },
+    { modelo: { contains: term } }
+  ];
+}
+    const equipments = await prisma.equipos.findMany({
+      where,
+      select: {
+        id: true,
+        nombre: true,
+        tipo: true,
+        marca: true,
+        modelo: true,
+        estado_equipo: true,
+        ubicacion: true,
+        imagen: true,
+      },
+      orderBy: { nombre: 'asc' }
+    });
+
+    res.json(equipments);
+  } catch (error) {
+    console.error('Error al listar equipos:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// 2. OBTENER EQUIPO POR ID
+export const getEquipmentById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const equipment = await prisma.equipos.findUnique({
+      where: { id: parseInt(id) },
+      select: {
+        id: true,
+        nombre: true,
+        tipo: true,
+        marca: true,
+        modelo: true,
+        numero_serie: true,
+        ubicacion: true,
+        estado_equipo: true,
+        ultima_revision: true,
+        proxima_revision: true,
+        imagen: true,
+      }
+    });
+    if (!equipment) return res.status(404).json({ message: 'Equipo no encontrado.' });
+    res.json(equipment);
+  } catch (error) {
+    console.error('Error al obtener equipo:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// 3. CREAR EQUIPO
+export const createEquipment = async (req: Request, res: Response) => {
+  try {
+    const { nombre, tipo, marca, modelo, numero_serie, ubicacion, estado_equipo, ultima_revision, proxima_revision, imagen } = req.body;
+
+    if (!nombre || !tipo || !marca || !modelo) {
+      return res.status(400).json({ message: 'Nombre, tipo, marca y modelo son obligatorios.' });
+    }
+
+    const newEquipment = await prisma.equipos.create({
+      data: {
+        nombre,
+        tipo,
+        marca,
+        modelo,
+        numero_serie,
+        ubicacion,
+        estado_equipo,
+        ultima_revision: ultima_revision ? new Date(ultima_revision) : undefined,
+        proxima_revision: proxima_revision ? new Date(proxima_revision) : undefined,
+        imagen,
+      },
+      select: { id: true, nombre: true }
+    });
+
+    res.status(201).json({ message: 'Equipo creado.', equipment: newEquipment });
+  } catch (error) {
+    console.error('Error al crear equipo:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// 4. ACTUALIZAR EQUIPO
+export const updateEquipment = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { nombre, tipo, marca, modelo, numero_serie, ubicacion, estado_equipo, ultima_revision, proxima_revision, imagen } = req.body;
+
+    const updated = await prisma.equipos.update({
+      where: { id: parseInt(id) },
+      data: {
+        nombre,
+        tipo,
+        marca,
+        modelo,
+        numero_serie,
+        ubicacion,
+        estado_equipo,
+        ultima_revision: ultima_revision ? new Date(ultima_revision) : undefined,
+        proxima_revision: proxima_revision ? new Date(proxima_revision) : undefined,
+        imagen,
+      },
+      select: { id: true, nombre: true }
+    });
+
+    res.json({ message: 'Equipo actualizado.', equipment: updated });
+  } catch (error) {
+    console.error('Error al actualizar equipo:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// 5. ACTIVAR/DESACTIVAR
+export const toggleEquipmentStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const equipment = await prisma.equipos.findUnique({ where: { id: parseInt(id) } });
+    if (!equipment) return res.status(404).json({ message: 'Equipo no encontrado.' });
+
+    const newStatus = equipment.estado_equipo === 'funcional' ? 'fuera_de_servicio' : 'funcional';
+    const updated = await prisma.equipos.update({
+      where: { id: parseInt(id) },
+      data: { estado_equipo: newStatus }
+    });
+
+    res.json({ message: `Equipo ${newStatus}.`, equipment: updated });
+  } catch (error) {
+    console.error('Error al cambiar estado del equipo:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+export const getEquipmentTypes = async (_req: Request, res: Response) => {
+  try {
+    const types = await prisma.equipos.groupBy({
+      by: ['tipo'],
+      where: { 
+        tipo: { not: null },
+        estado: 'activo'
+      }
+    });
+    const equipmentTypes = types.map(t => t.tipo).filter(Boolean) as string[];
+    res.json(equipmentTypes);
+  } catch (error) {
+    console.error('Error al obtener tipos de equipo:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// roshi_fit/backend/src/routes/equipmentRoutes.ts
+import { Router } from 'express';
+import { getActiveEquipment,   getEquipments,
+        getEquipmentById,
+        createEquipment,
+        updateEquipment,
+        toggleEquipmentStatus, getEquipmentTypes } from '../controllers/equipmentController';
+
+const router = Router();
+router.get('/active', getActiveEquipment); // GET /api/equipment/active
+
+// Admin
+router.get('/', getEquipments);
+router.get('/:id', getEquipmentById);
+router.post('/', createEquipment);
+router.patch('/:id', updateEquipment);
+router.post('/:id/toggle-status', toggleEquipmentStatus);
+router.get('/types', getEquipmentTypes);
+export default router;
+
+// roshi_fit/src/api/equipmentApi.ts
+import api from './axiosInstance';
+import { type Equipment, type EquipmentFilters } from '../types/Equipment';
+
+export const fetchActiveEquipment = async (): Promise<Equipment[]> => {
+  const res = await api.get<Equipment[]>('/equipment/active');
+  return res.data;
+};
+
+//admin
+export const fetchEquipments = async (filters: EquipmentFilters): Promise<Equipment[]> => {
+  const params = new URLSearchParams();
+  if (filters.search) params.append('search', filters.search);
+  if (filters.tipo) params.append('tipo', filters.tipo);
+  if (filters.estado_equipo) params.append('estado_equipo', filters.estado_equipo);
+  const res = await api.get<Equipment[]>(`/equipments?${params.toString()}`);
+  return res.data;
+};
+
+export const fetchEquipmentById = async (id: number): Promise<Equipment & {
+  numero_serie: string | null;
+  ultima_revision: string | null;
+  proxima_revision: string | null;
+}> => {
+  const res = await api.get(`/equipments/${id}`);
+  return res.data;
+};
+
+export const createEquipment = async ( data: {
+  nombre: string;
+  tipo: string;
+  marca: string;
+  modelo: string;
+  numero_serie?: string;
+  ubicacion?: string;
+  estado_equipo?: string;
+  ultima_revision?: string;
+  proxima_revision?: string;
+  imagen?: string;
+}): Promise<Equipment> => {
+  const res = await api.post<Equipment>('/equipments', data);
+  return res.data;
+};
+
+export const updateEquipment = async (id: number,  data:{
+  nombre?: string;
+  tipo?: string;
+  marca?: string;
+  modelo?: string;
+  numero_serie?: string;
+  ubicacion?: string;
+  estado_equipo?: string;
+  ultima_revision?: string;
+  proxima_revision?: string;
+  imagen?: string;
+}): Promise<Equipment> => {
+  const res = await api.patch<Equipment>(`/equipments/${id}`, data);
+  return res.data;
+};
+
+export const toggleEquipmentStatus = async (id: number): Promise<Equipment> => {
+  const res = await api.post<Equipment>(`/equipments/${id}/toggle-status`);
+  return res.data;
+};
+
+// NUEVA FUNCIÓN
+export const fetchEquipmentTypes = async (): Promise<string[]> => {
+  const res = await api.get<string[]>('/equipments/types');
+  return res.data;
+};
+
+// // roshi_fit/src/types/Equipment.ts
+// export interface Equipment {
+//   id: number;
+//   nombre: string;
+//   tipo: string | null;
+//   imagen: string | null;
+// }
+
+// roshi_fit/src/types/Equipment.ts
+export interface Equipment {
+  id: number;
+  nombre: string;
+  tipo: string | null;
+  marca: string;
+  modelo: string;
+  estado_equipo: string; // ← Dinámico
+  ubicacion: string;
+  imagen: string | null;
+}
+
+export interface EquipmentFilters {
+  search: string;
+  tipo: string;
+  estado_equipo: string;
+}
+
+export interface CreateEquipmentData {
+  nombre: string;
+  tipo: string;
+  marca: string;
+  modelo: string;
+  numero_serie?: string;
+  ubicacion?: string;
+  estado_equipo?: string;
+  ultima_revision?: string;
+  proxima_revision?: string;
+  imagen?: string;
+}
+
+export interface UpdateEquipmentData {
+  nombre?: string;
+  tipo?: string;
+  marca?: string;
+  modelo?: string;
+  numero_serie?: string;
+  ubicacion?: string;
+  estado_equipo?: string;
+  ultima_revision?: string;
+  proxima_revision?: string;
+  imagen?: string;
+}
+
+// roshi_fit/src/pages/dashboard/equipments/CreateEquipmentModal.tsx
+import React, { useState } from 'react';
+import { createEquipment } from '../../../api/equipmentApi';
+import { uploadProductImage } from '../../../api/uploadApi';
+
+interface CreateEquipmentModalProps {
+  onClose: () => void;
+  onCreate: () => void;
+}
+
+const CreateEquipmentModal: React.FC<CreateEquipmentModalProps> = ({ onClose, onCreate }) => {
+  const [formData, setFormData] = useState({
+    nombre: '',
+    tipo: '',
+    marca: '',
+    modelo: '',
+    numero_serie: '',
+    ubicacion: '',
+    estado_equipo: 'funcional' as 'funcional' | 'en_mantenimiento' | 'fuera_de_servicio',
+    ultima_revision: '',
+    proxima_revision: '',
+    imagen: '',
+  });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    if (!formData.nombre || !formData.tipo || !formData.marca || !formData.modelo) {
+      setError('Nombre, tipo, marca y modelo son obligatorios.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      let imagen = formData.imagen;
+
+      if (imageFile) {
+        imagen = await uploadProductImage(imageFile);
+      }
+
+      await createEquipment({
+        ...formData,
+        imagen: imagen || undefined,
+      });
+
+      onCreate();
+      onClose();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Error al crear el equipo.';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
+      <div
+        className="bg-dashboard-accent/90 p-6 rounded-xl shadow-2xl w-full max-w-md border border-dashboard-accent"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4 border-b border-dashboard-accent pb-2">
+          <h2 className="text-xl font-bold text-dashboard-text">Crear Nuevo Equipo</h2>
+          <button onClick={onClose} className="text-dashboard-text hover:text-dashboard-primary text-2xl">
+            &times;
+          </button>
+        </div>
+
+        {error && <div className="bg-red-800/50 text-red-200 p-2 rounded mb-4">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="nombre"
+            placeholder="Nombre del equipo *"
+            value={formData.nombre}
+            onChange={handleChange}
+            required
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <select
+            name="tipo"
+            value={formData.tipo}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          >
+            <option value="cardio">Cardio</option>
+            <option value="fuerza">Fuerza</option>
+            <option value="especializado">Especializado</option>
+          </select>
+          <input
+            name="marca"
+            placeholder="Marca *"
+            value={formData.marca}
+            onChange={handleChange}
+            required
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="modelo"
+            placeholder="Modelo *"
+            value={formData.modelo}
+            onChange={handleChange}
+            required
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="numero_serie"
+            placeholder="Número de Serie"
+            value={formData.numero_serie}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="ubicacion"
+            placeholder="Ubicación"
+            value={formData.ubicacion}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <select
+            name="estado_equipo"
+            value={formData.estado_equipo}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          >
+            <option value="funcional">Funcional</option>
+            <option value="en_mantenimiento">En Mantenimiento</option>
+            <option value="fuera_de_servicio">Fuera de Servicio</option>
+          </select>
+          <input
+            name="ultima_revision"
+            type="date"
+            value={formData.ultima_revision}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="proxima_revision"
+            type="date"
+            value={formData.proxima_revision}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <div>
+            <label className="block text-sm text-dashboard-text-secondary mb-1">
+              Imagen del equipo
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-2">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-dashboard-text hover:text-dashboard-primary">
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded hover:bg-dashboard-secondary transition-colors"
+            >
+              {loading ? 'Creando...' : 'Crear Equipo'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default CreateEquipmentModal;
+
+// roshi_fit/src/pages/dashboard/equipments/EditEquipmentModal.tsx
+import React, { useState, useEffect } from 'react';
+import { fetchEquipmentById, updateEquipment } from '../../../api/equipmentApi';
+import { uploadProductImage } from '../../../api/uploadApi';
+
+interface EditEquipmentModalProps {
+  equipmentId: number;
+  onClose: () => void;
+  onUpdate: () => void;
+}
+
+const EditEquipmentModal: React.FC<EditEquipmentModalProps> = ({ equipmentId, onClose, onUpdate }) => {
+  const [formData, setFormData] = useState({
+    nombre: '',
+    tipo: '',
+    marca: '',
+    modelo: '',
+    numero_serie: '',
+    ubicacion: '',
+    estado_equipo: '',
+    ultima_revision: '',
+    proxima_revision: '',
+    imagen: '',
+  });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadEquipment = async () => {
+      try {
+        const equipment = await fetchEquipmentById(equipmentId);
+        setFormData({
+          nombre: equipment.nombre,
+          tipo: equipment.tipo as string,          marca: equipment.marca,
+          modelo: equipment.modelo,
+          numero_serie: equipment.numero_serie || '',
+          ubicacion: equipment.ubicacion || '',
+          estado_equipo: equipment.estado_equipo,
+          ultima_revision: equipment.ultima_revision ? equipment.ultima_revision.split('T')[0] : '',
+          proxima_revision: equipment.proxima_revision ? equipment.proxima_revision.split('T')[0] : '',
+          imagen: equipment.imagen || '',
+        });
+        setCurrentImage(equipment.imagen);
+      } catch (err: any) {
+        setError(err.response?.data?.message || 'Error al cargar el equipo.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEquipment();
+  }, [equipmentId]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      let imagen = currentImage;
+
+      if (imageFile) {
+        imagen = await uploadProductImage(imageFile);
+      }
+
+      await updateEquipment(equipmentId, {
+        ...formData,
+        imagen: imagen || undefined,
+      });
+
+      onUpdate();
+      onClose();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Error al actualizar el equipo.';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
+        <div className="bg-dashboard-accent/90 p-6 rounded-xl w-full max-w-md border border-dashboard-accent">
+          <p className="text-dashboard-text">Cargando equipo...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
+      <div
+        className="bg-dashboard-accent/90 p-6 rounded-xl shadow-2xl w-full max-w-md border border-dashboard-accent"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-center mb-4 border-b border-dashboard-accent pb-2">
+          <h2 className="text-xl font-bold text-dashboard-text">Editar Equipo</h2>
+          <button onClick={onClose} className="text-dashboard-text hover:text-dashboard-primary text-2xl">
+            &times;
+          </button>
+        </div>
+
+        {error && <div className="bg-red-800/50 text-red-200 p-2 rounded mb-4">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="nombre"
+            placeholder="Nombre del equipo *"
+            value={formData.nombre}
+            onChange={handleChange}
+            required
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <select
+            name="tipo"
+            value={formData.tipo}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          >
+            <option value="cardio">Cardio</option>
+            <option value="fuerza">Fuerza</option>
+            <option value="especializado">Especializado</option>
+          </select>
+          <input
+            name="marca"
+            placeholder="Marca *"
+            value={formData.marca}
+            onChange={handleChange}
+            required
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="modelo"
+            placeholder="Modelo *"
+            value={formData.modelo}
+            onChange={handleChange}
+            required
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="numero_serie"
+            placeholder="Número de Serie"
+            value={formData.numero_serie}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="ubicacion"
+            placeholder="Ubicación"
+            value={formData.ubicacion}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <select
+            name="estado_equipo"
+            value={formData.estado_equipo}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          >
+            <option value="funcional">Funcional</option>
+            <option value="en_mantenimiento">En Mantenimiento</option>
+            <option value="fuera_de_servicio">Fuera de Servicio</option>
+          </select>
+          <input
+            name="ultima_revision"
+            type="date"
+            value={formData.ultima_revision}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          <input
+            name="proxima_revision"
+            type="date"
+            value={formData.proxima_revision}
+            onChange={handleChange}
+            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+          />
+          {currentImage && (
+            <div className="mb-2">
+              <label className="block text-sm text-dashboard-text-secondary mb-1">
+                Imagen actual
+              </label>
+              <img
+                src={`/assets/products/${currentImage}`}
+                alt="Imagen actual"
+                className="w-24 h-24 object-cover rounded border border-dashboard-accent"
+              />
+            </div>
+          )}
+          <div>
+            <label className="block text-sm text-dashboard-text-secondary mb-1">
+              Nueva imagen (opcional)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-2">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-dashboard-text hover:text-dashboard-primary">
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded hover:bg-dashboard-secondary transition-colors"
+            >
+              {loading ? 'Guardando...' : 'Guardar Cambios'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default EditEquipmentModal;
+
+// roshi_fit/src/pages/dashboard/equipments/EquipmentActions.tsx
+import React from 'react';
+import { Edit3, Power } from 'lucide-react';
+
+interface EquipmentActionsProps {
+  equipment: { id: number; estado_equipo: string };
+  onEdit?: (id: number) => void;
+  onToggleStatus?: (id: number) => void;
+}
+
+const EquipmentActions: React.FC<EquipmentActionsProps> = ({ equipment, onEdit, onToggleStatus }) => {
+  return (
+    <div className="flex space-x-2">
+      <button
+        onClick={() => onEdit?.(equipment.id)}
+        className="p-1 text-dashboard-text hover:text-dashboard-primary"
+        title="Editar"
+      >
+        <Edit3 size={16} />
+      </button>
+      <button
+        onClick={() => onToggleStatus?.(equipment.id)}
+        className={`p-1 ${
+          equipment.estado_equipo === 'funcional'
+            ? 'text-red-400 hover:text-red-300'
+            : 'text-green-400 hover:text-green-300'
+        }`}
+        title={equipment.estado_equipo === 'funcional' ? 'Desactivar' : 'Activar'}
+      >
+        <Power size={16} />
+      </button>
+    </div>
+  );
+};
+
+export default EquipmentActions;
+
+// roshi_fit/src/pages/dashboard/equipments/EquipmentFilters.tsx
+import React, { useState, useEffect } from 'react';
+import { fetchEquipmentTypes } from '../../../api/equipmentApi';
+
+interface EquipmentFiltersProps {
+  onFilterChange: (filters: { search: string; tipo: string; estado_equipo: string }) => void;
+  onAddEquipment: () => void;
+}
+
+const EquipmentFilters: React.FC<EquipmentFiltersProps> = ({ onFilterChange, onAddEquipment }) => {
+  const [search, setSearch] = useState('');
+  const [tipo, setTipo] = useState('');
+  const [estado_equipo, setEstadoEquipo] = useState('');
+  const [equipmentTypes, setEquipmentTypes] = useState<string[]>([]);
+
+  // Cargar tipos únicos de la BD al montar
+  useEffect(() => {
+    fetchEquipmentTypes().then(types => {
+      setEquipmentTypes(types);
+    }).catch(console.error);
+  }, []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearch(value);
+    onFilterChange({ search: value, tipo, estado_equipo });
+  };
+
+  const handleTipoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setTipo(value);
+    onFilterChange({ search, tipo: value, estado_equipo });
+  };
+
+  const handleEstadoEquipoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setEstadoEquipo(value);
+    onFilterChange({ search, tipo, estado_equipo: value });
+  };
+
+  return (
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+      {/* Búsqueda */}
+      <div className="w-full md:w-1/3">
+        <input
+          type="text"
+          placeholder="🔍 Buscar equipo..."
+          value={search}
+          onChange={handleSearchChange}
+          className="w-full p-2 bg-dashboard-accent text-dashboard-text rounded-lg border border-dashboard-accent focus:ring-dashboard-primary focus:border-dashboard-primary"
+        />
+      </div>
+
+      {/* Filtros y Botón */}
+      <div className="flex flex-wrap gap-3 w-full md:w-auto">
+        <select
+          value={tipo}
+          onChange={handleTipoChange}
+          className="p-2 bg-dashboard-accent text-dashboard-text rounded-lg border border-dashboard-accent"
+        >
+          <option value="">Todos los tipos</option>
+          {equipmentTypes.map(type => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={estado_equipo}
+          onChange={handleEstadoEquipoChange}
+          className="p-2 bg-dashboard-accent text-dashboard-text rounded-lg border border-dashboard-accent"
+        >
+          <option value="">Todos los estados</option>
+          <option value="funcional">Funcional</option>
+          <option value="en_mantenimiento">En Mantenimiento</option>
+          <option value="fuera_de_servicio">Fuera de Servicio</option>
+        </select>
+
+        <button
+          onClick={onAddEquipment}
+          className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded-lg hover:bg-dashboard-secondary transition-colors"
+        >
+          + Nuevo Equipo
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default EquipmentFilters;
+
+// roshi_fit/src/pages/dashboard/equipments/EquipmentList.tsx
+import React, { useState, useEffect } from 'react';
+import { fetchEquipments } from '../../../api/equipmentApi';
+import type { Equipment, EquipmentFilters } from '../../../types/Equipment';
+import EquipmentFiltersComponent from './EquipmentFilters';
+import EquipmentActions from './EquipmentActions';
+import CreateEquipmentModal from './CreateEquipmentModal';
+import EditEquipmentModal from './EditEquipmentModal';
+
+const EquipmentList: React.FC = () => {
+  const [equipments, setEquipments] = useState<Equipment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState<EquipmentFilters>({
+    search: '',
+    tipo: '',
+    estado_equipo: ''
+  });
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingEquipmentId, setEditingEquipmentId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const loadEquipments = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchEquipments(filters);
+        setEquipments(data);
+      } catch (error) {
+        console.error('Error al cargar equipos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEquipments();
+  }, [filters]);
+
+  const handleAddEquipment = () => setIsCreateModalOpen(true);
+  const handleCreateSuccess = () => setFilters({ search: '', tipo: '', estado_equipo: '' });
+  const handleEdit = (id: number) => setEditingEquipmentId(id);
+  const handleUpdateSuccess = () => setFilters(prev => ({ ...prev }));
+
+  const formatStatus = (estado: string) => {
+    const map: Record<string, string> = {
+      funcional: '🟢 Funcional',
+      en_mantenimiento: '🟡 En Mantenimiento',
+      fuera_de_servicio: '🔴 Fuera de Servicio',
+    };
+    return map[estado] || estado;
+  };
+
+  return (
+    <div className="bg-dashboard-accent/30 p-6 rounded-xl border border-dashboard-accent">
+      <EquipmentFiltersComponent onFilterChange={setFilters} onAddEquipment={handleAddEquipment} />
+
+      {loading ? (
+        <p className="text-dashboard-text py-6 text-center">Cargando equipos...</p>
+      ) : (
+        <div className="overflow-x-auto mt-6">
+          <table className="w-full text-dashboard-text">
+            <thead>
+              <tr className="border-b border-dashboard-accent">
+                <th className="py-3 px-4 text-left">IMAGEN</th>
+                <th className="py-3 px-4 text-left">NOMBRE</th>
+                <th className="py-3 px-4 text-left">TIPO</th>
+                <th className="py-3 px-4 text-left">MARCA/MODELO</th>
+                <th className="py-3 px-4 text-left">ESTADO</th>
+                <th className="py-3 px-4 text-left">UBICACIÓN</th>
+                <th className="py-3 px-4 text-left">ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody>
+              {equipments.map(equipment => (
+                <tr key={equipment.id} className="border-b border-dashboard-accent/50 hover:bg-dashboard-accent/20">
+                  <td className="py-3 px-4">
+                    {equipment.imagen ? (
+                      <img
+                        src={`/assets/products/${equipment.imagen}`}
+                        alt={equipment.nombre}
+                        className="w-12 h-12 object-cover rounded border border-dashboard-accent"
+                        onError={(e) => (e.currentTarget.src = '/assets/placeholder.jpg')}
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-dashboard-accent rounded flex items-center justify-center text-xs">
+                        —
+                      </div>
+                    )}
+                  </td>
+                  <td className="py-3 px-4 font-medium">{equipment.nombre}</td>
+                  <td className="py-3 px-4">{equipment.tipo}</td>
+                  <td className="py-3 px-4">{equipment.marca} / {equipment.modelo}</td>
+                  <td className="py-3 px-4">{formatStatus(equipment.estado_equipo)}</td>
+                  <td className="py-3 px-4">{equipment.ubicacion}</td>
+                  <td className="py-3 px-4">
+                    <EquipmentActions
+                      equipment={equipment}
+                      onEdit={handleEdit}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {equipments.length === 0 && !loading && (
+            <p className="text-dashboard-text text-center py-6">No se encontraron equipos.</p>
+          )}
+        </div>
+      )}
+
+      {isCreateModalOpen && (
+        <CreateEquipmentModal
+          onClose={() => setIsCreateModalOpen(false)}
+          onCreate={handleCreateSuccess}
+        />
+      )}
+
+      {editingEquipmentId && (
+        <EditEquipmentModal
+          equipmentId={editingEquipmentId}
+          onClose={() => setEditingEquipmentId(null)}
+          onUpdate={handleUpdateSuccess}
+        />
+      )}
+    </div>
+  );
+};
+
+export default EquipmentList;
+
+// como lo esta manejando prisma 
+
+model equipos {
+  id                 Int                    @id @default(autoincrement())
+  nombre             String                 @db.VarChar(100)
+  tipo               String?                @db.VarChar(50)
+  marca              String?                @db.VarChar(50)
+  modelo             String?                @db.VarChar(50)
+  numero_serie       String?                @unique(map: "numero_serie") @db.VarChar(100)
+  ubicacion          String?                @db.VarChar(100)
+  estado_equipo      equipos_estado_equipo? @default(funcional)
+  ultima_revision    DateTime?              @db.Date
+  proxima_revision   DateTime?              @db.Date
+  imagen             String?                @db.VarChar(255)
+  creacion_fecha     DateTime?              @default(now()) @db.DateTime(0)
+  modificacion_fecha DateTime?              @default(now()) @db.DateTime(0)
+  modificado_por     Int?
+  estado             equipos_estado?        @default(activo)
+  usuarios           usuarios?              @relation(fields: [modificado_por], references: [id], onUpdate: NoAction, map: "equipos_ibfk_1")
+
+  @@index([modificado_por], map: "modificado_por")
+}
+
+enum equipos_estado_equipo {
+  funcional
+  en_mantenimiento
+  fuera_de_servicio
+}
+
+enum equipos_estado {
+  activo
+  inactivo
+  desabilitado
+}
+
+// roshi_fit/backend/src/middleware/uploadEquipmentMiddleware.ts
+import multer, { FileFilterCallback } from 'multer';
+import path from 'path';
+import fs from 'fs';
+
+const equipmentDir = path.join(__dirname, '../../../public/assets/equipment');
+if (!fs.existsSync(equipmentDir)) {
+  fs.mkdirSync(equipmentDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, equipmentDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    const filename = `equipment_${uniqueSuffix}${ext}`;
+    cb(null, filename);
+  }
+});
+
+const fileFilter = (
+  req: Express.Request,
+  file: Express.Multer.File,
+  cb: FileFilterCallback
+) => {
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Solo se permiten imágenes'));
+  }
+};
+
+export const uploadEquipment = multer({ storage, fileFilter });
+

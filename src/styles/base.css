@@ -1,0 +1,67 @@
+/* base.css */
+@import "tailwindcss";
+
+/* Definición del Tema Original (Por Defecto) */
+.theme-original {
+  --primary: #ff6b35; /* Naranja principal */
+  --secondary: #1a1a2e; /* Azul oscuro */
+  --accent: #16213e; /* Azul medio */
+  --gold: #ffd700; /* Dorado */
+  --text-light: #ffffff; /* Blanco */
+  --text-gray: #b0bec5; /* Gris claro */
+}
+
+/* Definición del Tema Futurista */
+.theme-futurista {
+  --primary: #00d4ff; /* Cian brillante */
+  --secondary: #270a14; /* Azul muy oscuro */
+  --accent: #1a1f3a; /* Azul medio */
+  --gold: #00bcd4; /* Cian dorado */
+  --text-light: #ffffff; /* Blanco */
+  --text-gray: #b0bec5; /* Gris claro */
+}
+
+.theme-dashboard-nocturno {
+  --dashboard-bg: #1A1A2E;
+  --dashboard-sidebar: #0A0E27;
+  --dashboard-text: #FFFFFF;
+  --dashboard-text-secondary: #B0BEC5;
+  --dashboard-primary: #FFD700; /* Dorado */
+  --dashboard-accent: #16213E;
+}
+
+/* Tema Amanecer (Claro) */
+.theme-dashboard-amanecer {
+  --dashboard-bg: #EBEBF2;
+  --dashboard-sidebar: #D7DBE2;
+  --dashboard-text: #2C3E50;
+  --dashboard-text-secondary: #7F8C8D;
+  --dashboard-primary: #4A90E2; /* Azul eléctrico */
+  --dashboard-secondary: #A56FDD; /* Violeta */
+  --dashboard-accent: #FFFFFF;
+}
+
+/* Aplicar el tema por defecto al body */
+body {
+  /* Aplicar el tema original por defecto */
+  --primary: #ff6b35; /* Naranja principal */
+  --secondary: #1a1a2e; /* Azul oscuro */
+  --accent: #16213e; /* Azul medio */
+  --gold: #ffd700; /* Dorado */
+  --text-light: #ffffff; /* Blanco */
+  --text-gray: #b0bec5; /* Gris claro */
+}
+
+/* Animación neon para el tema futurista */
+@keyframes neon {
+  0%, 100% {
+    text-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary), 0 0 15px var(--primary);
+  }
+  50% {
+    text-shadow: 0 0 2px var(--primary), 0 0 5px var(--primary), 0 0 8px var(--primary);
+  }
+}
+
+.animate-neon {
+  animation: neon 2s ease-in-out infinite alternate;
+}
