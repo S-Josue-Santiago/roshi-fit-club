@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/products/CreateProductModal.tsx
 import React, { useState, useEffect } from 'react';
-import { fetchCategories } from '../../../api/categoryApi';
+import { fetchCategoriesProducts } from '../../../api/categoryApi';
 import { createProduct } from '../../../api/productApi';
 import { uploadProductImage } from '../../../api/uploadApi';
 import { type Category } from '../../../types/Category';
@@ -25,7 +25,7 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({ onClose, onCrea
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCategories().then(setCategories).catch(console.error);
+    fetchCategoriesProducts().then(setCategories).catch(console.error);
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {

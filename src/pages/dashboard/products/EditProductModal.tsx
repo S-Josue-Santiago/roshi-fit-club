@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/products/EditProductModal.tsx
 import React, { useState, useEffect } from 'react';
-import { fetchCategories } from '../../../api/categoryApi';
+import { fetchCategoriesProducts } from '../../../api/categoryApi';
 import { fetchProductById, updateProduct } from '../../../api/productApi';
 import { uploadProductImage } from '../../../api/uploadApi';
 import { type Category } from '../../../types/Product';
@@ -41,7 +41,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({ productId, onClose,
           estado: product.estado,
         });
         setCurrentImage(product.imagen_principal);
-        const cats = await fetchCategories();
+        const cats = await fetchCategoriesProducts();
         setCategories(cats);
       } catch (err: any) {
         setError(err.response?.data?.message || 'Error al cargar el producto.');
