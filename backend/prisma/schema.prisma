@@ -716,7 +716,7 @@ model transacciones_pago {
   @@index([metodo_pago_id], map: "metodo_pago_id")
   @@index([modificado_por], map: "modificado_por")
 }
- 
+
 model usuarios {
   id                                                                     Int                         @id @default(autoincrement())
   nombre_completo                                                        String                      @db.VarChar(100)
