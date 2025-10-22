@@ -30,7 +30,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
         </p>
       </section>
 
-      {/* Sección: Servicios */}
+      Sección: Servicios
       <section id="servicios" className="py-20 px-4 bg-accent/30">
         <h2 className="text-3xl md:text-4xl font-bold text-primary mb-8 text-center ">Servicios</h2>
         <div className="max-w-6xl mx-auto px-4">
