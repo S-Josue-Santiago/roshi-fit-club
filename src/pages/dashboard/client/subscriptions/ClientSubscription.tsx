@@ -20,6 +20,7 @@ const ClientSubscription: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isRenewModalOpen, setIsRenewModalOpen] = useState(false);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null); // Add this line
 
   useEffect(() => {
     const loadSubscription = async () => {
@@ -27,10 +28,12 @@ const ClientSubscription: React.FC = () => {
         const userData = localStorage.getItem('userData');
         if (!userData) {
           setError('Usuario no autenticado.');
+          setLoading(false);
           return;
         }
 
         const user = JSON.parse(userData);
+        setUserId(user.id); // Set userId here
         const history = await fetchSubscriptionHistory(user.id);
 
         if (history.length > 0) {
@@ -183,9 +186,9 @@ const ClientSubscription: React.FC = () => {
       </div>
 
       {/* Modales */}
-      {isRenewModalOpen && (
+      {isRenewModalOpen && userId !== null && ( // Add userId !== null condition
         <RenewSubscriptionModal
-          usuarioId={subscription.id}
+          usuarioId={userId} // Change subscription.id to userId
           onClose={() => setIsRenewModalOpen(false)}
           onSuccess={handleRenewSuccess}
         />

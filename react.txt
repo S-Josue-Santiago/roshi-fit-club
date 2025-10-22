@@ -17,6 +17,8 @@ MySQL
 
 npm create vite@latest proyecto // npm install //npm run dev
 
+// tambien use react bits para algunas animaciones
+
 //para Tailwind
     npm install tailwindcss @tailwindcss/vite
     //se debe importar en vite.config.ts 
