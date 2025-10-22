@@ -1,24 +1,25 @@
 // tailwind.config.js (Raíz)
-
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./src/**/*.css", // Asegúrate de que esta línea esté aquí
+    "./src/**/*.css",
   ],
   theme: {
     extend: {
       colors: {
-        // ESTO ES LO CRÍTICO: DEBEN ESTAR TODAS LAS VARIABLES AQUÍ
+        // VARIABLES ACTUALIZADAS CON EL NUEVO TEMA GYM
         primary: 'var(--primary)', 
         secondary: 'var(--secondary)',
         accent: 'var(--accent)',
         gold: 'var(--gold)',
         'text-light': 'var(--text-light)',
         'text-gray': 'var(--text-gray)',
+        success: 'var(--success)',
+        warning: 'var(--warning)',
 
-          dashboard: {
+        dashboard: {
           bg: 'var(--dashboard-bg)',
           sidebar: 'var(--dashboard-sidebar)',
           text: 'var(--dashboard-text)',
@@ -26,11 +27,12 @@ export default {
           primary: 'var(--dashboard-primary)',
           secondary: 'var(--dashboard-secondary)',
           accent: 'var(--dashboard-accent)',
-  }
+        }
       },
 
-           backgroundImage: {
+      backgroundImage: {
         'gym-hero': "url('https://st4.depositphotos.com/23254502/24776/i/450/depositphotos_247766330-stock-photo-workout-gym-cross-fit-equipment.jpg')",
+        'gradient-gym': 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
       },
 
       keyframes: {
@@ -42,13 +44,20 @@ export default {
             textShadow: '0 0 2px var(--primary), 0 0 5px var(--primary), 0 0 8px var(--primary)',
           },
         },
+        'pulse-gym': {
+          '0%, 100%': {
+            boxShadow: '0 0 5px rgba(255, 71, 87, 0.5)',
+          },
+          '50%': {
+            boxShadow: '0 0 20px rgba(255, 71, 87, 0.8)',
+          },
+        },
       },
       animation: {
         neon: 'neon 2s ease-in-out infinite alternate',
+        'pulse-gym': 'pulse-gym 2s ease-in-out infinite',
       },
     },
-
-    
   },
   plugins: [],
 }

@@ -82,14 +82,14 @@ const EquipmentCarousel: React.FC = () => {
 // Tarjeta individual
 const EquipmentCard: React.FC<{ item: Equipment }> = ({ item }) => {
   return (
-    <div className="bg-accent/50 rounded-xl overflow-hidden border border-accent shadow-lg">
+    <div className="bg-accent/50 rounded-xl overflow-hidden border border-accent shadow-lg bg-black">
       <div className="relative h-64"> {/* 16:9 aproximado */}
         {item.imagen ? (
           <img
-            src={`../../../public/assets/equipment/${item.imagen}`}
+            src={`../../../public/assets/products/${item.imagen}`}
             alt={item.nombre}
             className="w-full h-full object-cover"
-            onError={(e) => (e.currentTarget.src = '/assets/placeholder_equipment.jpg')}
+            onError={(e) => (e.currentTarget.src = '/assets/placeholdermaquinas.png')}
           />
         ) : (
           <div className="w-full h-full bg-secondary flex items-center justify-center text-text-gray">

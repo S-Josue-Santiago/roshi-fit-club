@@ -34,13 +34,13 @@ const GalleryGrid: React.FC = () => {
 // Tarjeta individual con hover
 const GalleryCard: React.FC<{ item: GalleryItem }> = ({ item }) => {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-accent shadow-lg">
+    <div className="group relative overflow-hidden rounded-xl border border-accent shadow-lg bg-black">
       <div className="h-64 relative">
         <img
-          src={`../../../public/assets/gallery/${item.imagen_url}`}
+          src={`../../../public/assets/products/${item.imagen_url}`}
           alt={item.titulo || 'Galería Roshi Fit'}
           className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-40"
-          onError={(e) => (e.currentTarget.src = '/assets/placeholder_gallery.jpg')}
+          onError={(e) => (e.currentTarget.src = '/assets/placeholdergaleria.png')}
         />
 
         {/* Título: esquina superior izquierda */}

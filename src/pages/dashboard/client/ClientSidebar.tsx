@@ -13,14 +13,14 @@ import {
 
 interface ClientSidebarProps {
   subscriptionStatus: string;
+  onSectionChange: (section: string) => void;
 }
 
-const ClientSidebar: React.FC<ClientSidebarProps> = ({ subscriptionStatus }) => {
+const ClientSidebar: React.FC<ClientSidebarProps> = ({ subscriptionStatus, onSectionChange }) => {
   const [activeSection, setActiveSection] = useState('dashboard');
 
-  // Definir secciones según el estado de suscripción
   const isActive = subscriptionStatus === 'activa';
-  
+
   const sections = isActive
     ? [
         { id: 'dashboard', name: 'Dashboard', icon: Home },
@@ -39,6 +39,13 @@ const ClientSidebar: React.FC<ClientSidebarProps> = ({ subscriptionStatus }) => 
         { id: 'cuenta', name: 'Cuenta', icon: Settings },
       ];
 
+const handleSectionClick = (sectionId: string) => {
+  setActiveSection(sectionId);
+  if (onSectionChange) {
+    onSectionChange(sectionId);
+  }
+};
+
   return (
     <aside className="fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-dashboard-sidebar border-r border-dashboard-accent overflow-y-auto">
       <nav className="p-4 space-y-1">
@@ -47,7 +54,7 @@ const ClientSidebar: React.FC<ClientSidebarProps> = ({ subscriptionStatus }) => 
           return (
             <button
               key={section.id}
-              onClick={() => setActiveSection(section.id)}
+              onClick={() => handleSectionClick(section.id)}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
                 activeSection === section.id
                   ? 'bg-dashboard-primary text-dashboard-bg font-bold'

@@ -92,6 +92,20 @@ const TopProductsCarousel: React.FC = () => {
         ))}
       </div>
 
+      {/* Indicadores de posición (NUEVO - Navegación manual) */}
+      <div className="flex justify-center mt-6 space-x-2">
+        {products.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`
+              w-2 h-2 rounded-full transition-all duration-300
+              ${index === currentIndex ? 'bg-primary' : 'bg-accent/60'}
+            `}
+          />
+        ))}
+      </div>
+
       {/* Botón "Ver más" */}
       <div className="text-center mt-8">
         <Link
@@ -113,13 +127,13 @@ const ProductCard: React.FC<{
   const price = formatPrice(product.precio_venta_q);
 
   return (
-    <div className="bg-accent/50 rounded-xl overflow-hidden border border-accent shadow-lg hover:shadow-xl transition-shadow">
+    <div className="bg-black bg-accent/50 rounded-xl overflow-hidden border border-accent shadow-lg hover:shadow-xl transition-shadow">
       {product.imagen_principal ? (
         <img
           src={`../../../public/assets/products/${product.imagen_principal}`}
           alt={product.nombre}
           className="w-full h-48 object-cover"
-          onError={(e) => (e.currentTarget.src = '/assets/placeholder.jpg')}
+          onError={(e) => (e.currentTarget.src = '/assets/placeholderproductos.png')}
         />
       ) : (
         <div className="w-full h-48 bg-secondary flex items-center justify-center text-text-gray">

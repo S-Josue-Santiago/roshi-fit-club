@@ -5,12 +5,13 @@ import { DashboardThemeProvider, useDashboardTheme } from '../../../contexts/Das
 import ClientHeader from './ClientHeader';
 import ClientSidebar from './ClientSidebar';
 
+// ✅ Prop obligatorio
 interface ClientLayoutProps {
   children: React.ReactNode;
+  onSectionChange: (section: string) => void;
 }
 
-// Componente interno con acceso al contexto
-const ClientLayoutContent: React.FC<ClientLayoutProps> = ({ children }) => {
+const ClientLayoutContent: React.FC<ClientLayoutProps> = ({ children, onSectionChange }) => {
   const { theme } = useDashboardTheme();
   const navigate = useNavigate();
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>('activa');
@@ -24,10 +25,10 @@ const ClientLayoutContent: React.FC<ClientLayoutProps> = ({ children }) => {
 
     try {
       const user = JSON.parse(userData);
-      // Simulamos el estado de suscripción (en producción, vendría del backend)
       const status = user.subscriptionStatus || 'activa';
       setSubscriptionStatus(status);
     } catch (e) {
+      console.error('Error al parsear userData:', e);
       navigate('/');
     }
   }, [navigate]);
@@ -35,7 +36,10 @@ const ClientLayoutContent: React.FC<ClientLayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-dashboard-bg text-dashboard-text">
       <ClientHeader subscriptionStatus={subscriptionStatus} />
-      <ClientSidebar subscriptionStatus={subscriptionStatus} />
+      <ClientSidebar 
+        subscriptionStatus={subscriptionStatus} 
+        onSectionChange={onSectionChange} 
+      />
       <main className="ml-64 pt-16 px-6 pb-8">
         {children}
       </main>
@@ -43,11 +47,12 @@ const ClientLayoutContent: React.FC<ClientLayoutProps> = ({ children }) => {
   );
 };
 
-// Componente principal con proveedor de tema
-const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
+const ClientLayout: React.FC<ClientLayoutProps> = ({ children, onSectionChange }) => {
   return (
     <DashboardThemeProvider>
-      <ClientLayoutContent>{children}</ClientLayoutContent>
+      <ClientLayoutContent onSectionChange={onSectionChange}>
+        {children}
+      </ClientLayoutContent>
     </DashboardThemeProvider>
   );
 };

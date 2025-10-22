@@ -27,7 +27,6 @@ import settingRoutes from './routes/settingRoutes';
 
 
 
-
 const app = express();
 
 const corsOptions = {
@@ -69,6 +68,7 @@ app.use('/api/sales', salesRoutes);
 //para reportes
 app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingRoutes);
+
 
 export const prisma = new PrismaClient();
 

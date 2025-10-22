@@ -50,7 +50,7 @@ const GeneralSchedule: React.FC = () => {
   });
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto bg-black">
       <table className="w-full text-text-light border-collapse">
         <thead>
           <tr className="border-b border-accent">

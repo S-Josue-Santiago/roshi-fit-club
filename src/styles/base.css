@@ -1,14 +1,16 @@
 /* base.css */
 @import "tailwindcss";
 
-/* Definición del Tema Original (Por Defecto) */
+/* Definición del Tema Original (Gym Oscuro Premium) */
 .theme-original {
-  --primary: #ff6b35; /* Naranja principal */
-  --secondary: #1a1a2e; /* Azul oscuro */
-  --accent: #16213e; /* Azul medio */
-  --gold: #ffd700; /* Dorado */
-  --text-light: #ffffff; /* Blanco */
-  --text-gray: #b0bec5; /* Gris claro */
+  --primary: #ff4757;           /* Rojo energía vibrante */
+  --secondary: #1e1e2d;         /* Azul oscuro profundo */
+  --accent: #2d2d44;           /* Azul medio con matices */
+  --gold: #ffd700;             /* Dorado para destacar */
+  --text-light: #ffffff;       /* Blanco puro */
+  --text-gray: #a0a0b0;        /* Gris suave */
+  --success: #00d2d3;          /* Verde azulado para progreso */
+  --warning: #ff9f43;          /* Naranja para advertencias */
 }
 
 /* Definición del Tema Futurista */
@@ -43,13 +45,15 @@
 
 /* Aplicar el tema por defecto al body */
 body {
-  /* Aplicar el tema original por defecto */
-  --primary: #ff6b35; /* Naranja principal */
-  --secondary: #1a1a2e; /* Azul oscuro */
-  --accent: #16213e; /* Azul medio */
-  --gold: #ffd700; /* Dorado */
-  --text-light: #ffffff; /* Blanco */
-  --text-gray: #b0bec5; /* Gris claro */
+  /* Aplicar el tema gym oscuro premium por defecto */
+  --primary: #ff4757;
+  --secondary: #1e1e2d;
+  --accent: #2d2d44;
+  --gold: #ffd700;
+  --text-light: #ffffff;
+  --text-gray: #a0a0b0;
+  --success: #00d2d3;
+  --warning: #ff9f43;
 }
 
 /* Animación neon para el tema futurista */
@@ -62,6 +66,20 @@ body {
   }
 }
 
+/* Nuevas animaciones para el tema gym */
+@keyframes pulse-gym {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(255, 71, 87, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.8);
+  }
+}
+
 .animate-neon {
   animation: neon 2s ease-in-out infinite alternate;
+}
+
+.animate-pulse-gym {
+  animation: pulse-gym 2s ease-in-out infinite;
 }

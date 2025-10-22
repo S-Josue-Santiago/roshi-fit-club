@@ -44,7 +44,7 @@ const ContactSection: React.FC = () => {
   }
 
   return (
-    <div className="bg-secondary/80 py-16 px-4 border-t border-accent/30">
+    <div className="bg-secondary/80 py-16 px-4 border-t border-accent/30 bg-black">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
           {content.titulo || 'Contacto'}

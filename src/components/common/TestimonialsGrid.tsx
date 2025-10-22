@@ -49,7 +49,7 @@ const StarRating: React.FC<{ rating: number | null }> = ({ rating }) => {
 // Tarjeta individual
 const TestimonialCard: React.FC<{ item: Testimonial }> = ({ item }) => {
   return (
-    <div className="bg-accent/50 rounded-xl p-6 border border-accent shadow-lg">
+    <div className="bg-accent/50 rounded-xl p-6 border border-accent shadow-lg bg-black">
       {/* Testimonio */}
       <p className="text-text-light italic mb-6">“{item.testimonio}”</p>
 
@@ -58,10 +58,10 @@ const TestimonialCard: React.FC<{ item: Testimonial }> = ({ item }) => {
         {/* Avatar */}
         {item.avatar ? (
           <img
-            src={`../../../public/assets/testimonials/${item.avatar}`}
+            src={`../../../public/assets/products/${item.avatar}`}
             alt={item.nombre_mostrar || 'Usuario'}
             className="w-12 h-12 rounded-full object-cover border-2 border-accent"
-            onError={(e) => (e.currentTarget.src = '/assets/avatar_default.jpg')}
+            onError={(e) => (e.currentTarget.src = '/assets/avatartest.png')}
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-text-light font-bold">

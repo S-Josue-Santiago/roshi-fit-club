@@ -1,0 +1,342 @@
+// roshi_fit/src/pages/dashboard/AdminDashboard.tsx
+import React from 'react';
+import { DashboardThemeProvider } from '../../contexts/DashboardThemeContext';
+import DashboardLayout from '../../components/dashboard/DashboardLayout';
+
+const AdminDashboard: React.FC = () => {
+  return (
+    <DashboardThemeProvider>
+      <DashboardLayout />
+    </DashboardThemeProvider>
+  );
+};
+
+export default AdminDashboard;
+
+// roshi_fit/src/components/dashboard/DashboardLayout.tsx
+import React, { useState } from 'react';
+import Header from './Header';
+import Sidebar from './Sidebar';
+import UserList from '../../pages/dashboard/users/UserList'; // ← Nuevo
+import RoleList from '../../pages/dashboard/roles/RoleList';
+import ProductList from '../../pages/dashboard/products/ProductList';
+import SupplierList from '../../pages/dashboard/suppliers/SupplierList';
+import CategoryList from '../../pages/dashboard/categories/CategoryList';
+import ExerciseList from '../../pages/dashboard/exercises/ExerciseList';
+import ServiceList from '../../pages/dashboard/services/ServiceList';
+import GalleryList from '../../pages/dashboard/gallery/GalleryList'
+import SubscriptionsList from '../../pages/dashboard/subscriptions/SubscriptionsList';
+import PlansList from '../../pages/dashboard/subscriptions/PlansList';
+import SalesList from '../../pages/dashboard/sales/SalesList';
+import EquipmentList from '../../pages/dashboard/equipments/EquipmentList';
+// import ReportList from '../../pages/dashboard/reports/ReportList';
+//para settings
+// import SettingsLayout from '../../pages/dashboard/settings/SettingsLayout';
+// import GeneralSettings from '../../pages/dashboard/settings/GeneralSettings';
+// import EmailSettings from '../../pages/dashboard/settings/EmailSettings';
+
+
+
+
+const DashboardLayout: React.FC = () => {
+  const [activeSection, setActiveSection] = useState('dashboard');
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'usuarios':
+        return <UserList />;
+      
+
+      case 'roles':
+        return <RoleList />;
+
+      case 'productos':
+        return <ProductList />;
+
+      case 'proveedores':
+        return <SupplierList />;
+
+      case 'categorias':
+        return <CategoryList />;
+
+      case 'ejercicios':
+        return <ExerciseList />;
+
+      case 'servicios':
+        return <ServiceList />;
+
+      case 'galeria':
+        return <GalleryList />;
+
+      case 'equipos':
+        return <EquipmentList />;
+
+
+
+      case 'suscripciones':
+        return (
+          <div className="space-y-8">
+            <div>
+              <h2 className="text-xl font-bold text-dashboard-text mb-3">Planes de Suscripción</h2>
+              <PlansList />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-dashboard-text mb-3">Suscripciones de Usuarios</h2>
+              <SubscriptionsList />
+            </div>
+          </div>
+        );
+
+
+      // case 'reportes':
+      //   return <ReportList />;
+
+
+      // case 'configuracion':
+      //   return (
+      //     <SettingsLayout>
+      //       {activeSubSection === 'general' && <GeneralSettings />}
+      //       {/* {activeSubSection === 'email' && <EmailSettings />} */}
+      //       {/* ... */}
+      //     </SettingsLayout>
+      //   );
+
+      default:
+        if (activeSection === 'ventas') return <SalesList />;
+        return <h2 className="text-2xl font-bold text-dashboard-primary">Sección: {activeSection.toUpperCase()}</h2>;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-dashboard-bg text-dashboard-text">
+      <Header />
+      <Sidebar activeSection={activeSection} onSectionChange={setActiveSection} />
+      <main className="ml-64 pt-24 px-6 pb-8">
+        {renderContent()}
+      </main>
+    </div>
+  );
+};
+
+export default DashboardLayout;
+
+import React from 'react';
+import { useDashboardTheme } from '../../contexts/DashboardThemeContext'; // ← Cambiado
+import { Bell, LogOut, Sun, Moon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // ← Eliminado Link
+
+const Header: React.FC = () => {
+  const { theme, toggleTheme } = useDashboardTheme(); // ← Usa el contexto del dashboard
+  const navigate = useNavigate();
+
+  const userData = localStorage.getItem('userData');
+  const user = userData ? JSON.parse(userData) : null;
+
+  const handleLogout = () => {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userData');
+    navigate('/');
+  };
+
+  const isNocturno = theme === 'nocturno';
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 shadow-md bg-dashboard-bg border-b border-dashboard-accent">
+      {/* Logo y Nombre */}
+      <div className="flex items-center space-x-2">
+        <div className="w-8 h-8 bg-dashboard-primary rounded-full flex items-center justify-center">
+          <span className="text-dashboard-bg font-bold text-sm">R</span>
+        </div>
+        <h1 className="text-xl font-bold text-dashboard-text">Roshi Fit</h1>
+      </div>
+
+      <div className="flex items-center space-x-4">
+        <button className="relative p-2 text-dashboard-text hover:text-dashboard-primary transition-colors">
+          <Bell size={20} />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
+
+        {user && (
+          <span className="hidden md:inline text-dashboard-text font-medium">
+            {user.nombre.split(' ')[0]}
+          </span>
+        )}
+
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-full hover:bg-dashboard-sidebar transition-colors"
+          title={`Cambiar a tema ${isNocturno ? 'Amanecer' : 'Nocturno'}`}
+        >
+          {isNocturno ? <Sun size={20} className="text-dashboard-text" /> : <Moon size={20} className="text-dashboard-text" />}
+        </button>
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center space-x-1 p-2 rounded-lg hover:bg-red-500/20 transition-colors text-dashboard-text"
+        >
+          <LogOut size={16} />
+          <span className="hidden sm:inline">Salir</span>
+        </button>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
+
+// roshi_fit/src/components/dashboard/Sidebar.tsx
+// import React, { useState } from 'react';
+import React from 'react'; // ← Solo React
+
+import {
+  Home,
+  Users,
+  Shield,
+  ShoppingCart,
+  Factory,
+  BarChart3,
+  Dumbbell,
+  // Calendar,
+  Settings,
+  // FileText,
+  Image,
+  CreditCard,
+  Package,
+  TrendingUp
+} from 'lucide-react';
+
+interface SidebarItem {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+}
+
+const sidebarItems: SidebarItem[] = [
+  { id: 'dashboard', name: 'DASHBOARD', icon: <Home size={18} /> },
+  { id: 'usuarios', name: 'USUARIOS', icon: <Users size={18} /> },
+  { id: 'roles', name: 'ROLES', icon: <Shield size={18} /> },
+  { id: 'productos', name: 'PRODUCTOS', icon: <ShoppingCart size={18} /> },
+  { id: 'proveedores', name: 'PROVEEDORES', icon: <Factory size={18} /> },
+  { id: 'categorias', name: 'CATEGORÍAS', icon: <BarChart3 size={18} /> },
+  { id: 'ejercicios', name: 'EJERCICIOS', icon: <Dumbbell size={18} /> },
+  { id: 'servicios', name: 'SERVICIOS', icon: <Dumbbell size={18} /> },
+  { id: 'galeria', name: 'GALERÍA', icon: <Image size={18} /> },
+  { id: 'suscripciones', name: 'SUSCRIPCIONES', icon: <CreditCard size={18} /> },
+  { id: 'ventas', name: 'VENTAS', icon: <Package size={18} /> },
+  // { id: 'clases', name: 'CLASES', icon: <Calendar size={18} /> },
+  { id: 'equipos', name: 'EQUIPOS', icon: <Dumbbell size={18} /> },
+  { id: 'reportes', name: 'REPORTES', icon: <TrendingUp size={18} /> },
+  { id: 'configuracion', name: 'CONFIGURACIÓN', icon: <Settings size={18} /> },
+];
+
+interface SidebarProps {
+  activeSection: string;
+  onSectionChange: (section: string) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => {
+  return (
+    <aside className="fixed left-0 top-16 w-64 h-[calc(100vh-4rem)] bg-dashboard-sidebar border-r border-dashboard-accent overflow-y-auto">
+      <nav className="p-4 space-y-1">
+        {sidebarItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => onSectionChange(item.id)}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
+              activeSection === item.id
+                ? 'bg-dashboard-primary text-dashboard-bg font-bold'
+                : 'text-dashboard-text hover:bg-dashboard-accent/30'
+            }`}
+          >
+            {item.icon}
+            <span>{item.name}</span>
+          </button>
+        ))}
+      </nav>
+    </aside>
+  );
+};
+
+export default Sidebar;
+
+
+// roshi_fit/src/pages/dashboard/roles/RoleList.tsx
+import React, { useState, useEffect } from 'react';
+import { fetchRoles } from '../../../api/roleApi';
+import { type Role } from '../../../types/Role';
+import RoleFilters from './RoleFilters';
+import RoleActions from './RoleActions';
+
+const RoleList: React.FC = () => {
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({ search: '', estado: '' });
+
+  useEffect(() => {
+    const loadRoles = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchRoles(filters);
+        setRoles(data);
+      } catch (error) {
+        console.error('Error al cargar roles:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadRoles();
+  }, [filters]);
+
+  const handleAddRole = () => {
+    alert('Funcionalidad de "Crear Nuevo Rol" en desarrollo.');
+  };
+
+  const formatStatus = (estado: string) => {
+    return estado === 'activo' 
+      ? <span className="text-green-400">✅ Activo</span>
+      : <span className="text-yellow-400">⏸️ Inactivo</span>;
+  };
+
+  return (
+    <div className="bg-dashboard-accent/30 p-6 rounded-xl border border-dashboard-accent">
+      <RoleFilters onFilterChange={setFilters} onAddRole={handleAddRole} />
+
+      {loading ? (
+        <p className="text-dashboard-text py-6 text-center">Cargando roles...</p>
+      ) : (
+        <div className="overflow-x-auto mt-6">
+          <table className="w-full text-dashboard-text">
+            <thead>
+              <tr className="border-b border-dashboard-accent">
+                <th className="py-3 px-4 text-left">NOMBRE</th>
+                <th className="py-3 px-4 text-left">DESCRIPCIÓN</th>
+                <th className="py-3 px-4 text-left">ESTADO</th>
+                <th className="py-3 px-4 text-left">ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody>
+              {roles.map((role) => (
+                <tr key={role.id} className="border-b border-dashboard-accent/50 hover:bg-dashboard-accent/20">
+                  <td className="py-3 px-4 font-medium">{role.nombre}</td>
+                  <td className="py-3 px-4 text-dashboard-text-secondary max-w-xs truncate">
+                    {role.descripcion || '—'}
+                  </td>
+                  <td className="py-3 px-4">{formatStatus(role.estado)}</td>
+                  <td className="py-3 px-4">
+                    <RoleActions role={role} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {roles.length === 0 && !loading && (
+            <p className="text-dashboard-text text-center py-6">No se encontraron roles.</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default RoleList;
