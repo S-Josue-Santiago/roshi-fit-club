@@ -2,7 +2,7 @@
 	Installed from https://reactbits.dev/ts/default/
 */
 
-import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo, FC, ReactNode } from 'react';
+import { forwardRef, useImperativeHandle, useEffect, useRef, useMemo, type FC, type ReactNode } from 'react';
 
 import * as THREE from 'three';
 
