@@ -10,8 +10,8 @@ import EquipmentCarousel from '../../common/EquipmentCarousel';
 import GalleryGrid from '../../common/GalleryGrid';
 import TestimonialsGrid from '../../common/TestimonialsGrid';
 import ContactSection from '../../common/ContactSection';
-import Shuffle from '../../../TextAnimations/Shuffle/Shuffle';
-import Beams from '../../../Backgrounds/Beams/Beams';
+// import Shuffle from '../../../TextAnimations/Shuffle/Shuffle';
+// import Beams from '../../../Backgrounds/Beams/Beams';
 
 const WelcomeRoshiOriginal: React.FC = () => {
   return (
@@ -26,7 +26,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
         zIndex: 0,
         pointerEvents: 'none'
       }}>
-        <Beams
+        {/* <Beams
           beamWidth={2}
           beamHeight={15}
           beamNumber={12}
@@ -35,7 +35,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
           noiseIntensity={1.75}
           scale={0.2}
           rotation={30}
-        />
+        /> */}
       </div>
 
       {/* Contenido principal sobre el fondo */}
@@ -48,7 +48,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
             className="absolute inset-0 w-full h-full object-cover -z-10"
           />
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6">
-            <Shuffle
+            {/* <Shuffle
               text="Roshi Fit Club"
               shuffleDirection="right"
               duration={0.35}
@@ -60,7 +60,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
               triggerOnce={true}
               triggerOnHover={true}
               respectReducedMotion={true}
-            />
+            /> */}
           </h2>
           <p className="text-text-gray max-w-2xl mx-auto">
             Bienvenido al dojo clásico de Roshi Fit Club. Aquí comienza tu transformación.
