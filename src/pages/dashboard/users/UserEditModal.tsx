@@ -75,7 +75,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Nombre Completo */}
           <div>
-            <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
               <CircleUser  size={16} className="text-cyan-400" />
               NOMBRE COMPLETO
             </label>
@@ -97,7 +97,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
               <Mail size={16} className="text-cyan-400" />
               CORREO ELECTRÓNICO
             </label>
@@ -119,7 +119,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
 
           {/* Rol */}
           <div>
-            <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
               <Shield size={16} className="text-cyan-400" />
               TIPO DE USUARIO
             </label>
@@ -143,7 +143,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
 
           {/* Estado */}
           <div>
-            <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
               <Activity size={16} className="text-cyan-400" />
               ESTADO DEL USUARIO
             </label>

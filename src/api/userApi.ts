@@ -1,6 +1,7 @@
 // roshi_fit/src/api/userApi.ts
 import api from './axiosInstance';
-import { type RegisterWithPlanParams, type User, type AdminCreateUserParams, type AdminCreateUserWithSubscriptionParams, type StaffCreateParams} from '../types/User';
+import type {  RegisterWithPlanParams,  User,  AdminCreateUserParams,  AdminCreateUserWithSubscriptionParams,  StaffCreateParams
+} from '../types/User';
 
 export const registerUserWithPlan = async (data: RegisterWithPlanParams) => {
   const res = await api.post('/users/register-with-plan', data);
@@ -55,5 +56,38 @@ export const createUserWithSubscription = async (
 // 2. FUNCIÓN CORREGIDA
 export const createStaffUser = async (data: StaffCreateParams) => {
   const res = await api.post('/users/admin-create-staff', data);
+  return res.data;
+};
+
+export const updateUserProfile = async (
+  userId: number,
+  data: {
+    nombre_completo: string;
+    telefono?: string;
+    fecha_nacimiento?: string;
+    genero?: 'masculino' | 'femenino' | 'otro';
+    direccion?: string;
+    foto_perfil?: string;
+  }
+) => {
+  const res = await api.patch(`/users/${userId}/profile`, data);
+  return res.data.user;
+};
+
+// CAMBIAR CONTRASEÑA → usa tipo inline
+export const changeUserPassword = async (
+  userId: number,
+  data: {
+    currentPassword: string;
+    newPassword: string;
+  }
+) => {
+  const res = await api.post(`/users/${userId}/change-password`, data);
+  return res.data;
+};
+
+// NUEVA FUNCIÓN
+export const fetchUserProfile = async (userId: number) => {
+  const res = await api.get(`/users/${userId}/profile`);
   return res.data;
 };

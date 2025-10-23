@@ -423,3 +423,102 @@ export const createStaffUser = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };
+
+//para la seccion de usuario
+
+// roshi_fit/backend/src/controllers/userController.ts
+
+// ACTUALIZAR PERFIL DEL USUARIO
+export const updateUserProfile = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { 
+      nombre_completo, 
+      telefono, 
+      fecha_nacimiento, 
+      genero, 
+      direccion, 
+      foto_perfil 
+    } = req.body;
+
+    const updatedUser = await prisma.usuarios.update({
+      where: { id: parseInt(id) },
+      data: {
+        nombre_completo,
+        telefono,
+        fecha_nacimiento: fecha_nacimiento ? new Date(fecha_nacimiento) : undefined,
+        genero,
+        direccion,
+        foto_perfil,
+      },
+      select: {
+        id: true,
+        nombre_completo: true,
+        email: true,
+        telefono: true,
+        fecha_nacimiento: true,
+        genero: true,
+        direccion: true,
+        foto_perfil: true,
+      }
+    });
+
+    res.json({ message: 'Perfil actualizado.', user: updatedUser });
+  } catch (error) {
+    console.error('Error al actualizar perfil:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// CAMBIAR CONTRASEÑA
+export const changeUserPassword = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await prisma.usuarios.findUnique({ where: { id: parseInt(id) } });
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado.' });
+
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: 'Contraseña actual incorrecta.' });
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    await prisma.usuarios.update({
+      where: { id: parseInt(id) },
+      data: { password_hash: hash }
+    });
+
+    res.json({ message: 'Contraseña actualizada.' });
+  } catch (error) {
+    console.error('Error al cambiar contraseña:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// NUEVA FUNCIÓN: Obtener perfil completo del usuario
+export const getUserProfile = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const user = await prisma.usuarios.findUnique({
+      where: { id: parseInt(id) },
+      select: {
+        id: true,
+        nombre_completo: true,
+        email: true,
+        telefono: true,
+        fecha_nacimiento: true,
+        genero: true,
+        direccion: true,
+        foto_perfil: true,
+        tipo_usuario: true,
+      }
+    });
+    if (!user) return res.status(404).json({ message: 'Usuario no encontrado.' });
+    res.json(user);
+  } catch (error) {
+    console.error('Error al obtener perfil:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};

@@ -96,7 +96,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ userId, onClose
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Nueva Contraseña */}
           <div>
-            <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
               <Key size={16} className="text-purple-400" />
               NUEVA CONTRASEÑA
             </label>
@@ -134,7 +134,7 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ userId, onClose
 
           {/* Confirmar Contraseña */}
           <div>
-            <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
               <Key size={16} className="text-purple-400" />
               CONFIRMAR CONTRASEÑA
             </label>

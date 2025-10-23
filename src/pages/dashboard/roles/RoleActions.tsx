@@ -24,15 +24,7 @@ const RoleActions: React.FC<RoleActionsProps> = ({ role }) => {
         title="Ver detalles"
       >
         <Eye size={16} className="sm:w-4 sm:h-4" />
-        {/* Tooltip */}
-        <span className="
-          absolute -top-8 left-1/2 transform -translate-x-1/2
-          bg-black text-white text-xs px-2 py-1 rounded
-          opacity-0 group-hover:opacity-100 transition-opacity duration-300
-          whitespace-nowrap pointer-events-none
-        ">
-          Ver Detalles
-        </span>
+
       </button>
 
       {/* Botón Editar */}
@@ -47,15 +39,7 @@ const RoleActions: React.FC<RoleActionsProps> = ({ role }) => {
         title="Editar rol"
       >
         <Edit3 size={16} className="sm:w-4 sm:h-4" />
-        {/* Tooltip */}
-        <span className="
-          absolute -top-8 left-1/2 transform -translate-x-1/2
-          bg-black text-white text-xs px-2 py-1 rounded
-          opacity-0 group-hover:opacity-100 transition-opacity duration-300
-          whitespace-nowrap pointer-events-none
-        ">
-          Editar Rol
-        </span>
+
       </button>
 
       {/* Botón Activar/Desactivar */}
@@ -72,15 +56,7 @@ const RoleActions: React.FC<RoleActionsProps> = ({ role }) => {
         title={role.estado === 'activo' ? 'Desactivar rol' : 'Activar rol'}
       >
         <Power size={16} className="sm:w-4 sm:h-4" />
-        {/* Tooltip */}
-        <span className="
-          absolute -top-8 left-1/2 transform -translate-x-1/2
-          bg-black text-white text-xs px-2 py-1 rounded
-          opacity-0 group-hover:opacity-100 transition-opacity duration-300
-          whitespace-nowrap pointer-events-none
-        ">
-          {role.estado === 'activo' ? 'Desactivar' : 'Activar'}
-        </span>
+
       </button>
     </div>
   );

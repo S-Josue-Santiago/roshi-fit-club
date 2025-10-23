@@ -160,7 +160,6 @@ const ProductList: React.FC = () => {
                       className="
                         transition-all duration-300 
                         hover:bg-black hover:bg-opacity-80
-                        hover:scale-105 hover:shadow-2xl
                         group bg-dashboard-accent/5
                       "
                     >

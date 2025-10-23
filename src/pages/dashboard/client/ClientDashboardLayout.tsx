@@ -6,6 +6,9 @@ import ClientHeader from './ClientHeader';
 import ClientSidebar from './ClientSidebar';
 import ClientSubscription from './subscriptions/ClientSubscription';
 import ProductList from './products/ProductList';
+import ClientExerciseList from './exercises/ClientExerciseList';
+import ClientAccount from './account/ClientAccount';
+
 
 const ClientDashboardLayoutContent: React.FC = () => {
   const navigate = useNavigate();
@@ -41,13 +44,10 @@ const ClientDashboardLayoutContent: React.FC = () => {
         return <ClientSubscription />;
       case 'productos':
         return userData ? <ProductList usuarioId={userData.id} onAddToCart={handleAddToCart} /> : null;
+      case 'ejercicios':
+        return <ClientExerciseList />;
       case 'cuenta':
-        return (
-          <div className="p-4">
-            <h2 className="text-2xl font-bold text-dashboard-primary">Sección: Cuenta</h2>
-            <p className="mt-2 text-dashboard-text-secondary">Configuración de Cuenta.</p>
-          </div>
-        );
+        return <ClientAccount />;
       default:
         return (
           <div className="p-4">

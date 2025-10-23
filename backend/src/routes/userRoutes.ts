@@ -2,7 +2,9 @@
 import { Router } from 'express';
 import { getUsers, registerUserWithPlan,   getUserById, 
   updateUser, 
-  resetPassword, createUserFromAdmin, createUserWithSubscription, createStaffUser } from '../controllers/userController';
+  resetPassword, createUserFromAdmin, createUserWithSubscription, createStaffUser,
+  updateUserProfile, //para usuarios
+  changeUserPassword, getUserProfile } from '../controllers/userController';
 
 const router = Router();
 
@@ -19,5 +21,10 @@ router.post('/admin-create', createUserFromAdmin);
 router.post('/admin-create-with-subscription', createUserWithSubscription);
 // POST /api/users/admin-create-staff
 router.post('/admin-create-staff', createStaffUser);
+
+// cuenta usuario
+router.patch('/:id/profile', updateUserProfile);
+router.post('/:id/change-password', changeUserPassword);
+router.get('/:id/profile', getUserProfile);
 export default router;
 

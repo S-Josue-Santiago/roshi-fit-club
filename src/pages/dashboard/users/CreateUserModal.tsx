@@ -171,7 +171,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onClose, onCreateSucc
               
               {/* Nombre Completo */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <User size={16} className="text-cyan-400" />
                   NOMBRE COMPLETO
                 </label>
@@ -191,7 +191,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onClose, onCreateSucc
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Mail size={16} className="text-cyan-400" />
                   CORREO ELECTRÓNICO
                 </label>
@@ -212,7 +212,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onClose, onCreateSucc
 
               {/* Contraseña */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Key size={16} className="text-cyan-400" />
                   CONTRASEÑA
                 </label>
@@ -248,7 +248,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onClose, onCreateSucc
 
               {/* Tipo de Usuario */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Shield size={16} className="text-cyan-400" />
                   TIPO DE USUARIO
                 </label>
@@ -280,7 +280,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onClose, onCreateSucc
 
                 {/* Plan */}
                 <div>
-                  <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                  <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                     <DollarSign size={16} className="text-green-400" />
                     PLAN DE SUSCRIPCIÓN
                   </label>
@@ -308,7 +308,7 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onClose, onCreateSucc
 
                 {/* Método de Pago */}
                 <div>
-                  <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                  <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                     <CreditCard size={16} className="text-green-400" />
                     MÉTODO DE PAGO
                   </label>

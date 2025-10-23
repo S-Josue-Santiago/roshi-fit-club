@@ -8,16 +8,38 @@ export interface RegisterWithPlanParams {
   detalles_pago?: Record<string, any>; // Campos dinámicos por método
 }
 
-// roshi_fit/src/types/User.ts
+
 export interface User {
   id: number;
   nombre_completo: string;
   email: string;
+  telefono: string | null;
   tipo_usuario: 'admin' | 'cliente' | 'entrenador';
   estado: 'activo' | 'inactivo' | 'desabilitado';
+  fecha_nacimiento: string | null;
   creacion_fecha: string;
   rol_id: number | null;
+  genero: 'masculino' | 'femenino' | 'otro' | null;
+  direccion: string | null;
+  foto_perfil: string | null;
 }
+
+export interface UpdateUserProfileData {
+  nombre_completo: string;
+  telefono?: string;
+  fecha_nacimiento?: string;
+  genero?: 'masculino' | 'femenino' | 'otro';
+  direccion?: string;
+  foto_perfil?: string;
+}
+
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
+// roshi_fit/src/types/User.ts
+
 
 export interface UserFilters {
   search: string;

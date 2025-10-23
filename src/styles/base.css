@@ -37,8 +37,8 @@
 .theme-dashboard-amanecer {
   --dashboard-bg: #F8FAFC;
   --dashboard-sidebar: #E2E8F0;
-  --dashboard-text: #1E293B;
-  --dashboard-text-secondary: #475569;
+  --dashboard-text: #000000;
+  --dashboard-text-secondary: #0e0f10;
   --dashboard-primary: #4A90E2;
   --dashboard-secondary: #7C3AED;
   --dashboard-accent: #FFFFFF;
