@@ -2,9 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import ClientLayout from './ClientLayout';
 import ClientSubscription from './subscriptions/ClientSubscription';
+import ClientDashboardLayout from './ClientDashboardLayout';
 
 const ClienteDashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState('dashboard');
+const ClienteDashboard: React.FC = () => {
+  return <ClientDashboardLayout />;
+};
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
@@ -25,13 +29,11 @@ const ClienteDashboard: React.FC = () => {
     switch (activeSection) {
       case 'suscripcion':
         return <ClientSubscription />;
-      case 'productos':
-        return (
-          <div className="p-4">
-            <h2 className="text-2xl font-bold text-dashboard-primary">Sección: Productos</h2>
-            <p className="mt-2 text-dashboard-text-secondary">Contenido de Productos.</p>
-          </div>
-        );
+
+
+    
+
+
       case 'cuenta':
         return (
           <div className="p-4">

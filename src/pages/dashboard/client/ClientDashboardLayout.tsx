@@ -1,27 +1,28 @@
 // roshi_fit/src/pages/dashboard/client/ClientDashboardLayout.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DashboardThemeProvider, useDashboardTheme } from '../../../contexts/DashboardThemeContext';
+import { DashboardThemeProvider } from '../../../contexts/DashboardThemeContext';
 import ClientHeader from './ClientHeader';
 import ClientSidebar from './ClientSidebar';
 import ClientSubscription from './subscriptions/ClientSubscription';
+import ProductList from './products/ProductList';
 
-// Componente interno con lógica de layout
 const ClientDashboardLayoutContent: React.FC = () => {
-  const { theme } = useDashboardTheme();
   const navigate = useNavigate();
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>('activa');
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
-    const userData = localStorage.getItem('userData');
-    if (!userData) {
+    const data = localStorage.getItem('userData');
+    if (!data) {
       navigate('/');
       return;
     }
 
     try {
-      const user = JSON.parse(userData);
+      const user = JSON.parse(data);
+      setUserData(user);
       const status = user.subscriptionStatus || 'activa';
       setSubscriptionStatus(status);
     } catch (e) {
@@ -29,17 +30,17 @@ const ClientDashboardLayoutContent: React.FC = () => {
     }
   }, [navigate]);
 
+  const handleAddToCart = () => {
+    // Recargar carrito o mostrar notificación
+    console.log('Producto añadido al carrito');
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'suscripcion':
         return <ClientSubscription />;
       case 'productos':
-        return (
-          <div className="p-4">
-            <h2 className="text-2xl font-bold text-dashboard-primary">Sección: Productos</h2>
-            <p className="mt-2 text-dashboard-text-secondary">Contenido de Productos.</p>
-          </div>
-        );
+        return userData ? <ProductList usuarioId={userData.id} onAddToCart={handleAddToCart} /> : null;
       case 'cuenta':
         return (
           <div className="p-4">
@@ -73,7 +74,6 @@ const ClientDashboardLayoutContent: React.FC = () => {
   );
 };
 
-// Componente principal con proveedor de tema
 const ClientDashboardLayout: React.FC = () => {
   return (
     <DashboardThemeProvider>

@@ -1,12 +1,12 @@
 // roshi_fit/src/pages/dashboard/users/ResetPasswordModal.tsx
 import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, X, Save, Lock, Key } from 'lucide-react';
 import { resetUserPassword } from '../../../api/userApi';
 
 interface ResetPasswordModalProps {
   userId: number;
   onClose: () => void;
-  onPasswordReset: () => void; // Para recargar la lista si es necesario
+  onPasswordReset: () => void;
 }
 
 const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ userId, onClose, onPasswordReset }) => {
@@ -57,29 +57,48 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ userId, onClose
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm p-4 text-white">
       <div
-        className="bg-dashboard-accent/90 p-6 rounded-xl shadow-2xl w-full max-w-md border border-dashboard-accent"
+        className="bg-dashboard-accent/95 p-6 rounded-2xl shadow-2xl w-full max-w-md border-2 border-dashboard-accent/50"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4 border-b border-dashboard-accent pb-2">
-          <h2 className="text-xl font-bold text-dashboard-text">Restablecer Contraseña</h2>
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6 pb-4 border-b border-dashboard-accent/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-purple-600/20 rounded-lg">
+              <Lock size={24} className="text-purple-400" />
+            </div>
+            <h2 className="text-xl font-black text-dashboard-text">RESTABLECER CONTRASEÑA</h2>
+          </div>
           <button
             onClick={onClose}
-            className="text-dashboard-text hover:text-dashboard-primary text-2xl"
+            className="p-2 text-dashboard-text hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all duration-300 transform hover:scale-110"
           >
-            &times;
+            <X size={24} />
           </button>
         </div>
 
-        {error && <div className="bg-red-800/50 text-red-200 p-2 rounded mb-4">{error}</div>}
-        {success && <div className="bg-green-800/50 text-green-200 p-2 rounded mb-4">✅ Contraseña actualizada.</div>}
+        {/* Mensajes de estado */}
+        {error && (
+          <div className="bg-red-600/20 border border-red-500/50 text-red-200 p-4 rounded-xl mb-6 flex items-center gap-2">
+            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+            {error}
+          </div>
+        )}
+        
+        {success && (
+          <div className="bg-green-600/20 border border-green-500/50 text-green-200 p-4 rounded-xl mb-6 flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            ✅ Contraseña actualizada correctamente
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Nueva Contraseña */}
           <div>
-            <label className="block text-sm text-dashboard-text-secondary mb-1">
-              Nueva Contraseña
+            <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+              <Key size={16} className="text-purple-400" />
+              NUEVA CONTRASEÑA
             </label>
             <div className="relative">
               <input
@@ -89,22 +108,35 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ userId, onClose
                 onChange={handleChange}
                 required
                 minLength={6}
-                className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent focus:ring-dashboard-primary focus:border-dashboard-primary"
+                className="
+                  w-full p-4 pr-12 bg-dashboard-bg text-dashboard-text 
+                  rounded-xl border-2 border-dashboard-accent/50
+                  focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20
+                  hover:border-purple-400/50 transition-all duration-300
+                  placeholder:text-dashboard-text-secondary/50
+                "
+                placeholder="Mínimo 6 caracteres"
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-2 top-2 text-dashboard-text"
+                className="
+                  absolute right-3 top-1/2 transform -translate-y-1/2
+                  text-dashboard-text-secondary hover:text-purple-400
+                  p-1 rounded-lg transition-all duration-300
+                  hover:bg-purple-400/10
+                "
               >
-                {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
 
           {/* Confirmar Contraseña */}
           <div>
-            <label className="block text-sm text-dashboard-text-secondary mb-1">
-              Confirmar Contraseña
+            <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+              <Key size={16} className="text-purple-400" />
+              CONFIRMAR CONTRASEÑA
             </label>
             <div className="relative">
               <input
@@ -114,33 +146,74 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({ userId, onClose
                 onChange={handleChange}
                 required
                 minLength={6}
-                className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent focus:ring-dashboard-primary focus:border-dashboard-primary"
+                className="
+                  w-full p-4 pr-12 bg-dashboard-bg text-dashboard-text 
+                  rounded-xl border-2 border-dashboard-accent/50
+                  focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20
+                  hover:border-purple-400/50 transition-all duration-300
+                  placeholder:text-dashboard-text-secondary/50
+                "
+                placeholder="Repite la contraseña"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-2 top-2 text-dashboard-text"
+                className="
+                  absolute right-3 top-1/2 transform -translate-y-1/2
+                  text-dashboard-text-secondary hover:text-purple-400
+                  p-1 rounded-lg transition-all duration-300
+                  hover:bg-purple-400/10
+                "
               >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
 
           {/* Botones */}
-          <div className="flex justify-end space-x-3 pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-dashboard-accent/50">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-dashboard-text hover:text-dashboard-primary"
+              className="
+                flex-1 px-6 py-3 text-dashboard-text font-bold
+                border-2 border-dashboard-accent/50 rounded-xl
+                hover:border-red-400 hover:text-red-400 hover:bg-red-400/10
+                transition-all duration-300 transform hover:scale-105
+                flex items-center justify-center gap-2
+              "
             >
-              Cancelar
+              <X size={18} />
+              CANCELAR
             </button>
             <button
               type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded hover:bg-dashboard-secondary transition-colors"
+              disabled={loading || success}
+              className="
+                flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 
+                text-white font-bold rounded-xl 
+                hover:from-purple-700 hover:to-purple-800
+                disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed
+                transition-all duration-300 transform hover:scale-105
+                flex items-center justify-center gap-2
+              "
             >
-              {loading ? 'Guardando...' : 'Guardar'}
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                  GUARDANDO...
+                </>
+              ) : success ? (
+                <>
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  ¡ÉXITO!
+                </>
+              ) : (
+                <>
+                  <Save size={18} />
+                  GUARDAR
+                </>
+              )}
             </button>
           </div>
         </form>

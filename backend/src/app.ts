@@ -22,7 +22,7 @@ import subscriptionRoutes from './routes/subscriptionRoutes';
 import salesRoutes from './routes/salesRoutes';
 import reportRoutes from './routes/reportRoutes';
 import settingRoutes from './routes/settingRoutes';
-
+import purchaseRoutes from './routes/purchaseRoutes';
 
 
 
@@ -68,7 +68,7 @@ app.use('/api/sales', salesRoutes);
 //para reportes
 app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingRoutes);
-
+app.use('/api/purchase', purchaseRoutes);
 
 export const prisma = new PrismaClient();
 

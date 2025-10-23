@@ -1,8 +1,10 @@
 // roshi_fit/src/pages/dashboard/client/ClientHeader.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDashboardTheme } from '../../../contexts/DashboardThemeContext';
-import { Sun, Moon, ShoppingCart, LogOut } from 'lucide-react';
+import { ShoppingCart, LogOut, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getCart } from '../../../api/purchaseApi';
+import CartModal from './CartModal';
 
 interface ClientHeaderProps {
   subscriptionStatus: string;
@@ -11,9 +13,30 @@ interface ClientHeaderProps {
 const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus }) => {
   const { theme, toggleTheme } = useDashboardTheme();
   const navigate = useNavigate();
+  const [userData, setUserData] = useState<any>(null);
+  const [cartCount, setCartCount] = useState(0);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const userData = localStorage.getItem('userData');
-  const user = userData ? JSON.parse(userData) : null;
+  useEffect(() => {
+    const data = localStorage.getItem('userData');
+    if (data) {
+      setUserData(JSON.parse(data));
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadCartCount = async () => {
+      if (userData?.id) {
+        try {
+          const cart = await getCart(userData.id);
+          setCartCount(cart.items.reduce((sum, item) => sum + item.cantidad, 0));
+        } catch (error) {
+          console.error('Error al cargar el carrito:', error);
+        }
+      }
+    };
+    loadCartCount();
+  }, [userData]);
 
   const handleLogout = () => {
     localStorage.removeItem('userToken');
@@ -43,18 +66,16 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus }) => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 shadow-md bg-dashboard-bg border-b border-dashboard-accent">
-      {/* Logo y Nombre */}
       <div className="flex items-center space-x-3">
         <span className="text-2xl">🐉</span>
         <h1 className="text-xl font-bold text-dashboard-text">ROSHI FIT</h1>
       </div>
 
-      {/* Información del usuario */}
       <div className="flex items-center space-x-6">
-        {user && (
+        {userData && (
           <div className="hidden md:flex items-center space-x-3">
             <span className="text-dashboard-text font-medium">
-              👤 {user.nombre.split(' ')[0]}
+              👤 {userData.nombre.split(' ')[0]}
             </span>
             <span className={getStatusColor(subscriptionStatus)}>
               {getStatusText(subscriptionStatus)}
@@ -62,12 +83,18 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus }) => {
           </div>
         )}
 
-        {/* Carrito */}
-        <button className="p-2 text-dashboard-text hover:text-dashboard-primary">
+        <button
+          onClick={() => setIsCartOpen(true)}
+          className="relative p-2 text-dashboard-text hover:text-dashboard-primary"
+        >
           <ShoppingCart size={20} />
+          {cartCount > 0 && (
+            <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+              {cartCount}
+            </span>
+          )}
         </button>
 
-        {/* Cambio de tema */}
         <button
           onClick={toggleTheme}
           className="p-2 rounded-full hover:bg-dashboard-sidebar transition-colors"
@@ -76,7 +103,6 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus }) => {
           {theme === 'nocturno' ? <Sun size={20} className="text-dashboard-text" /> : <Moon size={20} className="text-dashboard-text" />}
         </button>
 
-        {/* Cerrar Sesión */}
         <button
           onClick={handleLogout}
           className="flex items-center space-x-1 p-2 rounded-lg hover:bg-red-500/20 transition-colors text-dashboard-text"
@@ -85,6 +111,17 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus }) => {
           <span className="hidden sm:inline">Salir</span>
         </button>
       </div>
+
+      {isCartOpen && userData && (
+        <CartModal
+          usuarioId={userData.id}
+          onClose={() => setIsCartOpen(false)}
+          onCheckoutSuccess={() => {
+            setIsCartOpen(false);
+            setCartCount(0);
+          }}
+        />
+      )}
     </header>
   );
 };

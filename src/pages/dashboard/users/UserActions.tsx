@@ -21,38 +21,73 @@ const UserActions: React.FC<UserActionsProps> = ({
   onResetPassword,
 }) => {
   return (
-    <div className="flex space-x-2">
+    <div className="flex space-x-1 sm:space-x-2">
+      {/* Botón Ver */}
       <button
         onClick={() => onView(user.id)}
-        className="p-1 text-dashboard-text hover:text-dashboard-primary"
+        className="
+          p-2 sm:p-2 bg-cyan-600/20 text-cyan-400 rounded-lg
+          hover:bg-cyan-600 hover:text-white
+          border border-cyan-600/30 hover:border-cyan-400
+          transition-all duration-300 transform hover:scale-110
+          group relative
+        "
         title="Ver perfil"
       >
-        <Eye size={16} />
+        <Eye size={16} className="sm:w-4 sm:h-4" />
+        {/* Tooltip */}
+
       </button>
+
+      {/* Botón Editar */}
       <button
         onClick={() => onEdit(user.id)}
-        className="p-1 text-dashboard-text hover:text-dashboard-primary"
-        title="Editar"
+        className="
+          p-2 sm:p-2 bg-blue-600/20 text-blue-400 rounded-lg
+          hover:bg-blue-600 hover:text-white
+          border border-blue-600/30 hover:border-blue-400
+          transition-all duration-300 transform hover:scale-110
+          group relative
+        "
+        title="Editar usuario"
       >
-        <Edit3 size={16} />
+        <Edit3 size={16} className="sm:w-4 sm:h-4" />
+
       </button>
+
+      {/* Botón Restablecer Contraseña */}
       <button
         onClick={() => onResetPassword(user.id)}
-        className="p-1 text-dashboard-text hover:text-dashboard-secondary"
+        className="
+          p-2 sm:p-2 bg-purple-600/20 text-purple-400 rounded-lg
+          hover:bg-purple-600 hover:text-white
+          border border-purple-600/30 hover:border-purple-400
+          transition-all duration-300 transform hover:scale-110
+          group relative
+        "
         title="Restablecer contraseña"
       >
-        <Lock size={16} />
+        <Lock size={16} className="sm:w-4 sm:h-4" />
+        {/* Tooltip */}
+
       </button>
+
+      {/* Botón Activar/Desactivar */}
       <button
         onClick={() => onToggleStatus(user.id, user.estado)}
-        className={`p-1 ${
-          user.estado === 'activo'
-            ? 'text-red-400 hover:text-red-300'
-            : 'text-green-400 hover:text-green-300'
-        }`}
-        title={user.estado === 'activo' ? 'Desactivar' : 'Activar'}
+        className={`
+          p-2 sm:p-2 rounded-lg border transition-all duration-300 transform hover:scale-110
+          group relative
+          ${
+            user.estado === 'activo'
+              ? 'bg-red-600/20 text-red-400 border-red-600/30 hover:bg-red-600 hover:text-white hover:border-red-400'
+              : 'bg-green-600/20 text-green-400 border-green-600/30 hover:bg-green-600 hover:text-white hover:border-green-400'
+          }
+        `}
+        title={user.estado === 'activo' ? 'Desactivar usuario' : 'Activar usuario'}
       >
-        <Power size={16} />
+        <Power size={16} className="sm:w-4 sm:h-4" />
+
       </button>
     </div>
   );

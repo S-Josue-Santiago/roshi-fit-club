@@ -3,49 +3,51 @@
 
 /* Definición del Tema Original (Gym Oscuro Premium) */
 .theme-original {
-  --primary: #ff4757;           /* Rojo energía vibrante */
-  --secondary: #1e1e2d;         /* Azul oscuro profundo */
-  --accent: #2d2d44;           /* Azul medio con matices */
-  --gold: #ffd700;             /* Dorado para destacar */
-  --text-light: #ffffff;       /* Blanco puro */
-  --text-gray: #a0a0b0;        /* Gris suave */
-  --success: #00d2d3;          /* Verde azulado para progreso */
-  --warning: #ff9f43;          /* Naranja para advertencias */
+  --primary: #ff4757;
+  --secondary: #1e1e2d;
+  --accent: #2d2d44;
+  --gold: #ffd700;
+  --text-light: #ffffff;
+  --text-gray: #a0a0b0;
+  --success: #00d2d3;
+  --warning: #ff9f43;
 }
 
 /* Definición del Tema Futurista */
 .theme-futurista {
-  --primary: #00d4ff; /* Cian brillante */
-  --secondary: #270a14; /* Azul muy oscuro */
-  --accent: #1a1f3a; /* Azul medio */
-  --gold: #00bcd4; /* Cian dorado */
-  --text-light: #ffffff; /* Blanco */
-  --text-gray: #b0bec5; /* Gris claro */
+  --primary: #00d4ff;
+  --secondary: #270a14;
+  --accent: #1a1f3a;
+  --gold: #00bcd4;
+  --text-light: #ffffff;
+  --text-gray: #b0bec5;
 }
 
+/* TEMA DASHBOARD NOCTURNO MEJORADO */
 .theme-dashboard-nocturno {
   --dashboard-bg: #1A1A2E;
   --dashboard-sidebar: #0A0E27;
   --dashboard-text: #FFFFFF;
   --dashboard-text-secondary: #B0BEC5;
-  --dashboard-primary: #FFD700; /* Dorado */
+  --dashboard-primary: #FFD700;
   --dashboard-accent: #16213E;
 }
 
-/* Tema Amanecer (Claro) */
+/* TEMA DASHBOARD AMANECER MEJORADO - MÁS LEGIBLE */
 .theme-dashboard-amanecer {
-  --dashboard-bg: #EBEBF2;
-  --dashboard-sidebar: #D7DBE2;
-  --dashboard-text: #2C3E50;
-  --dashboard-text-secondary: #7F8C8D;
-  --dashboard-primary: #4A90E2; /* Azul eléctrico */
-  --dashboard-secondary: #A56FDD; /* Violeta */
+  --dashboard-bg: #F8FAFC;
+  --dashboard-sidebar: #E2E8F0;
+  --dashboard-text: #1E293B;
+  --dashboard-text-secondary: #475569;
+  --dashboard-primary: #4A90E2;
+  --dashboard-secondary: #7C3AED;
   --dashboard-accent: #FFFFFF;
+  --dashboard-border: #CBD5E1;
+  --dashboard-hover: #F1F5F9;
 }
 
 /* Aplicar el tema por defecto al body */
 body {
-  /* Aplicar el tema gym oscuro premium por defecto */
   --primary: #ff4757;
   --secondary: #1e1e2d;
   --accent: #2d2d44;
@@ -82,4 +84,17 @@ body {
 
 .animate-pulse-gym {
   animation: pulse-gym 2s ease-in-out infinite;
+}
+
+/* Mejoras de legibilidad para todos los temas */
+.dashboard-card {
+  @apply rounded-2xl border shadow-lg transition-all duration-300;
+}
+
+.dashboard-text-primary {
+  @apply font-semibold tracking-wide;
+}
+
+.dashboard-text-secondary {
+  @apply text-sm font-medium;
 }

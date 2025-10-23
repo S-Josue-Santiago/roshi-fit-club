@@ -1,13 +1,12 @@
 // roshi_fit/src/pages/dashboard/users/UserList.tsx
 import React, { useState, useEffect } from 'react';
-import { type  User } from '../../../types/User'; // , type UserFilters as UserFilterState
-import { fetchUsers,  updateUser } from '../../../api/userApi'; // resetUserPassword,
+import { type User } from '../../../types/User';
+import { fetchUsers, updateUser } from '../../../api/userApi';
 import UserFilters from './UserFilters';
 import UserActions from './UserActions';
 import UserEditModal from './UserEditModal';
 import ResetPasswordModal from './ResetPasswordModal';
 import CreateUserModal from './CreateUserModal';
-
 
 const UserList: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,11 +17,8 @@ const UserList: React.FC = () => {
     estado: '',
   });
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  // para cambiar contras
-const [resettingUserId, setResettingUserId] = useState<number | null>(null);
-const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-
+  const [resettingUserId, setResettingUserId] = useState<number | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -40,9 +36,9 @@ const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     loadUsers();
   }, [filters]);
 
- const handleAddUser = () => {
-  setIsCreateModalOpen(true);
-};
+  const handleAddUser = () => {
+    setIsCreateModalOpen(true);
+  };
 
   const handleView = (id: number) => {
     alert(`Ver perfil del usuario ${id}`);
@@ -52,10 +48,10 @@ const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const user = users.find(u => u.id === id);
     if (user) setEditingUser(user);
   };
-  // para cambiar contrasenia
-const handleResetPassword = (id: number) => {
-  setResettingUserId(id);
-};
+
+  const handleResetPassword = (id: number) => {
+    setResettingUserId(id);
+  };
 
   const handleToggleStatus = async (id: number, currentStatus: string) => {
     const newStatus = currentStatus === 'activo' ? 'inactivo' : 'activo';
@@ -67,19 +63,20 @@ const handleResetPassword = (id: number) => {
     }
   };
 
-
-
   const formatStatus = (estado: string) => {
     const statusMap: Record<string, { text: string; color: string }> = {
-      activo: { text: '✅ Activo', color: 'text-green-400' },
-      inactivo: { text: '⏸️ Inactivo', color: 'text-yellow-400' },
-      desabilitado: { text: '❌ Deshabilitado', color: 'text-red-400' },
+      activo: { text: '✅ Activo', color: 'text-green-600 font-bold' },
+      inactivo: { text: '⏸️ Inactivo', color: 'text-yellow-600 font-bold' },
+      desabilitado: { text: '❌ Deshabilitado', color: 'text-red-600 font-bold' },
     };
-    return statusMap[estado] || { text: estado, color: 'text-gray-400' };
+    return statusMap[estado] || { text: estado, color: 'text-gray-600 font-bold' };
   };
 
   return (
-    <div className="bg-dashboard-accent/30 p-6 rounded-xl border border-dashboard-accent">
+    <div className="
+      bg-dashboard-accent/30 p-4 sm:p-6 rounded-xl border border-dashboard-accent
+      shadow-lg hover:shadow-xl transition-all duration-300
+    ">
       <UserFilters
         filters={filters}
         onFilterChange={setFilters}
@@ -87,46 +84,122 @@ const handleResetPassword = (id: number) => {
       />
 
       {loading ? (
-        <p className="text-dashboard-text">Cargando usuarios...</p>
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-dashboard-primary"></div>
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-dashboard-text">
-            <thead>
-              <tr className="border-b border-dashboard-accent">
-                <th className="py-3 px-4 text-left">NOMBRE</th>
-                <th className="py-3 px-4 text-left">EMAIL</th>
-                <th className="py-3 px-4 text-left">ROL</th>
-                <th className="py-3 px-4 text-left">ESTADO</th>
-                <th className="py-3 px-4 text-left">ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id} className="border-b border-dashboard-accent/50 hover:bg-dashboard-accent/20">
-                  <td className="py-3 px-4">{user.nombre_completo}</td>
-                  <td className="py-3 px-4">{user.email}</td>
-                  <td className="py-3 px-4 capitalize">{user.tipo_usuario}</td>
-                  <td className="py-3 px-4">
-                    <span className={formatStatus(user.estado).color}>
-                      {formatStatus(user.estado).text}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <UserActions
-                      user={user}
-                      onView={handleView}
-                      onEdit={handleEdit}
-                      onToggleStatus={handleToggleStatus}
-                      onResetPassword={handleResetPassword}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="overflow-x-auto mt-6">
+          {/* Tabla responsiva */}
+          <div className="min-w-full inline-block align-middle">
+            <div className="overflow-hidden border border-dashboard-accent/50 rounded-lg bg-dashboard-accent/10">
+              <table className="min-w-full divide-y divide-dashboard-accent/30">
+                <thead className="bg-dashboard-accent/50">
+                  <tr>
+                    <th scope="col" className="
+                      px-3 py-3 sm:px-4 sm:py-4 text-left text-sm sm:text-base 
+                      font-black text-dashboard-text uppercase tracking-wide
+                      border-r border-dashboard-accent/30
+                    ">
+                      NOMBRE
+                    </th>
+                    <th scope="col" className="
+                      px-3 py-3 sm:px-4 sm:py-4 text-left text-sm sm:text-base 
+                      font-black text-dashboard-text uppercase tracking-wide
+                      border-r border-dashboard-accent/30
+                    ">
+                      EMAIL
+                    </th>
+                    <th scope="col" className="
+                      px-3 py-3 sm:px-4 sm:py-4 text-left text-sm sm:text-base 
+                      font-black text-dashboard-text uppercase tracking-wide
+                      border-r border-dashboard-accent/30
+                    ">
+                      ROL
+                    </th>
+                    <th scope="col" className="
+                      px-3 py-3 sm:px-4 sm:py-4 text-left text-sm sm:text-base 
+                      font-black text-dashboard-text uppercase tracking-wide
+                      border-r border-dashboard-accent/30
+                    ">
+                      ESTADO
+                    </th>
+                    <th scope="col" className="
+                      px-3 py-3 sm:px-4 sm:py-4 text-left text-sm sm:text-base 
+                      font-black text-dashboard-text uppercase tracking-wide
+                    ">
+                      ACCIONES
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-dashboard-accent/20">
+                  {users.map((user) => (
+                    <tr 
+                      key={user.id} 
+                      className="
+                        transition-all duration-300 
+                        hover:bg-black hover:bg-opacity-80
+                        group bg-dashboard-accent/5
+                      "
+                    >
+                      <td className="
+                        px-3 py-4 sm:px-4 sm:py-4 whitespace-nowrap text-sm sm:text-base 
+                        text-dashboard-text font-semibold group-hover:text-white
+                        transition-colors duration-300 border-r border-dashboard-accent/30
+                      ">
+                        {user.nombre_completo}
+                      </td>
+                      <td className="
+                        px-3 py-4 sm:px-4 sm:py-4 whitespace-nowrap text-sm sm:text-base 
+                        text-dashboard-text font-medium group-hover:text-white
+                        transition-colors duration-300 border-r border-dashboard-accent/30
+                      ">
+                        {user.email}
+                      </td>
+                      <td className="
+                        px-3 py-4 sm:px-4 sm:py-4 whitespace-nowrap text-sm sm:text-base 
+                        text-dashboard-text font-medium capitalize group-hover:text-white
+                        transition-colors duration-300 border-r border-dashboard-accent/30
+                      ">
+                        {user.tipo_usuario}
+                      </td>
+                      <td className="
+                        px-3 py-4 sm:px-4 sm:py-4 whitespace-nowrap text-sm sm:text-base 
+                        border-r border-dashboard-accent/30 font-semibold
+                      ">
+                        <span className={`
+                          ${formatStatus(user.estado).color} 
+                          group-hover:text-white
+                          transition-colors duration-300
+                        `}>
+                          {formatStatus(user.estado).text}
+                        </span>
+                      </td>
+                      <td className="
+                        px-3 py-4 sm:px-4 sm:py-4 whitespace-nowrap text-sm sm:text-base 
+                      ">
+                        <UserActions
+                          user={user}
+                          onView={handleView}
+                          onEdit={handleEdit}
+                          onToggleStatus={handleToggleStatus}
+                          onResetPassword={handleResetPassword}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           {users.length === 0 && !loading && (
-            <p className="text-dashboard-text text-center py-6">No se encontraron usuarios.</p>
+            <div className="text-center py-12 bg-dashboard-accent/20 rounded-lg border border-dashboard-accent/50 mt-6">
+              <div className="text-6xl mb-4">👥</div>
+              <p className="text-dashboard-text text-xl font-black">No se encontraron usuarios</p>
+              <p className="text-dashboard-text-secondary mt-2 text-base font-medium">
+                Intenta ajustar los filtros de búsqueda
+              </p>
+            </div>
           )}
         </div>
       )}
@@ -140,12 +213,12 @@ const handleResetPassword = (id: number) => {
         />
       )}
 
-                {/* Modal de contrasenia */}
+      {/* Modal de contraseña */}
       {resettingUserId && (
         <ResetPasswordModal
           userId={resettingUserId}
           onClose={() => setResettingUserId(null)}
-          onPasswordReset={loadUsers} // Opcional: recarga lista si es necesario
+          onPasswordReset={loadUsers}
         />
       )}
 
