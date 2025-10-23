@@ -32,7 +32,7 @@ const app = express();
 const corsOptions = {
     origin: [
     'http://localhost:5173',           // Desarrollo
-     "https://roshi-fit-club.vercel.app/"  //'https://roshi-fit-club.vercel.app' // Producción
+     "https://roshi-gym.vercel.app"  //'https://roshi-fit-club.vercel.app' // Producción
   ], // Reemplaza 5173 si usas otro puerto
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true, // Permite cookies y encabezados de autorización
