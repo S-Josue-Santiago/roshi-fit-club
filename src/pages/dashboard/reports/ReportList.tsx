@@ -59,7 +59,7 @@ const ReportList: React.FC = () => {
     loadKpis();
   }, [period]);
 
-  const handleSearchChange = (term: string) => { /* Lógica de búsqueda aquí si es necesario */ };
+  const handleSearchChange = (_term: string) => { /* Lógica de búsqueda aquí si es necesario */ };
   const handlePeriodChange = (period: string) => setPeriod(period);
 
   const reports = [
