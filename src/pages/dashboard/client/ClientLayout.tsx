@@ -1,14 +1,14 @@
 // roshi_fit/src/pages/dashboard/client/ClientDashboardLayout.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DashboardThemeProvider, useDashboardTheme } from '../../../contexts/DashboardThemeContext';
+import { DashboardThemeProvider } from '../../../contexts/DashboardThemeContext';
 import ClientHeader from './ClientHeader';
 import ClientSidebar from './ClientSidebar';
 import ClientSubscription from './subscriptions/ClientSubscription';
 import ProductList from './products/ProductList';
+import ClientAccount from './account/ClientAccount';
 
 const ClientDashboardLayoutContent: React.FC = () => {
-  const { theme } = useDashboardTheme();
   const navigate = useNavigate();
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>('activa');
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -31,19 +31,20 @@ const ClientDashboardLayoutContent: React.FC = () => {
     }
   }, [navigate]);
 
+  const handleAddToCart = () => {
+    // Esta función es necesaria para ProductList.
+    // Se puede usar para actualizar el contador del carrito en el futuro.
+    console.log('Producto añadido al carrito');
+  };
+
   const renderContent = () => {
     switch (activeSection) {
       case 'suscripcion':
         return <ClientSubscription />;
       case 'productos':
-        return userData ? <ProductList usuarioId={userData.id} /> : null;
+        return userData ? <ProductList usuarioId={userData.id} onAddToCart={handleAddToCart} /> : null;
       case 'cuenta':
-        return (
-          <div className="p-4">
-            <h2 className="text-2xl font-bold text-dashboard-primary">Sección: Cuenta</h2>
-            <p className="mt-2 text-dashboard-text-secondary">Configuración de Cuenta.</p>
-          </div>
-        );
+        return <ClientAccount />;
       default:
         return (
           <div className="p-4">

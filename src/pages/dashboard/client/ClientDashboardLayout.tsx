@@ -6,8 +6,8 @@ import ClientHeader from './ClientHeader';
 import ClientSidebar from './ClientSidebar';
 import ClientSubscription from './subscriptions/ClientSubscription';
 import ProductList from './products/ProductList';
-import ClientExerciseList from './exercises/ClientExerciseList';
 import ClientAccount from './account/ClientAccount';
+import ClientExerciseList from './exercises/ClientExerciseList';
 
 
 const ClientDashboardLayoutContent: React.FC = () => {

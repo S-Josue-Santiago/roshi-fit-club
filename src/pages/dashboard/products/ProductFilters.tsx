@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { fetchCategoriesProducts } from '../../../api/categoryApi';
 import { type Category } from '../../../types/Category';
-import { Search, PackagePlus, Filter, Tag, Activity } from 'lucide-react';
+import { Search, PackagePlus, Tag, Activity } from 'lucide-react';
 
 interface ProductFiltersProps {
   onFilterChange: (filters: {

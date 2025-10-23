@@ -1,8 +1,7 @@
 // roshi_fit/src/pages/dashboard/client/CartModal.tsx
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, X } from 'lucide-react';
 import { getCart, checkout } from '../../../api/purchaseApi';
-import type { CartItem, CartResponse } from '../../../types/Purchase';
+import type { CartResponse } from '../../../types/Purchase';
 import CheckoutForm from './CheckoutForm';
 
 interface CartModalProps {

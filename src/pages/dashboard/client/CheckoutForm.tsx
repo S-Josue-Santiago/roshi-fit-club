@@ -22,10 +22,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
     paypal_email: '',
   });
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchActivePaymentMethods().then(setPaymentMethods).finally(() => setLoading(false));
+    fetchActivePaymentMethods().then(setPaymentMethods);
   }, []);
 
   // Manejar cambio de método de pago y resetear campos

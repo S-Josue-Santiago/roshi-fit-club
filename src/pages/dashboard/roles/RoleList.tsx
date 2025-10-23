@@ -4,7 +4,7 @@ import { fetchRoles } from '../../../api/roleApi';
 import { type Role } from '../../../types/Role';
 import RoleFilters from './RoleFilters';
 import RoleActions from './RoleActions';
-import { Shield, Users } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 const RoleList: React.FC = () => {
   const [roles, setRoles] = useState<Role[]>([]);
