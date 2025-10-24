@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client';
 import cors from 'cors'; // Importar cors
 import serviceRoutes from './routes/serviceRoutes';
 import planRoutes from './routes/planRoutes';
@@ -67,14 +67,12 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/purchase', purchaseRoutes);
 
-export const prisma = new PrismaClient();
+// export const prisma = new PrismaClient();
 
 // Rutas de API
 app.get('/', (req, res) => {
   res.send('¡Servidor del gimnasio funcionando!');
 });
-
-
 
 
 export default app;
