@@ -6,6 +6,7 @@ import CategoryFiltersComponent from './CategoryFilters';
 import CategoryActions from './CategoryActions';
 import CreateCategoryModal from './CreateCategoryModal';
 import EditCategoryModal from './EditCategoryModal';
+import { BarChart3, Tag, FileText, Activity } from 'lucide-react';
 
 const CategoryList: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -35,49 +36,87 @@ const CategoryList: React.FC = () => {
   const handleUpdateSuccess = () => setFilters(prev => ({ ...prev }));
 
   const formatStatus = (estado: string) => {
-    return estado === 'activo' 
-      ? <span className="text-green-400">✅ Activo</span>
-      : <span className="text-yellow-400">⏸️ Inactivo</span>;
+    const statusMap: Record<string, { color: string; bg: string; text: string }> = {
+      activo: { color: 'text-green-400', bg: 'bg-green-600/20', text: 'Activo' },
+      inactivo: { color: 'text-yellow-400', bg: 'bg-yellow-600/20', text: 'Inactivo' },
+    };
+    const status = statusMap[estado] || { color: 'text-gray-400', bg: 'bg-gray-600/20', text: 'Desconocido' };
+    return (
+      <span className={`${status.color} ${status.bg} px-3 py-1 rounded-full text-xs font-bold border border-current/30 capitalize`}>
+        {status.text}
+      </span>
+    );
   };
 
   return (
-    <div className="bg-dashboard-accent/30 p-6 rounded-xl border border-dashboard-accent">
+    <div className="bg-dashboard-accent/30 p-4 sm:p-6 rounded-xl border border-dashboard-accent shadow-lg">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 bg-green-600/20 rounded-lg">
+          <BarChart3 size={24} className="text-green-400" />
+        </div>
+        <h1 className="text-2xl font-black text-dashboard-text">CATEGORÍAS DE PRODUCTOS</h1>
+      </div>
+
       <CategoryFiltersComponent onFilterChange={setFilters} onAddCategory={handleAddCategory} />
 
       {loading ? (
-        <p className="text-dashboard-text py-6 text-center">Cargando categorías...</p>
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-dashboard-primary"></div>
+        </div>
       ) : (
         <div className="overflow-x-auto mt-6">
-          <table className="w-full text-dashboard-text">
-            <thead>
-              <tr className="border-b border-dashboard-accent">
-                <th className="py-3 px-4 text-left">NOMBRE</th>
-                <th className="py-3 px-4 text-left">DESCRIPCIÓN</th>
-                <th className="py-3 px-4 text-left">ESTADO</th>
-                <th className="py-3 px-4 text-left">ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map(category => (
-                <tr key={category.id} className="border-b border-dashboard-accent/50 hover:bg-dashboard-accent/20">
-                  <td className="py-3 px-4 font-medium">{category.nombre}</td>
-                  <td className="py-3 px-4 text-dashboard-text-secondary max-w-xs truncate">
-                    {category.descripcion || '—'}
-                  </td>
-                  <td className="py-3 px-4">{formatStatus(category.estado)}</td>
-                  <td className="py-3 px-4">
-                    <CategoryActions
-                      category={category}
-                      onEdit={handleEdit}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="min-w-full inline-block align-middle">
+            <div className="overflow-hidden border border-dashboard-accent/50 rounded-lg bg-dashboard-accent/10">
+              <table className="min-w-full divide-y divide-dashboard-accent/30">
+                <thead className="bg-dashboard-accent/50">
+                  <tr>
+                    <th scope="col" className="px-4 py-4 text-left text-sm font-black text-dashboard-text uppercase tracking-wider border-r border-dashboard-accent/30">
+                      <div className="flex items-center gap-2"><Tag size={18} className="text-green-400" />NOMBRE</div>
+                    </th>
+                    <th scope="col" className="px-4 py-4 text-left text-sm font-black text-dashboard-text uppercase tracking-wider border-r border-dashboard-accent/30">
+                      <div className="flex items-center gap-2"><FileText size={18} className="text-green-400" />DESCRIPCIÓN</div>
+                    </th>
+                    <th scope="col" className="px-4 py-4 text-left text-sm font-black text-dashboard-text uppercase tracking-wider border-r border-dashboard-accent/30">
+                      <div className="flex items-center gap-2"><Activity size={18} className="text-green-400" />ESTADO</div>
+                    </th>
+                    <th scope="col" className="px-4 py-4 text-left text-sm font-black text-dashboard-text uppercase tracking-wider">
+                      ACCIONES
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-dashboard-accent/20">
+                  {categories.map(category => (
+                    <tr key={category.id} className="transition-all duration-300 hover:bg-black hover:bg-opacity-80 hover:shadow-2xl group bg-dashboard-accent/5">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-dashboard-text group-hover:text-white border-r border-dashboard-accent/30">
+                        {category.nombre}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-dashboard-text-secondary group-hover:text-white border-r border-dashboard-accent/30 max-w-sm truncate">
+                        {category.descripcion || <span className="italic text-dashboard-text-secondary/50">Sin descripción</span>}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm border-r border-dashboard-accent/30">
+                        {formatStatus(category.estado)}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm">
+                        <CategoryActions
+                          category={category}
+                          onEdit={handleEdit}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           {categories.length === 0 && !loading && (
-            <p className="text-dashboard-text text-center py-6">No se encontraron categorías.</p>
+            <div className="text-center py-12 bg-dashboard-accent/20 rounded-lg border border-dashboard-accent/50 mt-6">
+              <div className="text-6xl mb-4">📊</div>
+              <p className="text-dashboard-text text-xl font-black">No se encontraron categorías</p>
+              <p className="text-dashboard-text-secondary mt-2 text-base font-medium">
+                Intenta ajustar los filtros de búsqueda o crea una nueva.
+              </p>
+            </div>
           )}
         </div>
       )}

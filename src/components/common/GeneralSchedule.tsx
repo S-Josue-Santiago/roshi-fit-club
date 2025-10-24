@@ -3,6 +3,26 @@ import React, { useState, useEffect } from 'react';
 import { fetchGeneralSchedules } from '../../api/scheduleApi';
 import { type Schedule } from '../../types/Schedule';
 
+// Hook para detectar el tema actual
+const useTheme = () => {
+  const [theme, setTheme] = useState<'original' | 'futurista'>('original');
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const bodyClass = document.body.className;
+      setTheme(bodyClass.includes('futurista') ? 'futurista' : 'original');
+    };
+
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
+};
+
 // Mapeo para mostrar nombres en español
 const DIA_NOMBRES: Record<Schedule['dia_semana'], string> = {
   lunes: 'Lunes',
@@ -22,6 +42,7 @@ const DIAS_ORDEN: Schedule['dia_semana'][] = [
 const GeneralSchedule: React.FC = () => {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const theme = useTheme();
 
   useEffect(() => {
     fetchGeneralSchedules()
@@ -36,8 +57,14 @@ const GeneralSchedule: React.FC = () => {
     return time;
   };
 
+  const getLoadingStyle = () => {
+    return theme === 'futurista'
+      ? 'text-gray-600 text-lg font-light'
+      : 'text-gray-400 text-lg font-light';
+  };
+
   if (loading) {
-    return <p className="text-text-gray text-center py-6">Cargando horarios...</p>;
+    return <p className={`${getLoadingStyle()} text-center py-10`}>Cargando horarios...</p>;
   }
 
   // Convertir array de horarios en un mapa por día
@@ -49,26 +76,66 @@ const GeneralSchedule: React.FC = () => {
     });
   });
 
+  const getStyles = () => {
+    if (theme === 'futurista') {
+      return {
+        container: 'rounded-2xl overflow-hidden',
+        containerStyle: {
+          background: 'linear-gradient(315deg, #f0f4f8, #ffffff)',
+          boxShadow: '-8px -8px 16px rgba(255, 255, 255, 0.8), 8px 8px 16px rgba(0, 120, 255, 0.15)',
+          border: '2px solid rgba(0, 120, 255, 0.2)'
+        },
+        table: 'w-full text-gray-800 border-collapse',
+        headerRow: 'border-b-2 border-blue-200/50',
+        headerCell: 'py-4 px-5 text-left font-black text-blue-600 uppercase tracking-wider',
+        bodyRow: 'border-b border-blue-100/80 last:border-b-0',
+        dayCell: 'py-3 px-5 font-semibold text-gray-700',
+        timeCell: 'py-3 px-5',
+        timeText: 'font-bold text-blue-600',
+        closedText: 'text-gray-400 italic'
+      };
+    }
+    // Tema Original
+    return {
+      container: 'rounded-2xl overflow-hidden',
+      containerStyle: {
+        background: 'linear-gradient(315deg, rgba(30, 30, 30, 0.95), rgba(45, 45, 45, 0.95))',
+        boxShadow: '-8px -8px 16px rgba(20, 20, 20, 0.8), 8px 8px 16px rgba(80, 80, 80, 0.3)',
+        border: '1px solid rgba(255, 107, 53, 0.2)'
+      },
+      table: 'w-full text-text-light border-collapse',
+      headerRow: 'border-b-2 border-accent',
+      headerCell: 'py-4 px-5 text-left text-primary font-bold uppercase tracking-wider',
+      bodyRow: 'border-b border-accent/30 last:border-b-0 hover:bg-accent/20 transition-colors duration-200',
+      dayCell: 'py-3 px-5 font-medium',
+      timeCell: 'py-3 px-5',
+      timeText: 'text-gold font-semibold',
+      closedText: 'text-text-gray italic'
+    };
+  };
+
+  const styles = getStyles();
+
   return (
-    <div className="overflow-x-auto bg-black">
-      <table className="w-full text-text-light border-collapse">
+    <div className={styles.container} style={styles.containerStyle}>
+      <table className={styles.table}>
         <thead>
-          <tr className="border-b border-accent">
-            <th className="py-3 px-4 text-left text-primary font-bold">Día</th>
-            <th className="py-3 px-4 text-left text-primary font-bold">Horario</th>
+          <tr className={styles.headerRow}>
+            <th className={styles.headerCell}>Día</th>
+            <th className={styles.headerCell}>Horario</th>
           </tr>
         </thead>
         <tbody>
           {DIAS_ORDEN.map(dia => {
             const horario = scheduleMap.get(dia);
             return (
-              <tr key={dia} className="border-b border-accent/30 hover:bg-accent/20">
-                <td className="py-3 px-4 font-medium">{DIA_NOMBRES[dia]}</td>
-                <td className="py-3 px-4">
+              <tr key={dia} className={styles.bodyRow}>
+                <td className={styles.dayCell}>{DIA_NOMBRES[dia]}</td>
+                <td className={styles.timeCell}>
                   {horario ? (
-                    <span className="text-gold">{horario.inicio} - {horario.fin}</span>
+                    <span className={styles.timeText}>{horario.inicio} - {horario.fin}</span>
                   ) : (
-                    <span className="text-text-gray">Cerrado</span>
+                    <span className={styles.closedText}>Cerrado</span>
                   )}
                 </td>
               </tr>

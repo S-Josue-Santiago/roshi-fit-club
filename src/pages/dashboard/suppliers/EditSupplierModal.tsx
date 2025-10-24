@@ -1,6 +1,7 @@
 // roshi_fit/src/pages/dashboard/suppliers/EditSupplierModal.tsx
 import React, { useState, useEffect } from 'react';
 import { fetchSupplierById, updateSupplier } from '../../../api/supplierApi';
+import { X, Save, Building, User, Mail, Phone, MapPin, FileText, Activity } from 'lucide-react';
 
 interface EditSupplierModalProps {
   supplierId: number;
@@ -66,95 +67,250 @@ const EditSupplierModal: React.FC<EditSupplierModalProps> = ({ supplierId, onClo
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
-        <div className="bg-dashboard-accent/90 p-6 rounded-xl w-full max-w-md border border-dashboard-accent">
-          <p className="text-dashboard-text">Cargando proveedor...</p>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="bg-black p-8 rounded-2xl w-full max-w-md border-2 border-dashboard-accent/50">
+          <div className="flex justify-center items-center gap-3">
+            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-dashboard-primary"></div>
+            <p className="text-dashboard-text font-semibold">Cargando proveedor...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <div
-        className="bg-dashboard-accent/90 p-6 rounded-xl shadow-2xl w-full max-w-md border border-dashboard-accent"
+        className="bg-black p-6 rounded-2xl shadow-2xl w-full max-w-2xl border-2 border-dashboard-accent/50 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4 border-b border-dashboard-accent pb-2">
-          <h2 className="text-xl font-bold text-dashboard-text">Editar Proveedor</h2>
-          <button onClick={onClose} className="text-dashboard-text hover:text-dashboard-primary text-2xl">
-            &times;
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6 pb-4 border-b border-dashboard-accent/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-orange-600/20 rounded-lg">
+              <Building size={24} className="text-orange-400" />
+            </div>
+            <h2 className="text-xl font-black text-dashboard-text">EDITAR PROVEEDOR</h2>
+          </div>
+          <button 
+            onClick={onClose} 
+            className="p-2 text-dashboard-text hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all duration-300 transform hover:scale-110"
+          >
+            <X size={24} />
           </button>
         </div>
 
-        {error && <div className="bg-red-800/50 text-red-200 p-2 rounded mb-4">{error}</div>}
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-600/20 border border-red-500/50 text-red-200 p-4 rounded-xl mb-6 flex items-center gap-2">
+            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="nombre_empresa"
-            placeholder="Nombre de la empresa *"
-            value={formData.nombre_empresa}
-            onChange={handleChange}
-            required
-            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-          />
-          <input
-            name="contacto_nombre"
-            placeholder="Nombre de contacto"
-            value={formData.contacto_nombre}
-            onChange={handleChange}
-            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-          />
-          <input
-            name="email"
-            type="email"
-            placeholder="Email *"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-          />
-          <input
-            name="telefono"
-            placeholder="Teléfono"
-            value={formData.telefono}
-            onChange={handleChange}
-            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-          />
-          <textarea
-            name="direccion"
-            placeholder="Dirección"
-            value={formData.direccion}
-            onChange={handleChange}
-            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-          />
-          <input
-            name="rfc_nit"
-            placeholder="RFC/NIT"
-            value={formData.rfc_nit}
-            onChange={handleChange}
-            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-          />
-          <select
-            name="estado"
-            value={formData.estado}
-            onChange={handleChange}
-            className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-          >
-            <option value="activo">Activo</option>
-            <option value="inactivo">Inactivo</option>
-          </select>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Columna Izquierda */}
+            <div className="space-y-6">
+              {/* Nombre de Empresa */}
+              <div>
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                  <Building size={16} className="text-orange-400" />
+                  NOMBRE DE LA EMPRESA *
+                </label>
+                <input
+                  name="nombre_empresa"
+                  value={formData.nombre_empresa}
+                  onChange={handleChange}
+                  required
+                  className="
+                    w-full p-4 bg-dashboard-bg text-dashboard-text 
+                    rounded-xl border-2 border-dashboard-accent/50
+                    focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20
+                    hover:border-orange-400/50 transition-all duration-300
+                  "
+                  placeholder="Ingresa el nombre de la empresa..."
+                />
+              </div>
 
-          <div className="flex justify-end space-x-3 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-dashboard-text hover:text-dashboard-primary">
-              Cancelar
+              {/* Contacto */}
+              <div>
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                  <User size={16} className="text-orange-400" />
+                  NOMBRE DE CONTACTO
+                </label>
+                <input
+                  name="contacto_nombre"
+                  value={formData.contacto_nombre}
+                  onChange={handleChange}
+                  className="
+                    w-full p-4 bg-dashboard-bg text-dashboard-text 
+                    rounded-xl border-2 border-dashboard-accent/50
+                    focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20
+                    hover:border-orange-400/50 transition-all duration-300
+                  "
+                  placeholder="Persona de contacto..."
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                  <Mail size={16} className="text-orange-400" />
+                  CORREO ELECTRÓNICO *
+                </label>
+                <input
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="
+                    w-full p-4 bg-dashboard-bg text-dashboard-text 
+                    rounded-xl border-2 border-dashboard-accent/50
+                    focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20
+                    hover:border-orange-400/50 transition-all duration-300
+                  "
+                  placeholder="email@empresa.com"
+                />
+              </div>
+
+              {/* RFC/NIT */}
+              <div>
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                  <FileText size={16} className="text-orange-400" />
+                  RFC / NIT
+                </label>
+                <input
+                  name="rfc_nit"
+                  value={formData.rfc_nit}
+                  onChange={handleChange}
+                  className="
+                    w-full p-4 bg-dashboard-bg text-dashboard-text 
+                    rounded-xl border-2 border-dashboard-accent/50
+                    focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20
+                    hover:border-orange-400/50 transition-all duration-300
+                  "
+                  placeholder="Número de identificación fiscal..."
+                />
+              </div>
+            </div>
+
+            {/* Columna Derecha */}
+            <div className="space-y-6">
+              {/* Teléfono */}
+              <div>
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                  <Phone size={16} className="text-orange-400" />
+                  TELÉFONO
+                </label>
+                <input
+                  name="telefono"
+                  value={formData.telefono}
+                  onChange={handleChange}
+                  className="
+                    w-full p-4 bg-dashboard-bg text-dashboard-text 
+                    rounded-xl border-2 border-dashboard-accent/50
+                    focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20
+                    hover:border-orange-400/50 transition-all duration-300
+                  "
+                  placeholder="Número de contacto..."
+                />
+              </div>
+
+              {/* Dirección */}
+              <div>
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                  <MapPin size={16} className="text-orange-400" />
+                  DIRECCIÓN
+                </label>
+                <textarea
+                  name="direccion"
+                  value={formData.direccion}
+                  onChange={handleChange}
+                  rows={4}
+                  className="
+                    w-full p-4 bg-dashboard-bg text-dashboard-text 
+                    rounded-xl border-2 border-dashboard-accent/50
+                    focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20
+                    hover:border-orange-400/50 transition-all duration-300
+                    resize-vertical
+                  "
+                  placeholder="Dirección completa de la empresa..."
+                />
+              </div>
+
+              {/* Estado */}
+              <div>
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                  <Activity size={16} className="text-orange-400" />
+                  ESTADO DEL PROVEEDOR
+                </label>
+                <select
+                  name="estado"
+                  value={formData.estado}
+                  onChange={handleChange}
+                  className="
+                    w-full p-4 bg-dashboard-bg text-dashboard-text 
+                    rounded-xl border-2 border-dashboard-accent/50
+                    focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20
+                    hover:border-orange-400/50 transition-all duration-300
+                    cursor-pointer
+                  "
+                >
+                  <option className="bg-black" value="activo">Activo</option>
+                  <option className="bg-black" value="inactivo">Inactivo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Nota de campos obligatorios */}
+          <div className="p-4 bg-blue-600/10 rounded-xl border border-blue-600/30">
+            <p className="text-sm text-blue-400 font-semibold text-center">
+              * Campos obligatorios
+            </p>
+          </div>
+
+          {/* Botones */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-dashboard-accent/50">
+            <button
+              type="button"
+              onClick={onClose}
+              className="
+                flex-1 px-6 py-3 text-dashboard-text font-bold
+                border-2 border-dashboard-accent/50 rounded-xl
+                hover:border-red-400 hover:text-red-400 hover:bg-red-400/10
+                transition-all duration-300 transform hover:scale-105
+                flex items-center justify-center gap-2
+              "
+            >
+              <X size={18} />
+              CANCELAR
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded hover:bg-dashboard-secondary transition-colors"
+              className="
+                flex-1 px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-700 
+                text-white font-bold rounded-xl 
+                hover:from-orange-700 hover:to-orange-800
+                disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed
+                transition-all duration-300 transform hover:scale-105
+                flex items-center justify-center gap-2
+              "
             >
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                  GUARDANDO...
+                </>
+              ) : (
+                <>
+                  <Save size={18} />
+                  GUARDAR CAMBIOS
+                </>
+              )}
             </button>
           </div>
         </form>

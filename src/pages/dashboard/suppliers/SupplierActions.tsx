@@ -10,24 +10,39 @@ interface SupplierActionsProps {
 
 const SupplierActions: React.FC<SupplierActionsProps> = ({ supplier, onEdit, onToggleStatus }) => {
   return (
-    <div className="flex space-x-2">
+    <div className="flex space-x-1 sm:space-x-2">
+      {/* Botón Editar */}
       <button
         onClick={() => onEdit?.(supplier.id)}
-        className="p-1 text-dashboard-text hover:text-dashboard-primary"
-        title="Editar"
+        className="
+          p-2 sm:p-2 bg-orange-600/20 text-orange-400 rounded-lg
+          hover:bg-orange-600 hover:text-white
+          border border-orange-600/30 hover:border-orange-400
+          transition-all duration-300 transform hover:scale-110
+          group relative
+        "
+        title="Editar proveedor"
       >
-        <Edit3 size={16} />
+        <Edit3 size={16} className="sm:w-4 sm:h-4" />
+
       </button>
+
+      {/* Botón Activar/Desactivar */}
       <button
         onClick={() => onToggleStatus?.(supplier.id)}
-        className={`p-1 ${
-          supplier.estado === 'activo'
-            ? 'text-red-400 hover:text-red-300'
-            : 'text-green-400 hover:text-green-300'
-        }`}
-        title={supplier.estado === 'activo' ? 'Desactivar' : 'Activar'}
+        className={`
+          p-2 sm:p-2 rounded-lg border transition-all duration-300 transform hover:scale-110
+          group relative
+          ${
+            supplier.estado === 'activo'
+              ? 'bg-red-600/20 text-red-400 border-red-600/30 hover:bg-red-600 hover:text-white hover:border-red-400'
+              : 'bg-green-600/20 text-green-400 border-green-600/30 hover:bg-green-600 hover:text-white hover:border-green-400'
+          }
+        `}
+        title={supplier.estado === 'activo' ? 'Desactivar proveedor' : 'Activar proveedor'}
       >
-        <Power size={16} />
+        <Power size={16} className="sm:w-4 sm:h-4" />
+
       </button>
     </div>
   );

@@ -28,6 +28,12 @@ const Navbar: React.FC = () => {
     window.location.reload();
   };
 
+  // Función para cambiar del modal de login al de registro
+  const handleGoToRegister = () => {
+    setIsLoginModalOpen(false);
+    setIsRegisterModalOpen(true);
+  };
+
   const modalProps: NavbarThemeProps = {
     setIsRegisterModalOpen,
     setIsLoginModalOpen,
@@ -45,7 +51,7 @@ const Navbar: React.FC = () => {
       <Modal
         isOpen={isRegisterModalOpen}
         onClose={() => setIsRegisterModalOpen(false)}
-        title="Registro Completo"
+        title={`Registro: ${modalTitle}`}
       >
         <RegisterFormWithPayment
           onRegisterSuccess={handleRegisterSuccess}
@@ -62,7 +68,10 @@ const Navbar: React.FC = () => {
         onClose={() => setIsLoginModalOpen(false)}
         title={`Ingreso: ${modalTitle}`}
       >
-        <LoginForm onLoginSuccess={handleLoginSuccess} />
+        <LoginForm 
+          onLoginSuccess={handleLoginSuccess} 
+          onGoToRegister={handleGoToRegister} 
+        />
       </Modal>
     </>
   );

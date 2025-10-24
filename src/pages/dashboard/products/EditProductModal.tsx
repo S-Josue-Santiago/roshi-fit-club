@@ -146,7 +146,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({ productId, onClose,
             <div className="space-y-6">
               {/* Nombre */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Package size={16} className="text-cyan-400" />
                   NOMBRE DEL PRODUCTO
                 </label>
@@ -166,7 +166,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({ productId, onClose,
 
               {/* Descripción */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Edit size={16} className="text-cyan-400" />
                   DESCRIPCIÓN
                 </label>
@@ -188,7 +188,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({ productId, onClose,
 
               {/* Categoría */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Tag size={16} className="text-cyan-400" />
                   CATEGORÍA
                 </label>
@@ -239,7 +239,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({ productId, onClose,
 
               {/* Precio */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <DollarSign size={16} className="text-cyan-400" />
                   PRECIO DE VENTA (Q)
                 </label>
@@ -262,7 +262,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({ productId, onClose,
 
               {/* Stock */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Box size={16} className="text-cyan-400" />
                   STOCK ACTUAL
                 </label>
@@ -283,7 +283,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({ productId, onClose,
 
               {/* Estado */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Activity size={16} className="text-cyan-400" />
                   ESTADO DEL PRODUCTO
                 </label>
@@ -317,7 +317,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({ productId, onClose,
               {/* Imagen actual */}
               {currentImage && (
                 <div>
-                  <label className="block text-sm font-bold text-dashboard-text mb-3">
+                  <label className=" text-sm font-bold text-dashboard-text mb-3">
                     IMAGEN ACTUAL
                   </label>
                   <div className="p-4 bg-dashboard-accent/30 rounded-xl border-2 border-dashboard-accent/50">
@@ -332,7 +332,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({ productId, onClose,
 
               {/* Nueva imagen */}
               <div>
-                <label className="block text-sm font-bold text-dashboard-text mb-3">
+                <label className=" text-sm font-bold text-dashboard-text mb-3">
                   NUEVA IMAGEN (OPCIONAL)
                 </label>
                 <div className="p-4 bg-dashboard-accent/30 rounded-xl border-2 border-dashboard-accent/50 border-dashed">

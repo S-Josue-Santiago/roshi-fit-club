@@ -10,20 +10,28 @@ interface CategoryActionsProps {
 
 const CategoryActions: React.FC<CategoryActionsProps> = ({ category, onEdit, onToggleStatus }) => {
   return (
-    <div className="flex space-x-2">
+    <div className="flex gap-2">
       <button
         onClick={() => onEdit?.(category.id)}
-        className="p-1 text-dashboard-text hover:text-dashboard-primary"
-        title="Editar"
+        className="
+          p-2 bg-green-600/20 text-green-400 rounded-lg
+          hover:bg-green-600 hover:text-white
+          border border-green-600/30 hover:border-green-400
+          transition-all duration-300 transform hover:scale-110
+        "
+        title="Editar Categoría"
       >
         <Edit3 size={16} />
       </button>
       <button
         onClick={() => onToggleStatus?.(category.id)}
-        className={`p-1 ${
+        className={`
+          p-2 rounded-lg border transition-all duration-300 transform hover:scale-110
+          ${
           category.estado === 'activo'
-            ? 'text-red-400 hover:text-red-300'
-            : 'text-green-400 hover:text-green-300'
+            ? 'bg-red-600/20 text-red-400 border-red-600/30 hover:bg-red-600 hover:text-white hover:border-red-400'
+            : 'bg-green-600/20 text-green-400 border-green-600/30 hover:bg-green-600 hover:text-white hover:border-green-400'
+          }
         }`}
         title={category.estado === 'activo' ? 'Desactivar' : 'Activar'}
       >

@@ -4,23 +4,42 @@
 /* Definición del Tema Original (Gym Oscuro Premium) */
 .theme-original {
   --primary: #ff4757;
-  --secondary: #1e1e2d;
-  --accent: #2d2d44;
+  --secondary: rgb(5, 14, 37);
+  --accent: #1616d6;
   --gold: #ffd700;
   --text-light: #ffffff;
   --text-gray: #a0a0b0;
   --success: #00d2d3;
   --warning: #ff9f43;
+
+  /* Escala de tipografía para el tema Original */
+  --font-size-xs: 0.8rem;    /* 12.8px */
+  --font-size-sm: 0.9rem;    /* 14.4px */
+  --font-size-base: 1rem;    /* 16px */
+  --font-size-lg: 1.15rem;   /* 18.4px */
+  --font-size-xl: 1.3rem;    /* 20.8px */
+  --font-size-2xl: 1.6rem;   /* 25.6px */
+  --font-size-3xl: 2rem;     /* 32px */
 }
 
 /* Definición del Tema Futurista */
 .theme-futurista {
   --primary: #00d4ff;
-  --secondary: #270a14;
+  --secondary: #c3c4cf;
   --accent: #1a1f3a;
   --gold: #00bcd4;
   --text-light: #ffffff;
   --text-gray: #b0bec5;
+}
+/* Escala de tipografía para el tema Futurista (ligeramente más grande para un look moderno) */
+.theme-futurista {
+  --font-size-xs: 0.85rem;
+  --font-size-sm: 0.95rem;
+  --font-size-base: 1.05rem;
+  --font-size-lg: 1.2rem;
+  --font-size-xl: 1.4rem;
+  --font-size-2xl: 1.7rem;
+  --font-size-3xl: 2.1rem;
 }
 
 /* TEMA DASHBOARD NOCTURNO MEJORADO */
@@ -56,6 +75,15 @@ body {
   --text-gray: #a0a0b0;
   --success: #00d2d3;
   --warning: #ff9f43;
+
+  /* Tipografía por defecto */
+  --font-size-xs: 0.8rem;
+  --font-size-sm: 0.9rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.15rem;
+  --font-size-xl: 1.3rem;
+  --font-size-2xl: 1.6rem;
+  --font-size-3xl: 2rem;
 }
 
 /* Animación neon para el tema futurista */

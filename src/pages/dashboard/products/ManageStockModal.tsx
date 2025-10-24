@@ -101,7 +101,7 @@ const ManageStockModal: React.FC<ManageStockModalProps> = ({
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
               <TrendingUp size={16} className="text-green-400" />
               NUEVO STOCK
             </label>

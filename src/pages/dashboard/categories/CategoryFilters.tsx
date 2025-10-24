@@ -1,5 +1,6 @@
 // roshi_fit/src/pages/dashboard/categories/CategoryFilters.tsx
 import React, { useState } from 'react';
+import { Search, Filter, Plus } from 'lucide-react';
 
 interface CategoryFiltersProps {
   onFilterChange: (filters: { search: string; estado: string }) => void;
@@ -23,31 +24,55 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({ onFilterChange, onAdd
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-      <div className="w-full md:w-1/3">
-        <input
-          type="text"
-          placeholder="🔍 Buscar categoría..."
-          value={search}
-          onChange={handleSearchChange}
-          className="w-full p-2 bg-dashboard-accent text-dashboard-text rounded-lg border border-dashboard-accent focus:ring-dashboard-primary focus:border-dashboard-primary"
-        />
+    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 p-4 bg-dashboard-accent/20 rounded-xl border border-dashboard-accent/50">
+      <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+        <div>
+          <label className=" text-sm font-bold text-dashboard-text mb-2 flex items-center gap-2">
+            <Search size={16} className="text-green-400" />
+            BUSCAR CATEGORÍA
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Nombre de categoría..."
+              value={search}
+              onChange={handleSearchChange}
+              className="w-full sm:w-64 p-3 pl-10 bg-dashboard-bg text-dashboard-text rounded-xl border-2 border-dashboard-accent/50 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 hover:border-green-400/50 transition-all duration-300"
+            />
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-dashboard-text-secondary" />
+          </div>
+        </div>
+        <div>
+          <label className=" text-sm font-bold text-dashboard-text mb-2 flex items-center gap-2">
+            <Filter size={16} className="text-green-400" />
+            ESTADO
+          </label>
+          <select
+            value={estado}
+            onChange={handleEstadoChange}
+            className=" w-full sm:w-auto p-3 bg-dashboard-bg text-dashboard-text rounded-xl border-2 border-dashboard-accent/50 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 hover:border-green-400/50 transition-all duration-300 cursor-pointer"
+          >
+            <option className="bg-black" value="">Todos</option>
+            <option className="bg-black" value="activo">Activo</option>
+            <option className="bg-black" value="inactivo">Inactivo</option>
+          </select>
+        </div>
       </div>
-      <div className="flex flex-wrap gap-3 w-full md:w-auto">
-        <select
-          value={estado}
-          onChange={handleEstadoChange}
-          className="p-2 bg-dashboard-accent text-dashboard-text rounded-lg border border-dashboard-accent"
-        >
-          <option value="">Todos los estados</option>
-          <option value="activo">Activo</option>
-          <option value="inactivo">Inactivo</option>
-        </select>
+
+      <div className="w-full lg:w-auto">
         <button
           onClick={onAddCategory}
-          className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded-lg hover:bg-dashboard-secondary transition-colors"
+          className="
+            w-full lg:w-auto px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 
+            text-white font-bold rounded-xl 
+            hover:from-green-700 hover:to-green-800
+            transition-all duration-300 transform hover:scale-105 hover:shadow-2xl
+            border-2 border-green-500/30 flex items-center justify-center gap-2
+            group
+          "
         >
-          + Nueva Categoría
+          <Plus size={20} className="group-hover:scale-110 transition-transform" />
+          <span>NUEVA CATEGORÍA</span>
         </button>
       </div>
     </div>
