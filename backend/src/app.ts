@@ -10,7 +10,6 @@ import galleryRoutes from './routes/galleryRoutes';
 import testimonialRoutes from './routes/testimonialRoutes';
 import contentRoutes from './routes/contentRoutes';
 import authRoutes from './routes/authRoutes';
-import paymentRoutes from './routes/paymentMethodRoutes';
 import paymentMethodRoutes from './routes/paymentMethodRoutes';
 import userRoutes from './routes/userRoutes';
 import roleRoutes from './routes/roleRoutes';
@@ -50,9 +49,7 @@ app.use('/api/gallery', galleryRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/payment', paymentRoutes);
-// app.use('/api/plans', planRoutes);
-app.use('/api/payment-methods', paymentMethodRoutes); // ← NUEVA LÍNEA
+app.use('/api/payment-methods', paymentMethodRoutes);
 app.use('/api/users', userRoutes);
 //apis para la seccion de roles
 app.use('/api/roles', roleRoutes);
