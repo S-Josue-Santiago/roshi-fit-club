@@ -364,9 +364,9 @@ const RegisterFormWithPayment: React.FC<RegisterFormProps> = ({ onRegisterSucces
               className={`${styles.select} ${styles.inputFocusRing}`}
               style={styles.inputStyle}
             >
-              <option value="">Selecciona un plan</option>
+              <option className="text-black" value="">Selecciona un plan</option>
               {plans.map(plan => (
-                <option key={plan.id} value={plan.id}>
+                <option className="text-black" key={plan.id} value={plan.id}>
                   {plan.nombre} - Q{parseFloat(plan.precio_q.toString()).toFixed(2)}
                 </option>
               ))}
@@ -391,9 +391,9 @@ const RegisterFormWithPayment: React.FC<RegisterFormProps> = ({ onRegisterSucces
               className={`${styles.select} ${styles.inputFocusRing}`}
               style={styles.inputStyle}
             >
-              <option value="">Selecciona un método</option>
+              <option className="text-black" value="">Selecciona un método</option>
               {paymentMethods.map(method => (
-                <option key={method.id} value={method.id}>
+                <option className="text-black" key={method.id} value={method.id}>
                   {method.nombre}
                 </option>
               ))}

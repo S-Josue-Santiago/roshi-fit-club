@@ -8,8 +8,14 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+    base: '/', // ← AGREGAR ESTO (importante para rutas)
     build: {
     outDir: 'dist',
-    copyPublicDir: true  // ← AGREGAR ESTO
+    copyPublicDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined // ← Deshabilita el split de chunks
+      }
+    }
   }
 })

@@ -129,11 +129,11 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
 
   return (
     <div 
-      className={`fixed inset-0 z-50 flex items-center justify-center ${styles.overlay} backdrop-blur-md`}
+      className={`fixed inset-0 z-50 flex items-center justify-center ${styles.overlay} backdrop-blur-md min-h-screen`}
       onClick={onClose}
     >
       <div 
-        className={`${styles.modal} p-6 md:p-8 rounded-3xl w-full max-w-3xl border-2 max-h-[90vh] overflow-hidden flex flex-col animate-slideUp`}
+        className={`${styles.modal} p-6 md:p-8 rounded-3xl w-full max-w-3xl border-2 max-h-[90vh] flex flex-col animate-fadeIn overflow-y-auto`}
         style={{ boxShadow: styles.modalShadow }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -285,19 +285,17 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
           background: ${theme === 'amanecer' ? 'rgba(74, 144, 226, 0.8)' : 'rgba(138, 43, 226, 0.8)'};
         }
 
-        @keyframes slideUp {
+        @keyframes fadeIn {
           from {
             opacity: 0;
-            transform: translateY(30px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
           }
         }
 
-        .animate-slideUp {
-          animation: slideUp 0.4s ease-out;
+        .animate-fadeIn {
+          animation: fadeIn 0.4s ease-out;
         }
       `}</style>
     </div>
