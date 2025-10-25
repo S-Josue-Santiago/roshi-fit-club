@@ -24,7 +24,7 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
-  { id: 'dashboard', name: 'DASHBOARD', icon: <Home size={20} /> },
+  // { id: 'dashboard', name: 'DASHBOARD', icon: <Home size={20} /> },
   { id: 'usuarios', name: 'USUARIOS', icon: <Users size={20} /> },
   { id: 'roles', name: 'ROLES', icon: <Shield size={20} /> },
   { id: 'productos', name: 'PRODUCTOS', icon: <ShoppingCart size={20} /> },
@@ -36,8 +36,8 @@ const sidebarItems: SidebarItem[] = [
   { id: 'suscripciones', name: 'SUSCRIPCIONES', icon: <CreditCard size={20} /> },
   { id: 'ventas', name: 'VENTAS', icon: <Package size={20} /> },
   { id: 'equipos', name: 'EQUIPOS', icon: <Dumbbell size={20} /> },
-  { id: 'reportes', name: 'REPORTES', icon: <TrendingUp size={20} /> },
-  { id: 'configuracion', name: 'CONFIGURACIÓN', icon: <Settings size={20} /> },
+  // { id: 'reportes', name: 'REPORTES', icon: <TrendingUp size={20} /> },
+  // { id: 'configuracion', name: 'CONFIGURACIÓN', icon: <Settings size={20} /> },
 ];
 
 interface SidebarProps {

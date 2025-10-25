@@ -12,6 +12,7 @@ import ReportCard from './ReportCard';
 import ReportDetail from './ReportDetail';
 
 const ReportList: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState('');
   const [period, setPeriod] = useState('month');
   const [loading, setLoading] = useState(true);
   const [kpiData, setKpiData] = useState({
@@ -59,7 +60,7 @@ const ReportList: React.FC = () => {
     loadKpis();
   }, [period]);
 
-  const handleSearchChange = (_term: string) => { /* Lógica de búsqueda aquí si es necesario */ };
+  const handleSearchChange = (term: string) => setSearchTerm(term);
   const handlePeriodChange = (period: string) => setPeriod(period);
 
   const reports = [

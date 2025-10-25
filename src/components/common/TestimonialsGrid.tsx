@@ -126,7 +126,7 @@ const TestimonialCard: React.FC<{ item: Testimonial; theme: 'original' | 'futuri
         {/* Avatar */}
         {item.avatar ? (
           <img
-            src={`../../../public/assets/products/${item.avatar}`}
+            src={`/assets/testimonials/${item.avatar}`}
             alt={item.nombre_mostrar || 'Usuario'}
             className={`${styles.avatar} ${styles.avatarBorder}`}
             onError={(e) => (e.currentTarget.src = '/assets/avatartest.png')}

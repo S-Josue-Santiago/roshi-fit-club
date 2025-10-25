@@ -53,14 +53,14 @@ const ClientSidebar: React.FC<ClientSidebarProps> = ({ subscriptionStatus, onSec
 
   const sections = isActive
     ? [
-        { id: 'dashboard', name: 'Dashboard', icon: Home },
+        // { id: 'dashboard', name: 'Dashboard', icon: Home },
         { id: 'suscripcion', name: 'Suscripción', icon: CreditCard },
         { id: 'productos', name: 'Productos', icon: ShoppingCart },
         { id: 'ejercicios', name: 'Ejercicios', icon: Dumbbell },
-        { id: 'entrenamientos', name: 'Mis Entrenamientos', icon: Dumbbell },
-        { id: 'progreso', name: 'Progreso', icon: TrendingUp },
-        { id: 'clases', name: 'Clases', icon: Calendar },
-        { id: 'evaluaciones', name: 'Mis Evaluaciones', icon: FileText },
+        // { id: 'entrenamientos', name: 'Mis Entrenamientos', icon: Dumbbell },
+        // { id: 'progreso', name: 'Progreso', icon: TrendingUp },
+        // { id: 'clases', name: 'Clases', icon: Calendar },
+        // { id: 'evaluaciones', name: 'Mis Evaluaciones', icon: FileText },
         { id: 'cuenta', name: 'Cuenta', icon: Settings },
       ]
     : [

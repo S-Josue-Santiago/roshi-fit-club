@@ -95,12 +95,18 @@ const GalleryCard: React.FC<{ item: GalleryItem; theme: 'original' | 'futurista'
   return (
     <div className={styles.container} style={styles.containerStyle}>
       <div className="h-64 relative">
-        <img
-          src={`../../../public/assets/products/${item.imagen_url}`}
-          alt={item.titulo || 'Galería Roshi Fit'}
-          className={styles.image}
-          onError={(e) => (e.currentTarget.src = '/assets/placeholdergaleria.png')}
-        />
+        {item.imagen_url ? (
+          <img
+            src={`/assets/gallery/${item.imagen_url}`}
+            alt={item.titulo}
+            className="w-full h-48 object-cover rounded-t-lg"
+            onError={(e) => (e.currentTarget.src = '/assets/placeholdergaleria.png')}
+          />
+        ) : (
+          <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded-t-lg">
+            <p className="text-gray-500">No hay imagen disponible</p>
+          </div>
+        )}
 
         {/* Título: esquina superior izquierda */}
         {item.titulo && (

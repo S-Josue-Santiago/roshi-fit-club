@@ -194,10 +194,10 @@ const EquipmentCard: React.FC<{ item: Equipment; theme: 'original' | 'futurista'
       <div className="relative h-64"> {/* 16:9 aproximado */}
         {item.imagen ? (
           <img
-            src={`../../../public/assets/products/${item.imagen}`}
+            src={`/assets/equipment/${item.imagen}`}
             alt={item.nombre}
-            className="w-full h-full object-cover"
-            onError={(e) => (e.currentTarget.src = '/assets/placeholdermaquinas.png')} // Fallback
+            className="w-full h-48 object-cover rounded-t-lg"
+            onError={(e) => (e.currentTarget.src = '/assets/placeholdermaquinas.png')}
           />
         ) : (
           <div className={`w-full h-full flex items-center justify-center ${styles.placeholderText}`} style={{ background: styles.placeholderBg }}>

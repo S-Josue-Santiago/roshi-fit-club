@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import cors from 'cors'; // Importar cors
 import serviceRoutes from './routes/serviceRoutes';
 import planRoutes from './routes/planRoutes';
@@ -70,6 +70,7 @@ app.use('/api/purchase', purchaseRoutes);
 app.use('/api/training', trainingRoutes);
 
 export const prisma = new PrismaClient();
+export { Prisma };
 
 // Rutas de API
 app.get('/', (req, res) => {
