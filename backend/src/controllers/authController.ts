@@ -10,18 +10,26 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     // 1. Validar campos
     if (!email || !password) {
+      console.log('Login attempt: Missing email or password.');
       return res.status(400).json({ message: 'Email y contraseña son requeridos.' });
     }
 
     // 2. Buscar usuario
     const user = await prisma.usuarios.findUnique({ where: { email } });
-    if (!user || user.estado !== 'activo') {
+    if (!user) {
+      console.log(`Login attempt for ${email}: User not found.`);
+      return res.status(401).json({ message: 'Credenciales inválidas.' });
+    }
+
+    if (user.estado !== 'activo') {
+      console.log(`Login attempt for ${email}: User is not active (state: ${user.estado}).`);
       return res.status(401).json({ message: 'Credenciales inválidas.' });
     }
 
     // 3. Verificar contraseña
     const isPasswordValid = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordValid) {
+      console.log(`Login attempt for ${email}: Invalid password.`);
       return res.status(401).json({ message: 'Credenciales inválidas.' });
     }
 
