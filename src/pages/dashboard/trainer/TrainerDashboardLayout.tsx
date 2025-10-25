@@ -1,5 +1,5 @@
 // roshi_fit/src/pages/dashboard/trainer/TrainerDashboardLayout.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react'; // Fix: Removed useState as it's not used
 import { useNavigate } from 'react-router-dom';
 import { DashboardThemeProvider, useDashboardTheme } from '../../../contexts/DashboardThemeContext';
 import TrainerHeader from './TrainerHeader';
@@ -11,7 +11,7 @@ interface TrainerDashboardLayoutProps {
 }
 
 const TrainerDashboardLayoutContent: React.FC<TrainerDashboardLayoutProps> = ({ children, onSectionChange }) => {
-  const { theme } = useDashboardTheme();
+  const { /* theme */ } = useDashboardTheme(); // Fix: Removed 'theme' as it's not read
   const navigate = useNavigate();
 
   useEffect(() => {

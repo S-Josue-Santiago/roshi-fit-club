@@ -12,7 +12,7 @@ import ReportCard from './ReportCard';
 import ReportDetail from './ReportDetail';
 
 const ReportList: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [, setSearchTerm] = useState(''); // Fix: Removed 'searchTerm' from destructuring as its value is not read
   const [period, setPeriod] = useState('month');
   const [loading, setLoading] = useState(true);
   const [kpiData, setKpiData] = useState({

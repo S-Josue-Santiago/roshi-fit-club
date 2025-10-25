@@ -1,13 +1,13 @@
 // roshi_fit/src/pages/dashboard/client/ClientSidebar.tsx
 import React, { useState, useEffect } from 'react';
 import {
-  Home,
+  // Home, // Fix: Removed unused import
   CreditCard,
   ShoppingCart,
   Dumbbell,
-  TrendingUp,
-  Calendar,
-  FileText,
+  // TrendingUp, // Fix: Removed unused import
+  // Calendar, // Fix: Removed unused import
+  // FileText, // Fix: Removed unused import
   Settings,
   ChevronDown,
   ChevronRight,

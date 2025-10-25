@@ -29,7 +29,7 @@ const useDashboardThemeDetection = () => {
 };
 
 const Header: React.FC = () => {
-  const { theme, toggleTheme } = useDashboardTheme();
+  const { toggleTheme } = useDashboardTheme(); // Fix: Removed 'theme' as it's not read
   const detectedTheme = useDashboardThemeDetection();
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);

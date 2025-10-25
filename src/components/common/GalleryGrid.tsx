@@ -97,8 +97,8 @@ const GalleryCard: React.FC<{ item: GalleryItem; theme: 'original' | 'futurista'
       <div className="h-64 relative">
         {item.imagen_url ? (
           <img
-            src={`/assets/gallery/${item.imagen_url}`}
-            alt={item.titulo}
+            src={`/assets/gallery/${item.imagen_url}`} 
+            alt={item.titulo ?? ''} // Fix: Provide a default empty string if item.titulo is null
             className="w-full h-48 object-cover rounded-t-lg"
             onError={(e) => (e.currentTarget.src = '/assets/placeholdergaleria.png')}
           />

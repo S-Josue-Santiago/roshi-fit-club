@@ -36,7 +36,7 @@ const useDashboardThemeDetection = () => {
 };
 
 const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus }) => {
-  const { theme, toggleTheme } = useDashboardTheme();
+  const { toggleTheme } = useDashboardTheme(); // Fix: Removed 'theme' as it's not read
   const detectedTheme = useDashboardThemeDetection();
   const navigate = useNavigate();
   const [userData, setUserData] = useState<any>(null);

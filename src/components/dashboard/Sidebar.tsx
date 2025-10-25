@@ -1,18 +1,18 @@
 // roshi_fit/src/components/dashboard/Sidebar.tsx
 import React, { useState, useEffect } from 'react';
 import {
-  Home,
+  // Home, // Fix: Removed unused import
   Users,
   Shield,
   ShoppingCart,
   Factory,
   BarChart3,
   Dumbbell,
-  Settings,
+  // Settings, // Fix: Removed unused import
   Image,
   CreditCard,
   Package,
-  TrendingUp,
+  // TrendingUp, // Fix: Removed unused import
   ChevronDown,
   ChevronRight
 } from 'lucide-react';
