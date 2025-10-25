@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchActivePaymentMethods } from '../../../api/paymentMethodApi';
 import type { PaymentMethod } from '../../../types/PaymentMethod';
+import { X, Truck, CreditCard, DollarSign, MapPin, ArrowLeft, CheckCircle } from 'lucide-react';
 
 interface CheckoutFormProps {
   usuarioId: number;
@@ -14,7 +15,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
     tipo_entrega: 'retiro' as 'retiro' | 'domicilio',
     direccion_entrega: '',
     metodo_pago_id: 1,
-    // Campos de pago
     numero_tarjeta: '',
     cvv: '',
     mes_expiracion: '',
@@ -22,25 +22,22 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
     paypal_email: '',
   });
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchActivePaymentMethods().then(setPaymentMethods);
   }, []);
 
-  // Manejar cambio de método de pago y resetear campos
   const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newMethodId = parseInt(e.target.value);
     
-    // Resetear campos según el método
     if (newMethodId === 1) {
-      // Tarjeta de crédito - limpiar PayPal
       setFormData(prev => ({ 
         ...prev, 
         metodo_pago_id: newMethodId,
         paypal_email: '' 
       }));
     } else if (newMethodId === 4) {
-      // PayPal - limpiar tarjeta
       setFormData(prev => ({ 
         ...prev, 
         metodo_pago_id: newMethodId,
@@ -50,7 +47,6 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
         anio_expiracion: '' 
       }));
     } else {
-      // Efectivo - limpiar todo
       setFormData(prev => ({ 
         ...prev, 
         metodo_pago_id: newMethodId,
@@ -67,8 +63,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     let detalles_pago: Record<string, any> = {};
     const metodoId = formData.metodo_pago_id;
@@ -93,44 +90,92 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
       metodo_pago_id: metodoId,
       detalles_pago
     });
+
+    setLoading(false);
   };
 
   const selectedMethod = paymentMethods.find(m => m.id === formData.metodo_pago_id);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
-      <div className="bg-dashboard-accent/90 p-6 rounded-xl shadow-2xl w-full max-w-2xl border border-dashboard-accent" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-center mb-4 border-b border-dashboard-accent pb-2">
-          <h2 className="text-xl font-bold text-dashboard-text">Finalizar Compra</h2>
-          <button onClick={onBack} className="text-dashboard-text hover:text-dashboard-primary text-2xl">&times;</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm p-4">
+      <div 
+        className="bg-dashboard-accent/95 p-6 rounded-2xl shadow-2xl w-full max-w-2xl border-2 border-dashboard-accent/50"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6 pb-4 border-b border-dashboard-accent/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-green-600/20 rounded-lg">
+              <CheckCircle size={24} className="text-green-400" />
+            </div>
+            <h2 className="text-xl font-black text-dashboard-text">FINALIZAR COMPRA</h2>
+          </div>
+          <button 
+            onClick={onBack}
+            className="p-2 text-dashboard-text hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all duration-300 transform hover:scale-110"
+          >
+            <X size={24} />
+          </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Tipo de entrega */}
           <div>
-            <label className="block text-sm text-dashboard-text-secondary mb-1">Tipo de Entrega</label>
-            <div className="flex space-x-4">
-              <label className="flex items-center">
+            <label className=" text-sm font-bold text-dashboard-text mb-4 flex items-center gap-2">
+              <Truck size={16} className="text-cyan-400" />
+              TIPO DE ENTREGA
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className={`
+                relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300
+                ${formData.tipo_entrega === 'retiro' 
+                  ? 'border-cyan-500 bg-cyan-500/10' 
+                  : 'border-dashboard-accent/50 bg-dashboard-accent/20 hover:border-cyan-400/50'
+                }
+              `}>
                 <input
                   type="radio"
                   name="tipo_entrega"
                   value="retiro"
                   checked={formData.tipo_entrega === 'retiro'}
                   onChange={handleChange}
-                  className="mr-2"
+                  className="sr-only"
                 />
-                Retiro en Gimnasio
+                <div className="flex items-center gap-3">
+                  <div className={`w-4 h-4 rounded-full border-2 ${
+                    formData.tipo_entrega === 'retiro' ? 'border-cyan-500 bg-cyan-500' : 'border-dashboard-text-secondary'
+                  }`}></div>
+                  <div>
+                    <p className="font-bold text-dashboard-text">Retiro en Gimnasio</p>
+                    <p className="text-sm text-dashboard-text-secondary">Recoge tu pedido en nuestro local</p>
+                  </div>
+                </div>
               </label>
-              <label className="flex items-center">
+
+              <label className={`
+                relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-300
+                ${formData.tipo_entrega === 'domicilio' 
+                  ? 'border-cyan-500 bg-cyan-500/10' 
+                  : 'border-dashboard-accent/50 bg-dashboard-accent/20 hover:border-cyan-400/50'
+                }
+              `}>
                 <input
                   type="radio"
                   name="tipo_entrega"
                   value="domicilio"
                   checked={formData.tipo_entrega === 'domicilio'}
                   onChange={handleChange}
-                  className="mr-2"
+                  className="sr-only"
                 />
-                Domicilio
+                <div className="flex items-center gap-3">
+                  <div className={`w-4 h-4 rounded-full border-2 ${
+                    formData.tipo_entrega === 'domicilio' ? 'border-cyan-500 bg-cyan-500' : 'border-dashboard-text-secondary'
+                  }`}></div>
+                  <div>
+                    <p className="font-bold text-dashboard-text">Entrega a Domicilio</p>
+                    <p className="text-sm text-dashboard-text-secondary">Recibe tu pedido en casa</p>
+                  </div>
+                </div>
               </label>
             </div>
           </div>
@@ -138,27 +183,45 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
           {/* Dirección (solo si es domicilio) */}
           {formData.tipo_entrega === 'domicilio' && (
             <div>
-              <label className="block text-sm text-dashboard-text-secondary mb-1">Dirección de Entrega</label>
+              <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <MapPin size={16} className="text-cyan-400" />
+                DIRECCIÓN DE ENTREGA
+              </label>
               <input
                 type="text"
                 name="direccion_entrega"
                 value={formData.direccion_entrega}
                 onChange={handleChange}
                 required
-                className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-                placeholder="Zona, calle, referencias..."
+                className="
+                  w-full p-4 bg-dashboard-bg text-dashboard-text 
+                  rounded-xl border-2 border-dashboard-accent/50
+                  focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+                  hover:border-cyan-400/50 transition-all duration-300
+                  placeholder:text-dashboard-text-secondary/50
+                "
+                placeholder="Zona, calle, número, referencias..."
               />
             </div>
           )}
 
           {/* Método de pago */}
           <div>
-            <label className="block text-sm text-dashboard-text-secondary mb-1">Método de Pago</label>
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+              <CreditCard size={16} className="text-cyan-400" />
+              MÉTODO DE PAGO
+            </label>
             <select
               name="metodo_pago_id"
               value={formData.metodo_pago_id}
               onChange={handlePaymentMethodChange}
-              className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
+              className="
+                w-full p-4 bg-dashboard-bg text-dashboard-text 
+                rounded-xl border-2 border-dashboard-accent/50
+                focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+                hover:border-cyan-400/50 transition-all duration-300
+                cursor-pointer
+              "
             >
               {paymentMethods.map(method => (
                 <option key={method.id} value={method.id}>{method.nombre}</option>
@@ -168,26 +231,42 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
 
           {/* Campos dinámicos de pago */}
           {selectedMethod && (
-            <div className="p-3 bg-dashboard-accent/50 rounded border border-dashboard-accent">
-              <h5 className="font-semibold text-dashboard-text mb-2">Detalles de {selectedMethod.nombre}</h5>
+            <div className="p-5 bg-dashboard-accent/30 rounded-xl border-2 border-dashboard-accent/50">
+              <h5 className="font-bold text-dashboard-text mb-4 flex items-center gap-2">
+                <DollarSign size={16} className="text-cyan-400" />
+                DETALLES DE {selectedMethod.nombre.toUpperCase()}
+              </h5>
+              
               {selectedMethod.id === 1 && (
-                <>
+                <div className="space-y-4">
                   <input
                     name="numero_tarjeta"
                     placeholder="Número de Tarjeta"
                     value={formData.numero_tarjeta}
                     onChange={handleChange}
                     required
-                    className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded mt-2"
+                    className="
+                      w-full p-4 bg-dashboard-bg text-dashboard-text 
+                      rounded-xl border-2 border-dashboard-accent/50
+                      focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+                      hover:border-cyan-400/50 transition-all duration-300
+                      placeholder:text-dashboard-text-secondary/50
+                    "
                   />
-                  <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="grid grid-cols-2 gap-4">
                     <input
                       name="mes_expiracion"
                       placeholder="Mes (MM)"
                       value={formData.mes_expiracion}
                       onChange={handleChange}
                       required
-                      className="p-2 bg-dashboard-bg text-dashboard-text rounded"
+                      className="
+                        p-4 bg-dashboard-bg text-dashboard-text 
+                        rounded-xl border-2 border-dashboard-accent/50
+                        focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+                        hover:border-cyan-400/50 transition-all duration-300
+                        placeholder:text-dashboard-text-secondary/50
+                      "
                     />
                     <input
                       name="anio_expiracion"
@@ -195,7 +274,13 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
                       value={formData.anio_expiracion}
                       onChange={handleChange}
                       required
-                      className="p-2 bg-dashboard-bg text-dashboard-text rounded"
+                      className="
+                        p-4 bg-dashboard-bg text-dashboard-text 
+                        rounded-xl border-2 border-dashboard-accent/50
+                        focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+                        hover:border-cyan-400/50 transition-all duration-300
+                        placeholder:text-dashboard-text-secondary/50
+                      "
                     />
                   </div>
                   <input
@@ -204,10 +289,17 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
                     value={formData.cvv}
                     onChange={handleChange}
                     required
-                    className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded mt-2"
+                    className="
+                      w-full p-4 bg-dashboard-bg text-dashboard-text 
+                      rounded-xl border-2 border-dashboard-accent/50
+                      focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+                      hover:border-cyan-400/50 transition-all duration-300
+                      placeholder:text-dashboard-text-secondary/50
+                    "
                   />
-                </>
+                </div>
               )}
+              
               {selectedMethod.id === 4 && (
                 <input
                   name="paypal_email"
@@ -216,25 +308,57 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
                   value={formData.paypal_email}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded mt-2"
+                  className="
+                    w-full p-4 bg-dashboard-bg text-dashboard-text 
+                    rounded-xl border-2 border-dashboard-accent/50
+                    focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+                    hover:border-cyan-400/50 transition-all duration-300
+                    placeholder:text-dashboard-text-secondary/50
+                  "
                 />
               )}
             </div>
           )}
 
-          <div className="flex justify-end space-x-3 pt-2">
+          {/* Botones */}
+          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-dashboard-accent/50">
             <button
               type="button"
               onClick={onBack}
-              className="px-4 py-2 text-dashboard-text hover:text-dashboard-primary"
+              className="
+                flex-1 px-6 py-3 text-dashboard-text font-bold
+                border-2 border-dashboard-accent/50 rounded-xl
+                hover:border-red-400 hover:text-red-400 hover:bg-red-400/10
+                transition-all duration-300 transform hover:scale-105
+                flex items-center justify-center gap-2
+              "
             >
-              Volver al Carrito
+              <ArrowLeft size={18} />
+              VOLVER AL CARRITO
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded hover:bg-dashboard-secondary transition-colors"
+              disabled={loading}
+              className="
+                flex-1 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 
+                text-white font-bold rounded-xl 
+                hover:from-green-700 hover:to-green-800
+                disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed
+                transition-all duration-300 transform hover:scale-105
+                flex items-center justify-center gap-2
+              "
             >
-              Confirmar Compra
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                  PROCESANDO...
+                </>
+              ) : (
+                <>
+                  <CheckCircle size={18} />
+                  CONFIRMAR COMPRA
+                </>
+              )}
             </button>
           </div>
         </form>

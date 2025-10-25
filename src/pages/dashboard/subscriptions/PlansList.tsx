@@ -6,6 +6,7 @@ import PlansFiltersComponent from './PlansFilters';
 import PlanActions from './PlanActions';
 import CreatePlanModal from './CreatePlanModal';
 import EditPlanModal from './EditPlanModal';
+import { Award, DollarSign, Clock, Users } from 'lucide-react';
 
 const PlansList: React.FC = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -43,7 +44,17 @@ const PlansList: React.FC = () => {
   };
 
   return (
-    <div className="bg-dashboard-accent/30 p-6 rounded-xl border border-dashboard-accent">
+    <div className="
+      bg-dashboard-accent/30 p-4 sm:p-6 rounded-xl border border-dashboard-accent
+      shadow-lg hover:shadow-xl transition-all duration-300
+    ">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2 bg-teal-600/20 rounded-lg">
+          <Award size={24} className="text-teal-400" />
+        </div>
+        <h1 className="text-2xl font-black text-dashboard-text">PLANES DE SUSCRIPCIÓN</h1>
+      </div>
+
       <PlansFiltersComponent
         onFilterChange={setFilters}
         onAddPlan={handleAddPlan}
@@ -51,38 +62,69 @@ const PlansList: React.FC = () => {
       />
 
       {loading ? (
-        <p className="text-dashboard-text py-6 text-center">Cargando planes...</p>
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-dashboard-primary"></div>
+        </div>
       ) : (
         <div className="overflow-x-auto mt-6">
-          <table className="w-full text-dashboard-text">
-            <thead>
-              <tr className="border-b border-dashboard-accent">
-                <th className="py-3 px-4 text-left">PLANES</th>
-                <th className="py-3 px-4 text-left">PRECIO</th>
-                <th className="py-3 px-4 text-left">DURACIÓN</th>
-                <th className="py-3 px-4 text-left">USUARIOS ACTIVOS</th>
-                <th className="py-3 px-4 text-left">ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody>
-              {plans.map(plan => (
-                <tr key={plan.id} className="border-b border-dashboard-accent/50 hover:bg-dashboard-accent/20">
-                  <td className="py-3 px-4 font-medium">{plan.nombre}</td>
-                  <td className="py-3 px-4 text-dashboard-primary font-bold">
-                    {formatPrice(Number(plan.precio_q))}
-                  </td>
-                  <td className="py-3 px-4">{plan.duracion_dias} días</td>
-                  <td className="py-3 px-4">{plan.usuarios_activos}</td>
-                  <td className="py-3 px-4">
-                    <PlanActions plan={plan} onEdit={handleEdit} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="min-w-full inline-block align-middle">
+            <div className="overflow-hidden border border-dashboard-accent/50 rounded-lg bg-dashboard-accent/10">
+              <table className="min-w-full divide-y divide-dashboard-accent/30">
+                <thead className="bg-dashboard-accent/50">
+                  <tr>
+                    <th scope="col" className="px-4 py-4 text-left text-sm font-black text-dashboard-text uppercase tracking-wider border-r border-dashboard-accent/30">
+                      <div className="flex items-center gap-2"><Award size={16} className="text-teal-400" />PLAN</div>
+                    </th>
+                    <th scope="col" className="px-4 py-4 text-left text-sm font-black text-dashboard-text uppercase tracking-wider border-r border-dashboard-accent/30">
+                      <div className="flex items-center gap-2"><DollarSign size={16} className="text-teal-400" />PRECIO</div>
+                    </th>
+                    <th scope="col" className="px-4 py-4 text-left text-sm font-black text-dashboard-text uppercase tracking-wider border-r border-dashboard-accent/30">
+                      <div className="flex items-center gap-2"><Clock size={16} className="text-teal-400" />DURACIÓN</div>
+                    </th>
+                    <th scope="col" className="px-4 py-4 text-left text-sm font-black text-dashboard-text uppercase tracking-wider border-r border-dashboard-accent/30">
+                      <div className="flex items-center gap-2"><Users size={16} className="text-teal-400" />USUARIOS ACTIVOS</div>
+                    </th>
+                    <th scope="col" className="px-4 py-4 text-left text-sm font-black text-dashboard-text uppercase tracking-wider">
+                      ACCIONES
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-dashboard-accent/20">
+                  {plans.map(plan => (
+                    <tr key={plan.id} className="transition-all duration-300 hover:bg-black hover:bg-opacity-80 group bg-dashboard-accent/5">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-semibold text-dashboard-text group-hover:text-white border-r border-dashboard-accent/30">
+                        {plan.nombre}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-bold text-dashboard-text group-hover:text-white border-r border-dashboard-accent/30">
+                        {formatPrice(Number(plan.precio_q))}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-dashboard-text-secondary group-hover:text-white border-r border-dashboard-accent/30">
+                        {plan.duracion_dias} días
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm font-bold text-dashboard-text group-hover:text-white border-r border-dashboard-accent/30">
+                        <div className="flex items-center justify-start gap-2">
+                          <Users size={16} className="text-teal-400" />
+                          <span>{plan.usuarios_activos}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm">
+                        <PlanActions plan={plan} onEdit={handleEdit} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           {plans.length === 0 && !loading && (
-            <p className="text-dashboard-text text-center py-6">No se encontraron planes.</p>
+            <div className="text-center py-12 bg-dashboard-accent/20 rounded-lg border border-dashboard-accent/50 mt-6">
+              <div className="text-6xl mb-4">📄</div>
+              <p className="text-dashboard-text text-xl font-black">No se encontraron planes</p>
+              <p className="text-dashboard-text-secondary mt-2 text-base font-medium">
+                Intenta ajustar los filtros de búsqueda o crea un nuevo plan.
+              </p>
+            </div>
           )}
         </div>
       )}

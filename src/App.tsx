@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import WelcomeRoshi from './pages/WelcomeRoshi';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import ClienteDashboard from './pages/dashboard/ClienteDashboard'; // ← NUEVO
+import EntrenadorDashboard from './pages/dashboard/EntrenadorDashboard'; // ← Importar
 import './styles/base.css';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -42,6 +43,14 @@ const App = () => {
             element={
               <ProtectedRoute>
                 <ClienteDashboard />
+              </ProtectedRoute>
+            }
+          />
+                  <Route
+            path="/dashboard/entrenador"
+            element={
+              <ProtectedRoute>
+                <EntrenadorDashboard />
               </ProtectedRoute>
             }
           />

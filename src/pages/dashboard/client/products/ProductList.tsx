@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { fetchProducts } from '../../../../api/productApi';
 import type { Product } from '../../../../types/Product';
 import ProductCard from './ProductCard';
+import { Search, Filter, Package, Loader } from 'lucide-react';
 
 interface ProductListProps {
   usuarioId: number;
-  onAddToCart: () => void; // ✅ Requerido
+  onAddToCart: () => void;
 }
 
 const ProductList: React.FC<ProductListProps> = ({ usuarioId, onAddToCart }) => {
@@ -34,39 +35,126 @@ const ProductList: React.FC<ProductListProps> = ({ usuarioId, onAddToCart }) => 
   }, [filters]);
 
   return (
-    <div>
-      {/* Filtros */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <input
-          type="text"
-          placeholder="🔍 Buscar producto..."
-          value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          className="flex-1 p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-        />
-        <select
-          value={filters.categoria_id}
-          onChange={(e) => setFilters({ ...filters, categoria_id: e.target.value })}
-          className="p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-        >
-          <option value="">Todas las categorías</option>
-          {/* Cargar categorías dinámicamente si es necesario */}
-        </select>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-cyan-600/20 rounded-xl">
+            <Package size={28} className="text-cyan-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-dashboard-text">PRODUCTOS DISPONIBLES</h1>
+            <p className="text-dashboard-text-secondary text-sm">Explora nuestro catálogo de productos</p>
+          </div>
+        </div>
       </div>
 
+      {/* Filtros Mejorados */}
+      <div className="bg-dashboard-accent/20 p-6 rounded-xl border-2 border-dashboard-accent/30">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Búsqueda */}
+          <div>
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+              <Search size={16} className="text-cyan-400" />
+              BUSCAR PRODUCTO
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                className="
+                  w-full p-4 pl-12 bg-dashboard-bg text-dashboard-text 
+                  rounded-xl border-2 border-dashboard-accent/50
+                  focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+                  hover:border-cyan-400/50 transition-all duration-300
+                  placeholder:text-dashboard-text-secondary/50
+                "
+                placeholder="Nombre, descripción..."
+              />
+              <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-dashboard-text-secondary" />
+            </div>
+          </div>
+
+          {/* Filtro de Categoría */}
+          <div>
+            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+              <Filter size={16} className="text-cyan-400" />
+              FILTRAR POR CATEGORÍA
+            </label>
+            <select
+              value={filters.categoria_id}
+              onChange={(e) => setFilters({ ...filters, categoria_id: e.target.value })}
+              className="
+                w-full p-4 bg-dashboard-bg text-dashboard-text 
+                rounded-xl border-2 border-dashboard-accent/50
+                focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20
+                hover:border-cyan-400/50 transition-all duration-300
+                cursor-pointer
+              "
+            >
+              <option value="">Todas las categorías</option>
+              {/* Cargar categorías dinámicamente si es necesario */}
+            </select>
+          </div>
+
+          {/* Contador de productos */}
+          <div className="flex items-end">
+            <div className="bg-cyan-600/20 p-4 rounded-xl border-2 border-cyan-500/30 w-full text-center">
+              <p className="text-cyan-400 text-sm font-bold">PRODUCTOS ENCONTRADOS</p>
+              <p className="text-2xl font-black text-dashboard-text mt-1">
+                {loading ? '...' : products.length}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Estado de carga */}
+      {loading && (
+        <div className="flex justify-center items-center py-16">
+          <div className="text-center">
+            <Loader className="animate-spin h-12 w-12 text-cyan-400 mx-auto mb-4" />
+            <p className="text-dashboard-text font-bold">CARGANDO PRODUCTOS...</p>
+            <p className="text-dashboard-text-secondary text-sm mt-1">Buscando los mejores productos para ti</p>
+          </div>
+        </div>
+      )}
+
       {/* Lista de productos */}
-      {loading ? (
-        <p className="text-dashboard-text">Cargando productos...</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              producto={product}
-              usuarioId={usuarioId}
-              onAddToCart={onAddToCart} // ✅ Pasado
-            />
-          ))}
+      {!loading && (
+        <div>
+          {products.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  producto={product}
+                  usuarioId={usuarioId}
+                  onAddToCart={onAddToCart}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 bg-dashboard-accent/20 rounded-xl border-2 border-dashboard-accent/30">
+              <div className="text-6xl mb-4">📦</div>
+              <p className="text-dashboard-text text-xl font-black">NO SE ENCONTRARON PRODUCTOS</p>
+              <p className="text-dashboard-text-secondary mt-2">
+                {filters.search ? 
+                  'Intenta ajustar los términos de búsqueda' : 
+                  'No hay productos disponibles en este momento'
+                }
+              </p>
+              {filters.search && (
+                <button
+                  onClick={() => setFilters({ ...filters, search: '' })}
+                  className="mt-4 px-6 py-2 bg-cyan-600/20 text-cyan-400 rounded-lg border border-cyan-500/30 hover:bg-cyan-600/30 transition-colors"
+                >
+                  Limpiar búsqueda
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

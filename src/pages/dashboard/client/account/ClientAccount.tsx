@@ -4,13 +4,43 @@ import { useNavigate } from 'react-router-dom';
 import EditAccountModal from './EditAccountModal';
 import ChangePasswordModal from './ChangePasswordModal';
 import { fetchUserProfile } from '../../../../api/userApi';
+import { 
+  User, Mail, Phone, Calendar, MapPin, User2, 
+  Edit, Lock, Camera, Check, AlertCircle 
+} from 'lucide-react';
 
 const AVATARS = [
   'avatar1.jpg', 'avatar2.jpg', 'avatar3.jpg',
   'avatar4.jpg', 'avatar5.jpg', 'avatar6.jpg'
 ];
 
+// Hook para detectar el tema del dashboard
+const useDashboardThemeDetection = () => {
+  const [detectedTheme, setDetectedTheme] = useState<'nocturno' | 'amanecer'>('nocturno');
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const bodyClass = document.body.className;
+      if (bodyClass.includes('theme-dashboard-amanecer')) {
+        setDetectedTheme('amanecer');
+      } else {
+        setDetectedTheme('nocturno');
+      }
+    };
+
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return detectedTheme;
+};
+
 const ClientAccount: React.FC = () => {
+  const theme = useDashboardThemeDetection();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -48,14 +78,6 @@ const ClientAccount: React.FC = () => {
     setIsEditModalOpen(false);
   };
 
-  if (loading) {
-    return <p className="text-dashboard-text">Cargando cuenta...</p>;
-  }
-
-  if (!user) {
-    return <p className="text-dashboard-text">Usuario no encontrado.</p>;
-  }
-
   const getAvatarUrl = (filename: string | null) => {
     if (!filename) return '/assets/avatars/avatar1.jpg';
     if (AVATARS.includes(filename)) {
@@ -70,63 +92,179 @@ const ClientAccount: React.FC = () => {
     return 'Otro';
   };
 
-  return (
-    <div className="bg-dashboard-accent/30 p-6 rounded-xl border border-dashboard-accent max-w-2xl">
-      <h2 className="text-2xl font-bold text-dashboard-text mb-6">Mi Cuenta</h2>
+  // Estilos según tema
+  const getStyles = () => {
+    if (theme === 'amanecer') {
+      return {
+        container: 'bg-gradient-to-br from-white via-slate-50 to-white border-slate-300',
+        containerShadow: '0 20px 40px rgba(74, 144, 226, 0.15)',
+        title: 'text-gray-900',
+        avatarBorder: 'border-blue-500',
+        avatarBg: 'bg-gradient-to-br from-blue-500 to-purple-600',
+        avatarOverlay: 'bg-gradient-to-t from-black/60 to-transparent',
+        userName: 'text-gray-900',
+        userEmail: 'text-gray-600',
+        infoCard: 'bg-white border-slate-200',
+        infoLabel: 'text-gray-600',
+        infoValue: 'text-gray-900',
+        infoIcon: 'text-blue-500',
+        editButton: 'bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700',
+        editButtonShadow: '0 8px 20px rgba(74, 144, 226, 0.4)',
+        passwordButton: 'bg-white border-slate-300 text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 hover:border-purple-400 hover:text-purple-600',
+        loadingText: 'text-gray-600',
+        errorContainer: 'bg-red-50 border-red-300 text-red-700',
+        badge: 'bg-green-100 text-green-700 border-green-400'
+      };
+    }
+    
+    // Tema Nocturno
+    return {
+      container: 'bg-gradient-to-br from-[#0A0E27] via-[#16213E] to-[#0A0E27] border-purple-500/30',
+      containerShadow: '0 20px 40px rgba(138, 43, 226, 0.3)',
+      title: 'text-white',
+      avatarBorder: 'border-[#FFD700]',
+      avatarBg: 'bg-gradient-to-br from-purple-900 to-purple-700',
+      avatarOverlay: 'bg-gradient-to-t from-black/80 to-transparent',
+      userName: 'text-white',
+      userEmail: 'text-[#B0BEC5]',
+      infoCard: 'bg-[#16213E]/50 border-purple-500/20',
+      infoLabel: 'text-[#B0BEC5]',
+      infoValue: 'text-white',
+      infoIcon: 'text-[#FFD700]',
+      editButton: 'bg-gradient-to-r from-purple-900 to-purple-700 text-white hover:from-purple-800 hover:to-purple-600',
+      editButtonShadow: '0 8px 20px rgba(138, 43, 226, 0.5)',
+      passwordButton: 'bg-[#16213E] border-purple-500/30 text-white hover:bg-purple-900 hover:border-[#FFD700] hover:text-[#FFD700]',
+      loadingText: 'text-[#B0BEC5]',
+      errorContainer: 'bg-red-900/20 border-red-500/40 text-red-300',
+      badge: 'bg-green-500/20 text-green-400 border-green-500'
+    };
+  };
 
-      {/* Foto de perfil */}
-      <div className="flex flex-col items-center mb-6">
-        <img
-          src={getAvatarUrl(user.foto_perfil)}
-          alt="Foto de perfil"
-          className="w-24 h-24 rounded-full object-cover border-4 border-dashboard-primary mb-4"
-        />
-        <span className="text-dashboard-text">{user.nombre_completo}</span>
+  const styles = getStyles();
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-transparent" 
+             style={{ borderColor: theme === 'amanecer' ? '#3b82f6' : '#8b5cf6', borderTopColor: 'transparent' }}></div>
+        <p className={`mt-4 ${styles.loadingText} font-semibold`}>Cargando cuenta...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className={`flex items-start gap-3 p-4 rounded-2xl border-2 ${styles.errorContainer}`}>
+        <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+        <p className="font-semibold">Usuario no encontrado.</p>
+      </div>
+    );
+  }
+
+  const infoItems = [
+    { icon: User, label: 'Nombre Completo', value: user.nombre_completo },
+    { icon: Mail, label: 'Email', value: user.email },
+    { icon: Phone, label: 'Teléfono', value: user.telefono || '—' },
+    { icon: Calendar, label: 'Fecha de Nacimiento', value: user.fecha_nacimiento ? new Date(user.fecha_nacimiento).toLocaleDateString('es-GT') : '—' },
+    { icon: User2, label: 'Género', value: getGenderText(user.genero) },
+    { icon: MapPin, label: 'Dirección', value: user.direccion || '—' },
+  ];
+
+  return (
+    <div 
+      className={`${styles.container} p-6 md:p-8 rounded-3xl border-2 max-w-4xl mx-auto`}
+      style={{ boxShadow: styles.containerShadow }}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h2 className={`text-3xl font-black ${styles.title}`}>Mi Cuenta</h2>
+        <div className={`px-4 py-2 rounded-xl border-2 ${styles.badge} font-bold text-sm flex items-center gap-2`}>
+          <Check size={16} />
+          Perfil Activo
+        </div>
       </div>
 
-      {/* Información de cuenta */}
-      <div className="space-y-4">
-        <div className="flex justify-between">
-          <span className="text-dashboard-text-secondary">Nombre:</span>
-          <span className="text-dashboard-text font-medium">{user.nombre_completo}</span>
+      {/* Foto de perfil y nombre */}
+      <div className="flex flex-col md:flex-row items-center gap-6 mb-8 p-6 rounded-2xl" style={{ background: theme === 'amanecer' ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(124, 58, 237, 0.05))' : 'linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(22, 33, 62, 0.5))' }}>
+        <div className="relative group">
+          <div className={`w-32 h-32 ${styles.avatarBg} rounded-2xl p-1 shadow-2xl`}>
+            <img
+              src={getAvatarUrl(user.foto_perfil)}
+              alt="Foto de perfil"
+              className="w-full h-full rounded-xl object-cover"
+            />
+          </div>
+          <div className={`absolute inset-0 rounded-2xl ${styles.avatarOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center`}>
+            <Camera size={32} className="text-white" />
+          </div>
         </div>
-        <div className="flex justify-between">
-          <span className="text-dashboard-text-secondary">Email:</span>
-          <span className="text-dashboard-text font-medium">{user.email}</span>
+        
+        <div className="flex-1 text-center md:text-left">
+          <h3 className={`text-2xl md:text-3xl font-black ${styles.userName} mb-2`}>
+            {user.nombre_completo}
+          </h3>
+          <p className={`${styles.userEmail} text-sm md:text-base font-semibold flex items-center justify-center md:justify-start gap-2`}>
+            <Mail size={16} />
+            {user.email}
+          </p>
         </div>
-        <div className="flex justify-between">
-          <span className="text-dashboard-text-secondary">Teléfono:</span>
-          <span className="text-dashboard-text font-medium">{user.telefono || '—'}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-dashboard-text-secondary">Fecha de nacimiento:</span>
-          <span className="text-dashboard-text font-medium">
-            {user.fecha_nacimiento ? new Date(user.fecha_nacimiento).toLocaleDateString('es-GT') : '—'}
-          </span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-dashboard-text-secondary">Género:</span>
-          <span className="text-dashboard-text font-medium">{getGenderText(user.genero)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="text-dashboard-text-secondary">Dirección:</span>
-          <span className="text-dashboard-text font-medium">{user.direccion || '—'}</span>
-        </div>
+      </div>
+
+      {/* Información de cuenta en grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {infoItems.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <div 
+              key={index}
+              className={`${styles.infoCard} p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`p-3 rounded-xl ${theme === 'amanecer' ? 'bg-blue-50' : 'bg-purple-900/30'}`}>
+                  <Icon size={20} className={styles.infoIcon} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-xs font-semibold ${styles.infoLabel} mb-1`}>
+                    {item.label}
+                  </p>
+                  <p className={`font-bold ${styles.infoValue} truncate`}>
+                    {item.value}
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Botones de acción */}
-      <div className="flex flex-wrap gap-3 mt-8">
+      <div className="flex flex-col sm:flex-row gap-4">
         <button
           onClick={() => setIsEditModalOpen(true)}
-          className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded hover:bg-dashboard-secondary transition-colors"
+          className={`
+            flex-1 flex items-center justify-center gap-2 px-6 py-4 
+            rounded-2xl font-black text-lg
+            ${styles.editButton}
+            transition-all duration-300 transform hover:scale-105
+            border-2 border-transparent
+          `}
+          style={{ boxShadow: styles.editButtonShadow }}
         >
-          Actualizar
+          <Edit size={20} />
+          Editar Perfil
         </button>
+        
         <button
           onClick={() => setIsPasswordModalOpen(true)}
-          className="px-4 py-2 bg-dashboard-secondary text-dashboard-bg font-semibold rounded hover:bg-dashboard-primary transition-colors"
+          className={`
+            flex-1 flex items-center justify-center gap-2 px-6 py-4 
+            rounded-2xl font-bold text-lg border-2
+            ${styles.passwordButton}
+            transition-all duration-300 transform hover:scale-105
+          `}
         >
-          Cambiar contraseña
+          <Lock size={20} />
+          Cambiar Contraseña
         </button>
       </div>
 

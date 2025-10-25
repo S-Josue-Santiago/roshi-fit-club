@@ -8,6 +8,7 @@ import ClientSubscription from './subscriptions/ClientSubscription';
 import ProductList from './products/ProductList';
 import ClientAccount from './account/ClientAccount';
 import ClientExerciseList from './exercises/ClientExerciseList';
+import MyTraining from './my-training/MyTraining';
 
 
 const ClientDashboardLayoutContent: React.FC = () => {
@@ -48,6 +49,10 @@ const ClientDashboardLayoutContent: React.FC = () => {
         return <ClientExerciseList />;
       case 'cuenta':
         return <ClientAccount />;
+
+      case 'entrenamientos':
+         return <MyTraining />;
+         
       default:
         return (
           <div className="p-4">

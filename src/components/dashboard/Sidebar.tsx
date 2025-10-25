@@ -1,5 +1,5 @@
 // roshi_fit/src/components/dashboard/Sidebar.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Home,
   Users,
@@ -13,8 +13,8 @@ import {
   CreditCard,
   Package,
   TrendingUp,
-  Menu,
-  X
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 
 interface SidebarItem {
@@ -45,71 +45,148 @@ interface SidebarProps {
   onSectionChange: (section: string) => void;
 }
 
+// Hook para detectar el tema del dashboard
+const useDashboardTheme = () => {
+  const [theme, setTheme] = useState<'nocturno' | 'amanecer'>('nocturno');
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const bodyClass = document.body.className;
+      if (bodyClass.includes('theme-dashboard-amanecer')) {
+        setTheme('amanecer');
+      } else {
+        setTheme('nocturno');
+      }
+    };
+
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
+};
+
 const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const theme = useDashboardTheme();
 
   const handleItemClick = (sectionId: string) => {
     onSectionChange(sectionId);
-    setIsMobileOpen(false); // Cerrar sidebar en móvil al seleccionar
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileOpen(!isMobileOpen);
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
   };
+
+  // Estilos según tema
+  const getStyles = () => {
+    if (theme === 'amanecer') {
+      return {
+        sidebar: 'bg-gradient-to-b from-slate-200 via-slate-100 to-slate-200 border-slate-300',
+        header: 'bg-gradient-to-r from-blue-50 to-purple-50 border-slate-200',
+        headerTitle: 'text-gray-900',
+        headerSubtitle: 'text-gray-600',
+        logo: 'bg-gradient-to-br from-blue-500 to-purple-600',
+        activeButton: {
+          bg: 'bg-gradient-to-r from-blue-500 via-blue-600 to-purple-600',
+          border: 'border-blue-400',
+          text: 'text-white',
+          shadow: 'shadow-lg shadow-blue-500/30'
+        },
+        inactiveButton: {
+          bg: 'bg-white hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50',
+          border: 'border-slate-200 hover:border-blue-400',
+          text: 'text-gray-700 hover:text-blue-600',
+          icon: 'text-gray-600 group-hover:text-blue-600'
+        },
+        indicator: 'bg-blue-500',
+        collapseButton: 'bg-white border-slate-300 text-gray-700 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600',
+        scrollbar: {
+          track: 'rgba(226, 232, 240, 0.5)',
+          thumb: 'rgba(74, 144, 226, 0.5)',
+          thumbHover: 'rgba(74, 144, 226, 0.8)'
+        }
+      };
+    }
+    
+    // Tema Nocturno
+    return {
+      sidebar: 'bg-gradient-to-b from-[#0A0E27] via-[#0F1333] to-[#0A0E27] border-[#16213E]',
+      header: 'bg-gradient-to-r from-[#16213E] to-[#1A1A2E] border-[#16213E]',
+      headerTitle: 'text-white',
+      headerSubtitle: 'text-[#B0BEC5]',
+      logo: 'bg-gradient-to-br from-purple-900 to-purple-700',
+      activeButton: {
+        bg: 'bg-gradient-to-r from-purple-900 via-[#1A1A2E] to-purple-800',
+        border: 'border-purple-500',
+        text: 'text-white',
+        shadow: 'shadow-lg shadow-purple-900/50'
+      },
+      inactiveButton: {
+        bg: 'bg-transparent hover:bg-gradient-to-r hover:from-[#1A1A2E] hover:to-[#16213E]',
+        border: 'border-transparent hover:border-[#FFD700]',
+        text: 'text-white hover:text-[#FFD700]',
+        icon: 'text-[#B0BEC5] group-hover:text-[#FFD700]'
+      },
+      indicator: 'bg-[#FFD700]',
+      collapseButton: 'bg-[#16213E] border-purple-500 text-white hover:bg-purple-900 hover:border-[#FFD700]',
+      scrollbar: {
+        track: 'rgba(22, 33, 62, 0.5)',
+        thumb: 'rgba(138, 43, 226, 0.5)',
+        thumbHover: 'rgba(138, 43, 226, 0.8)'
+      }
+    };
+  };
+
+  const styles = getStyles();
 
   return (
     <>
-      {/* Botón de menú móvil */}
-      <button
-        onClick={toggleMobileMenu}
-        className="
-          lg:hidden fixed top-4 left-4 z-50
-          p-3 rounded-xl bg-purple-900 text-white
-          shadow-lg hover:shadow-xl transition-all duration-300
-          hover:bg-purple-800 hover:scale-110
-        "
-      >
-        {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
-
-      {/* Overlay para móvil */}
-      {isMobileOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
-
       {/* Sidebar */}
-      <aside className={`
-        fixed left-0 top-0 h-full
-        bg-dashboard-sidebar border-r border-dashboard-accent/50
-        overflow-y-auto shadow-2xl transition-transform duration-300 z-40
-        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:top-16 lg:w-64 lg:h-[calc(100vh-4rem)]
-      `}>
+      <aside 
+        className={`
+          fixed left-0 top-0 h-full
+          ${styles.sidebar} border-r-2
+          overflow-y-auto custom-scrollbar shadow-2xl transition-all duration-500 z-40
+          lg:top-16 lg:h-[calc(100vh-4rem)]
+          ${isCollapsed ? 'w-20' : 'w-72'}
+        `}
+        style={{
+          boxShadow: theme === 'amanecer' 
+            ? '4px 0 20px rgba(74, 144, 226, 0.1)' 
+            : '4px 0 20px rgba(138, 43, 226, 0.2)'
+        }}
+      >
         
-        {/* Header del sidebar - Versión móvil */}
-        <div className="lg:hidden p-6 border-b border-dashboard-accent/30 bg-dashboard-sidebar">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-900 to-purple-800 rounded-xl flex items-center justify-center">
-              <span className="text-white font-black text-lg">R</span>
+        {/* Header del sidebar */}
+        <div className={`p-6 border-b-2 ${styles.header} transition-all duration-300`}>
+          {!isCollapsed ? (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`w-12 h-12 ${styles.logo} rounded-2xl flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform duration-300`}>
+                  <span className="text-white font-black text-xl">R</span>
+                </div>
+                <div>
+                  <h2 className={`text-xl font-black ${styles.headerTitle} tracking-wide`}>
+                    Roshi Fit
+                  </h2>
+                  <p className={`text-xs ${styles.headerSubtitle} mt-0.5 font-semibold`}>
+                    Dashboard Admin
+                  </p>
+                </div>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-black text-dashboard-text">Roshi Fit</h2>
-              <p className="text-xs text-dashboard-text-secondary">Dashboard</p>
+          ) : (
+            <div className="flex justify-center">
+              <div className={`w-12 h-12 ${styles.logo} rounded-2xl flex items-center justify-center shadow-lg`}>
+                <span className="text-white font-black text-xl">R</span>
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Header del sidebar - Versión desktop */}
-        <div className="hidden lg:block p-6 border-b border-dashboard-accent/30">
-          <h2 className="text-lg font-black text-dashboard-text tracking-wide">
-            MENÚ PRINCIPAL
-          </h2>
-          <p className="text-xs text-dashboard-text-secondary mt-1">
-            Navegación del sistema
-          </p>
+          )}
         </div>
 
         {/* Items de navegación */}
@@ -122,55 +199,53 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => 
                 key={item.id}
                 onClick={() => handleItemClick(item.id)}
                 className={`
-                  w-full flex items-center space-x-3 px-4 py-4 
-                  rounded-xl text-left transition-all duration-300
+                  w-full flex items-center px-4 py-4 
+                  rounded-2xl text-left transition-all duration-300
                   border-2 relative overflow-hidden group
                   ${isActive
-                    ? // ESTADO ACTIVO - Morado, negro y morado
-                      'bg-purple-900 border-purple-500 text-white font-bold shadow-lg transform scale-105'
-                    : // ESTADO NORMAL - Listo para hover (negro y verde)
-                      'bg-transparent border-transparent text-dashboard-text hover:bg-black hover:text-green-400 hover:border-green-400'
+                    ? `${styles.activeButton.bg} ${styles.activeButton.border} ${styles.activeButton.text} ${styles.activeButton.shadow} transform scale-105 font-bold`
+                    : `${styles.inactiveButton.bg} ${styles.inactiveButton.border} ${styles.inactiveButton.text}`
                   }
+                  ${isCollapsed ? 'justify-center' : 'space-x-3'}
                 `}
+                title={isCollapsed ? item.name : ''}
               >
-                {/* Efecto de gradiente morado para items activos */}
+                {/* Efecto de brillo para items activos */}
                 {isActive && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-900 via-black to-purple-800 rounded-xl"></div>
-                )}
-
-                {/* Efecto de overlay para hover en items inactivos */}
-                {!isActive && (
-                  <div className="absolute inset-0 bg-green-400/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
                 )}
                 
-                {/* Contenido del item */}
-                <div className={`relative z-10 transition-transform duration-300 ${
+                {/* Icono */}
+                <div className={`relative z-10 transition-all duration-300 flex-shrink-0 ${
                   isActive 
-                    ? 'text-white' 
-                    : 'text-dashboard-text group-hover:text-green-400'
+                    ? 'text-white scale-110' 
+                    : styles.inactiveButton.icon
                 }`}>
                   {item.icon}
                 </div>
                 
-                <span className={`relative z-10 font-semibold text-sm tracking-wide ${
-                  isActive 
-                    ? 'text-white' 
-                    : 'text-dashboard-text group-hover:text-green-400'
-                }`}>
-                  {item.name}
-                </span>
+                {/* Nombre del item */}
+                {!isCollapsed && (
+                  <span className={`relative z-10 font-bold text-sm tracking-wide flex-1 ${
+                    isActive 
+                      ? 'text-white' 
+                      : styles.inactiveButton.text
+                  }`}>
+                    {item.name}
+                  </span>
+                )}
 
                 {/* Indicador lateral para items activos */}
-                {isActive && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="w-2 h-8 bg-purple-400 rounded-full"></div>
+                {isActive && !isCollapsed && (
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                    <div className={`w-2 h-10 ${styles.indicator} rounded-full shadow-lg`}></div>
                   </div>
                 )}
 
-                {/* Indicador de hover para items inactivos */}
-                {!isActive && (
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <div className="w-2 h-2 bg-green-400 rounded-full group-hover:scale-125 transition-transform"></div>
+                {/* Indicador de punto para items activos colapsados */}
+                {isActive && isCollapsed && (
+                  <div className="absolute top-2 right-2">
+                    <div className={`w-2 h-2 ${styles.indicator} rounded-full`}></div>
                   </div>
                 )}
               </button>
@@ -178,8 +253,58 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => 
           })}
         </nav>
 
-
+        {/* Botón de colapsar/expandir */}
+        <div className="p-4 border-t-2" style={{ borderColor: theme === 'amanecer' ? '#CBD5E1' : '#16213E' }}>
+          <button
+            onClick={toggleCollapse}
+            className={`
+              w-full flex items-center justify-center px-4 py-3
+              rounded-2xl border-2 transition-all duration-300
+              ${styles.collapseButton} font-bold text-sm
+              hover:scale-105 shadow-md hover:shadow-lg
+            `}
+          >
+            {isCollapsed ? (
+              <ChevronRight size={20} />
+            ) : (
+              <>
+                <ChevronDown size={20} className="mr-2" />
+                <span>Contraer</span>
+              </>
+            )}
+          </button>
+        </div>
       </aside>
+
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: ${styles.scrollbar.track};
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: ${styles.scrollbar.thumb};
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: ${styles.scrollbar.thumbHover};
+        }
+
+        @keyframes shimmer {
+          0% {
+            transform: translateX(-100%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+
+        .animate-shimmer {
+          animation: shimmer 2s infinite;
+        }
+      `}</style>
     </>
   );
 };
