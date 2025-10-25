@@ -35,12 +35,17 @@ const corsOptions = {
     'http://localhost:5173',           // Para desarrollo local
     'https://roshi-gym.vercel.app'     // Tu URL de producción en Vercel
   ], // Reemplaza 5173 si usas otro puerto
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'], // ← Array en lugar de string
   credentials: true, // Permite cookies y encabezados de autorización
+    allowedHeaders: ['Content-Type', 'Authorization'], // ← AGREGAR ESTO
+
   optionsSuccessStatus: 204
+
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // ← AGREGAR: Maneja preflight
+
 app.use(express.json());
 app.use('/api/services', serviceRoutes);
 app.use('/api/plans', planRoutes);
