@@ -31,6 +31,7 @@ const app = express();
 
 const corsOptions = {
     origin: [
+    'https://roshi-fit-club-1.onrender.com',
     'http://localhost:5173',           // Para desarrollo local
     'https://roshi-gym.vercel.app'     // Tu URL de producción en Vercel
   ], // Reemplaza 5173 si usas otro puerto
