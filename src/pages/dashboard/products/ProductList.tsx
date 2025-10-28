@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/products/ProductList.tsx
 import React, { useState, useEffect } from 'react';
-import { fetchProducts } from '../../../api/productApi';
+import { fetchProducts, toggleProductStatus } from '../../../api/productApi';
 import { type Product, type ProductFilters } from '../../../types/Product';
 import ProductFiltersComponent from './ProductFilters';
 import ProductActions from './ProductActions';
@@ -50,6 +50,16 @@ const ProductList: React.FC = () => {
 
   const handleUpdateSuccess = () => {
     setFilters(prev => ({ ...prev }));
+  };
+
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await toggleProductStatus(id);
+      setFilters(prev => ({ ...prev })); // Refrescar la lista de productos
+    } catch (error) {
+      console.error('Error al cambiar estado del producto:', error);
+      alert('Error al cambiar estado del producto.');
+    }
   };
 
   const formatStatus = (estado: string) => {
@@ -237,6 +247,7 @@ const ProductList: React.FC = () => {
                           product={product}
                           onEdit={handleEdit}
                           onManageStock={(id, stock, name) => setManagingStock({ id, stock, name })}
+                          onToggleStatus={handleToggleStatus}
                         />
                       </td>
                     </tr>

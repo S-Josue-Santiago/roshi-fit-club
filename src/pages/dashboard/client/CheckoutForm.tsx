@@ -241,7 +241,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
                 "
               >
                 {paymentMethods.map(method => (
-                  <option key={method.id} value={method.id}>{method.nombre}</option>
+                  <option className="bg-black" key={method.id} value={method.id}>{method.nombre}</option>
                 ))}
               </select>
             </div>

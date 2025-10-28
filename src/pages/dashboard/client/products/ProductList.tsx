@@ -4,6 +4,8 @@ import { fetchProducts } from '../../../../api/productApi';
 import type { Product } from '../../../../types/Product';
 import ProductCard from './ProductCard';
 import { Search, Filter, Package, Loader } from 'lucide-react';
+import { fetchCategoriesProducts } from '../../../../api/categoryApi';
+import type { Category } from '../../../../types/Category';
 
 interface ProductListProps {
   usuarioId: number;
@@ -18,6 +20,25 @@ const ProductList: React.FC<ProductListProps> = ({ usuarioId, onAddToCart }) => 
     categoria_id: '',
     estado: 'activo'
   });
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      setCategoriesLoading(true);
+      try {
+        const data = await fetchCategoriesProducts();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error al cargar categorías:', error);
+        setCategoriesError('Error al cargar categorías.');
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    loadCategories();
+  }, []);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -92,9 +113,18 @@ const ProductList: React.FC<ProductListProps> = ({ usuarioId, onAddToCart }) => 
                 hover:border-cyan-400/50 transition-all duration-300
                 cursor-pointer
               "
+              disabled={categoriesLoading || !!categoriesError}
             >
               <option value="">Todas las categorías</option>
-              {/* Cargar categorías dinámicamente si es necesario */}
+              {categoriesLoading ? (
+                <option value="" disabled>Cargando categorías...</option>
+              ) : categoriesError ? (
+                <option value="" disabled>{categoriesError}</option>
+              ) : (
+                categories.map(category => (
+                  <option className="text-black" key={category.id} value={category.id}>{category.nombre}</option>
+                ))
+              )}
             </select>
           </div>
 

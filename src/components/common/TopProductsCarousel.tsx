@@ -262,6 +262,7 @@ const ProductCard: React.FC<{
           src={`/assets/products/${product.imagen_principal}`}
           alt={product.nombre}
           className="w-full h-48 object-cover rounded-t-xl"
+          onError={(e) => { e.currentTarget.src = '/assets/placeholder.jpg'; }}
         />
       ) : (
         <div className={styles.imageContainer} style={styles.imageContainerStyle}>
