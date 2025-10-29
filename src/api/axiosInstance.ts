@@ -25,7 +25,7 @@ api.interceptors.request.use(
   (error) => {
     return Promise.reject(error);
   }
-);
+);  
 
 // Interceptor para manejar errores de respuesta
 api.interceptors.response.use(

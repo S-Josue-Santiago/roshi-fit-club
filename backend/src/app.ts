@@ -1,33 +1,36 @@
 import express from 'express';
 import { PrismaClient, Prisma } from '@prisma/client';
 import cors from 'cors'; // Importar cors
-import serviceRoutes from './routes/serviceRoutes';
-import planRoutes from './routes/planRoutes';
-import scheduleRoutes from './routes/scheduleRoutes';
-import productRoutes from './routes/productRoutes';
-import equipmentRoutes from './routes/equipmentRoutes';
-import galleryRoutes from './routes/galleryRoutes';
-import testimonialRoutes from './routes/testimonialRoutes';
-import contentRoutes from './routes/contentRoutes';
-import authRoutes from './routes/authRoutes';
-import paymentMethodRoutes from './routes/paymentMethodRoutes';
-import userRoutes from './routes/userRoutes';
-import roleRoutes from './routes/roleRoutes';
-import categoryRoutes from './routes/categoryRoutes';
-import uploadRoutes from './routes/uploadRoutes';
-import supplierRoutes from './routes/supplierRoutes';
-import exerciseRoutes from './routes/exerciseRoutes';
-import subscriptionRoutes from './routes/subscriptionRoutes';
-import salesRoutes from './routes/salesRoutes';
-import reportRoutes from './routes/reportRoutes';
-import settingRoutes from './routes/settingRoutes';
-import purchaseRoutes from './routes/purchaseRoutes';
-import trainingRoutes from './routes/trainingRoutes';
-
-
+import serviceRoutes from './routes/serviceRoutes.js';
+import planRoutes from './routes/planRoutes.js';
+import scheduleRoutes from './routes/scheduleRoutes.js';
+import productRoutes from './routes/productRoutes.js';
+import equipmentRoutes from './routes/equipmentRoutes.js';
+import galleryRoutes from './routes/galleryRoutes.js';
+import testimonialRoutes from './routes/testimonialRoutes.js';
+import contentRoutes from './routes/contentRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import paymentMethodRoutes from './routes/paymentMethodRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import roleRoutes from './routes/roleRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
+import uploadRoutes from './routes/uploadRoutes.js';
+import supplierRoutes from './routes/supplierRoutes.js';
+import exerciseRoutes from './routes/exerciseRoutes.js';
+import subscriptionRoutes from './routes/subscriptionRoutes.js';
+import salesRoutes from './routes/salesRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
+import settingRoutes from './routes/settingRoutes.js';
+import purchaseRoutes from './routes/purchaseRoutes.js';
+import trainingRoutes from './routes/trainingRoutes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const corsOptions = {
     origin: [
@@ -75,6 +78,14 @@ app.use('/api/settings', settingRoutes);
 app.use('/api/purchase', purchaseRoutes);
 app.use('/api/training', trainingRoutes);
 
+// Servir archivos estáticos de la aplicación frontend
+app.use(express.static(path.join(__dirname, '../../dist')));
+
+// Para cualquier otra ruta que no sea de API, servir el index.html de la aplicación frontend
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
+});
+
 export const prisma = new PrismaClient();
 export { Prisma };
 
@@ -82,8 +93,6 @@ export { Prisma };
 app.get('/', (req, res) => {
   res.send('¡Servidor del gimnasio funcionando!');
 });
-
-
 
 
 export default app;
