@@ -77,11 +77,11 @@ app.use('/api/purchase', purchaseRoutes);
 app.use('/api/training', trainingRoutes);
 
 // Servir archivos estáticos de la aplicación frontend
-app.use(express.static(path.join(__dirname, '../../dist')));
+app.use(express.static(path.resolve(__dirname, '..' ,'..' , 'dist')));
 
 // Para cualquier otra ruta que no sea de API, servir el index.html de la aplicación frontend
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../dist', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '..' ,'..' , 'dist', 'index.html'));
 });
 
 export const prisma = new PrismaClient();
