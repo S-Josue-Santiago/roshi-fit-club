@@ -1,5 +1,5 @@
 // src/server.ts
-import app, { prisma } from './app.js';
+import app, { prisma } from './app';
 
 const PORT = process.env.PORT || 5000;
 

@@ -2,7 +2,6 @@
   "name": "roshi-fit-club-backend",
   "version": "1.0.0",
   "description": "Backend for Roshi Fit Club using Node, Express, and Prisma.",
-  "type": "module",
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
