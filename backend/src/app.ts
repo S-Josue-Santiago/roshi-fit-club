@@ -83,5 +83,9 @@ app.get('/', (req, res) => {
   res.send('¡Servidor del gimnasio funcionando!');
 });
 
+// Manejo de rutas no encontradas
+app.use((req, res, next) => {
+  res.status(404).send('No encontrado - Esta es una ruta de API que no existe.');
+});
 
 export default app;
