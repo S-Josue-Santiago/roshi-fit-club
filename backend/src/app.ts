@@ -23,8 +23,6 @@ import reportRoutes from './routes/reportRoutes';
 import settingRoutes from './routes/settingRoutes';
 import purchaseRoutes from './routes/purchaseRoutes';
 import trainingRoutes from './routes/trainingRoutes';
-import path from 'path';
-
 
 
 const app = express();
@@ -76,13 +74,6 @@ app.use('/api/settings', settingRoutes);
 app.use('/api/purchase', purchaseRoutes);
 app.use('/api/training', trainingRoutes);
 
-// Servir archivos estáticos de la aplicación frontend
-app.use(express.static(path.resolve(__dirname, '..' ,'..' , 'dist')));
-
-// Para cualquier otra ruta que no sea de API, servir el index.html de la aplicación frontend
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '..' ,'..' , 'dist', 'index.html'));
-});
 
 export const prisma = new PrismaClient();
 export { Prisma };
