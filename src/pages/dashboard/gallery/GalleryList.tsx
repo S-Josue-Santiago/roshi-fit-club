@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/gallery/GalleryList.tsx
-import React, { useState, useEffect } from 'react';
-import { fetchGalleryItems } from '../../../api/galleryApi';
+import React, { useState, useEffect, useCallback } from 'react';
+import { fetchGalleryItems, toggleGalleryItemStatus } from '../../../api/galleryApi';
 import type { GalleryItem, GalleryItemFilters } from '../../../types/GalleryItem';
 import GalleryFiltersComponent from './GalleryFilters';
 import GalleryActions from './GalleryActions';
@@ -18,26 +18,46 @@ const GalleryList: React.FC = () => {
   });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // New state to force data reload
+
+  const loadItems = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchGalleryItems(filters);
+      setItems(data);
+    } catch (error) {
+      console.error('Error al cargar galería:', error);
+      alert(`Error al cargar la galería: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, refreshTrigger]); // Add refreshTrigger to dependencies
 
   useEffect(() => {
-    const loadItems = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchGalleryItems(filters);
-        setItems(data);
-      } catch (error) {
-        console.error('Error al cargar galería:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadItems();
-  }, [filters]);
+  }, [loadItems, refreshTrigger]); // Add refreshTrigger to dependencies
 
   const handleAddItem = () => setIsCreateModalOpen(true);
-  const handleCreateSuccess = () => setFilters({ search: '', categoria: '', estado: '' });
+  const handleCreateSuccess = () => {
+    loadItems(); // Reload all items after creation
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
   const handleEdit = (id: number) => setEditingItemId(id);
-  const handleUpdateSuccess = () => setFilters(prev => ({ ...prev }));
+  const handleUpdateSuccess = () => {
+    loadItems(); // Reload all items after update
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
+
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await toggleGalleryItemStatus(id);
+      loadItems(); // Reload items to reflect the status change
+      setRefreshTrigger(prev => prev + 1); // Trigger refresh
+    } catch (error) {
+      console.error('Error toggling gallery item status:', error);
+      alert(`Error al cambiar el estado del item de galería: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
 
   const formatStatus = (estado: string) => {
     return estado === 'activo'
@@ -113,6 +133,7 @@ const GalleryList: React.FC = () => {
                         <GalleryActions
                           item={item}
                           onEdit={handleEdit}
+                          onToggleStatus={handleToggleStatus}
                         />
                       </td>
                     </tr>

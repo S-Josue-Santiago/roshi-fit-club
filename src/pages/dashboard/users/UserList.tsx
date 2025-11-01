@@ -76,6 +76,7 @@ const UserList: React.FC = () => {
     <div className="
       bg-dashboard-accent/30 p-4 sm:p-6 rounded-xl border border-dashboard-accent
       shadow-lg hover:shadow-xl transition-all duration-300
+      mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 // Added responsive spacing
     ">
       <UserFilters
         filters={filters}

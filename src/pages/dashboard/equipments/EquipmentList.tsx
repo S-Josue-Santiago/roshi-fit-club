@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/equipment/EquipmentList.tsx
-import React, { useState, useEffect } from 'react';
-import { fetchEquipment } from '../../../api/equipmentApi';
+import React, { useState, useEffect, useCallback } from 'react';
+import { fetchEquipment, toggleEquipmentStatus } from '../../../api/equipmentApi';
 import type { Equipment, EquipmentFilters } from '../../../types/Equipment';
 import EquipmentFiltersComponent from './EquipmentFilters';
 import EquipmentActions from './EquipmentActions';
@@ -19,26 +19,46 @@ const EquipmentList: React.FC = () => {
   });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingEquipmentId, setEditingEquipmentId] = useState<number | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // New state to force data reload
+
+  const loadEquipment = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchEquipment(filters);
+      setEquipment(data);
+    } catch (error) {
+      console.error('Error al cargar equipos:', error);
+      alert(`Error al cargar equipos: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, refreshTrigger]); // Add refreshTrigger to dependencies
 
   useEffect(() => {
-    const loadEquipment = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchEquipment(filters);
-        setEquipment(data);
-      } catch (error) {
-        console.error('Error al cargar equipos:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadEquipment();
-  }, [filters]);
+  }, [loadEquipment, refreshTrigger]); // Add refreshTrigger to dependencies
 
   const handleAddEquipment = () => setIsCreateModalOpen(true);
-  const handleCreateSuccess = () => setFilters({ search: '', tipo: '', estado_equipo: '', estado: '' });
+  const handleCreateSuccess = () => {
+    loadEquipment(); // Reload all equipment after creation
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
   const handleEdit = (id: number) => setEditingEquipmentId(id);
-  const handleUpdateSuccess = () => setFilters(prev => ({ ...prev }));
+  const handleUpdateSuccess = () => {
+    loadEquipment(); // Reload all equipment after update
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
+
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await toggleEquipmentStatus(id);
+      loadEquipment(); // Reload equipment to reflect the status change
+      setRefreshTrigger(prev => prev + 1); // Trigger refresh
+    } catch (error) {
+      console.error('Error toggling equipment status:', error);
+      alert(`Error al cambiar el estado del equipo: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
 
   const formatStatus = (estado: string) => {
     return estado === 'activo'
@@ -114,7 +134,7 @@ const EquipmentList: React.FC = () => {
                       <td className="px-4 py-4 whitespace-nowrap text-base text-dashboard-text-secondary group-hover:text-white border-r border-dashboard-accent/30">{eq.ubicacion || '—'}</td>
                       <td className="px-4 py-4 whitespace-nowrap text-base border-r border-dashboard-accent/30"><div className="group-hover:scale-105 transition-transform duration-300">{formatEquipmentStatus(eq.estado_equipo)}</div></td>
                       <td className="px-4 py-4 whitespace-nowrap text-base border-r border-dashboard-accent/30"><div className="group-hover:scale-105 transition-transform duration-300">{formatStatus(eq.estado)}</div></td>
-                      <td className="px-4 py-4 whitespace-nowrap text-base"><EquipmentActions equipment={eq} onEdit={handleEdit} /></td>
+                      <td className="px-4 py-4 whitespace-nowrap text-base"><EquipmentActions equipment={eq} onEdit={handleEdit} onToggleStatus={handleToggleStatus} /></td>
                     </tr>
                   ))}
                 </tbody>

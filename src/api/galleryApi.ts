@@ -11,7 +11,8 @@ export const fetchGalleryItems = async (filters: GalleryItemFilters): Promise<Ga
   const params = new URLSearchParams();
   if (filters.search) params.append('search', filters.search);
   if (filters.categoria) params.append('categoria', filters.categoria);
-  if (filters.estado) params.append('estado', filters.estado);
+  // Always append 'estado' parameter, even if it's an empty string for 'Todos'
+  params.append('estado', filters.estado);
   const res = await api.get<GalleryItem[]>(`/gallery?${params.toString()}`);
   return res.data;
 };

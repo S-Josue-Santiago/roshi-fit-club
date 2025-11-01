@@ -43,6 +43,8 @@ const sidebarItems: SidebarItem[] = [
 interface SidebarProps {
   activeSection: string;
   onSectionChange: (section: string) => void;
+  isCollapsed: boolean; // New prop
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>; // New prop
 }
 
 // Hook para detectar el tema del dashboard
@@ -70,8 +72,7 @@ const useDashboardTheme = () => {
   return theme;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange, isCollapsed, setIsCollapsed }) => {
   const theme = useDashboardTheme();
 
   const handleItemClick = (sectionId: string) => {
@@ -152,8 +153,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange }) => 
           fixed left-0 top-0 h-full
           ${styles.sidebar} border-r-2
           overflow-y-auto custom-scrollbar shadow-2xl transition-all duration-500 z-40
-          lg:top-16 lg:h-[calc(100vh-4rem)]
-          ${isCollapsed ? 'w-20' : 'w-72'}
+          w-20 // Default width for mobile (always collapsed)
+          lg:top-16 lg:h-[calc(100vh-4rem)] // Desktop fixed position and height
+          ${isCollapsed ? 'lg:w-20' : 'lg:w-72'} // Desktop collapse/expand width
         `}
         style={{
           boxShadow: theme === 'amanecer' 

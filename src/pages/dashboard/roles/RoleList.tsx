@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchRoles } from '../../../api/roleApi';
 import { type Role } from '../../../types/Role';
 import RoleFilters from './RoleFilters';
-import RoleActions from './RoleActions';
+// import RoleActions from './RoleActions';
 import { Shield } from 'lucide-react';
 
 const RoleList: React.FC = () => {
@@ -79,12 +79,12 @@ const RoleList: React.FC = () => {
                     ">
                       ESTADO
                     </th>
-                    <th scope="col" className="
+                    {/* <th scope="col" className="
                       px-3 py-3 sm:px-4 sm:py-4 text-left text-sm sm:text-base 
                       font-black text-dashboard-text uppercase tracking-wide
                     ">
                       ACCIONES
-                    </th>
+                    </th> */}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-dashboard-accent/20">
@@ -129,11 +129,11 @@ const RoleList: React.FC = () => {
                           {formatStatus(role.estado)}
                         </div>
                       </td>
-                      <td className="
+                      {/* <td className="
                         px-3 py-4 sm:px-4 sm:py-4 whitespace-nowrap text-sm sm:text-base
                       ">
                         <RoleActions role={role} />
-                      </td>
+                      </td> */}
                     </tr>
                   ))}
                 </tbody>

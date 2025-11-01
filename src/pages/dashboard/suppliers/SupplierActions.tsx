@@ -5,7 +5,7 @@ import { Edit3, Power } from 'lucide-react';
 interface SupplierActionsProps {
   supplier: { id: number; estado: string };
   onEdit?: (id: number) => void;
-  onToggleStatus?: (id: number) => void;
+  onToggleStatus?: (id: number) => void; // Reverted to original signature
 }
 
 const SupplierActions: React.FC<SupplierActionsProps> = ({ supplier, onEdit, onToggleStatus }) => {

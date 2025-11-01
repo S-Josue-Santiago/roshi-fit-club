@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/products/ProductActions.tsx
 import React from 'react';
-import { Eye, Edit3, Power, Package } from 'lucide-react';
+import {  Edit3, Power, Package } from 'lucide-react';
 
 interface ProductActionsProps {
   product: {
@@ -17,7 +17,7 @@ interface ProductActionsProps {
 
 const ProductActions: React.FC<ProductActionsProps> = ({
   product,
-  onView,
+  // onView,
   onEdit,
   onToggleStatus,
   onManageStock,
@@ -25,7 +25,7 @@ const ProductActions: React.FC<ProductActionsProps> = ({
   return (
     <div className="flex space-x-1 sm:space-x-2">
       {/* Botón Ver Detalles */}
-      <button
+      {/* <button
         onClick={() => onView?.(product.id)}
         className="
           p-2 sm:p-2 bg-blue-600/20 text-blue-400 rounded-lg
@@ -39,7 +39,7 @@ const ProductActions: React.FC<ProductActionsProps> = ({
       >
         <Eye size={16} className="sm:w-4 sm:h-4" />
 
-      </button>
+      </button> */}
 
       {/* Botón Editar */}
       <button

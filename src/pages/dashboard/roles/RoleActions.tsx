@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/roles/RoleActions.tsx
 import React from 'react';
-import { Eye, Edit3, Power } from 'lucide-react';
+import {  Edit3, Power } from 'lucide-react';
 
 interface RoleActionsProps {
   role: {
@@ -12,20 +12,7 @@ interface RoleActionsProps {
 const RoleActions: React.FC<RoleActionsProps> = ({ role }) => {
   return (
     <div className="flex space-x-1 sm:space-x-2">
-      {/* Botón Ver Detalles */}
-      <button
-        className="
-          p-2 sm:p-2 bg-blue-600/20 text-blue-400 rounded-lg
-          hover:bg-blue-600 hover:text-white
-          border border-blue-600/30 hover:border-blue-400
-          transition-all duration-300 transform hover:scale-110
-          group relative
-        "
-        title="Ver detalles"
-      >
-        <Eye size={16} className="sm:w-4 sm:h-4" />
 
-      </button>
 
       {/* Botón Editar */}
       <button

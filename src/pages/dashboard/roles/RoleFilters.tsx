@@ -87,7 +87,7 @@ const RoleFilters: React.FC<RoleFiltersProps> = ({ onFilterChange, onAddRole }) 
             text-white font-bold rounded-xl hover:from-purple-700 hover:to-purple-800
             transition-all duration-300 transform hover:scale-105 hover:shadow-2xl
             border-2 border-purple-500/30 flex items-center justify-center gap-2
-            group
+            group hidden
           "
         >
           <ShieldPlus size={20} className="group-hover:scale-110 transition-transform" />

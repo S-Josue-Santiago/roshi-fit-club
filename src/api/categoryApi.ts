@@ -5,7 +5,8 @@ import type { Category, CategoryFilters } from '../types/Category';
 export const fetchCategories = async (filters: CategoryFilters): Promise<Category[]> => {
   const params = new URLSearchParams();
   if (filters.search) params.append('search', filters.search);
-  if (filters.estado) params.append('estado', filters.estado);
+  // Always append 'estado' parameter, even if it's an empty string for 'Todos'
+  params.append('estado', filters.estado);
   const res = await api.get<Category[]>(`/categories?${params.toString()}`);
   return res.data;
 };

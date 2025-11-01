@@ -16,7 +16,7 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({ planId, onClose, onUpdate
     descripcion: '',
     precio_q: '',
     duracion_dias: '',
-    beneficios: '',
+    beneficios: [] as { name: string; value: boolean; }[], // Change to array of objects
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
@@ -32,10 +32,13 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({ planId, onClose, onUpdate
           descripcion: plan.descripcion || '',
           precio_q: plan.precio_q.toString(),
           duracion_dias: plan.duracion_dias.toString(),
-          beneficios: plan.beneficios ? JSON.stringify(plan.beneficios) : '',
+          beneficios: plan.beneficios
+            ? Object.entries(plan.beneficios).map(([name, value]) => ({ name, value: value as boolean }))
+            : [],
         });
         setCurrentImage(plan.imagen);
       } catch (err: any) {
+        console.error("Error al cargar el plan:", err);
         setError(err.response?.data?.message || 'Error al cargar el plan.');
       } finally {
         setLoading(false);
@@ -46,6 +49,27 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({ planId, onClose, onUpdate
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleBenefitNameChange = (index: number, newName: string) => {
+    const newBenefits = [...formData.beneficios];
+    newBenefits[index].name = newName;
+    setFormData({ ...formData, beneficios: newBenefits });
+  };
+
+  const handleBenefitValueChange = (index: number, newValue: boolean) => {
+    const newBenefits = [...formData.beneficios];
+    newBenefits[index].value = newValue;
+    setFormData({ ...formData, beneficios: newBenefits });
+  };
+
+  const handleAddBenefit = () => {
+    setFormData({ ...formData, beneficios: [...formData.beneficios, { name: '', value: true }] });
+  };
+
+  const handleRemoveBenefit = (index: number) => {
+    const newBenefits = formData.beneficios.filter((_, i) => i !== index);
+    setFormData({ ...formData, beneficios: newBenefits });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +96,7 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({ planId, onClose, onUpdate
         precio_q: parseFloat(formData.precio_q),
         duracion_dias: parseInt(formData.duracion_dias),
         imagen: imagen || undefined,
-        beneficios: formData.beneficios || undefined,
+        beneficios: JSON.stringify(formData.beneficios.reduce((acc, benefit) => ({ ...acc, [benefit.name]: benefit.value }), {})),
       });
 
       onUpdate();
@@ -145,16 +169,49 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({ planId, onClose, onUpdate
               <input name="duracion_dias" type="number" value={formData.duracion_dias} onChange={handleChange} required className="w-full p-3 bg-dashboard-bg text-dashboard-text rounded-xl border-2 border-dashboard-accent/50 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20" />
             </div>
           </div>
+
           <div>
-            <label className="text-sm font-bold text-dashboard-text mb-2 flex items-center gap-2"><List size={16} className="text-teal-400" />BENEFICIOS (JSON)</label>
-            <textarea
-              name="beneficios"
-              value={formData.beneficios}
-              onChange={handleChange}
-              rows={3}
-              className="w-full p-3 bg-dashboard-bg text-dashboard-text rounded-xl border-2 border-dashboard-accent/50 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 resize-vertical font-mono text-xs"
-              placeholder='{ "acceso_gimnasio": true, "clases_grupales": false }'
-            />
+            <label className="text-sm font-bold text-dashboard-text mb-2 flex items-center gap-2"><List size={16} className="text-teal-400" />BENEFICIOS</label>
+            <div className="space-y-3">
+              {formData.beneficios.map((benefit, index) => (
+                <div key={index} className="flex items-center gap-3 bg-dashboard-accent/10 p-3 rounded-xl border border-dashboard-accent/30">
+                  <input
+                    type="text"
+                    value={benefit.name}
+                    onChange={(e) => handleBenefitNameChange(index, e.target.value)}
+                    placeholder="Nombre del beneficio"
+                    className="flex-grow p-2 bg-dashboard-bg text-dashboard-text rounded-lg border border-dashboard-accent/50 focus:border-teal-500 focus:ring-1 focus:ring-teal-500/20"
+                  />
+                  <label className="flex items-center cursor-pointer">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={benefit.value}
+                        onChange={(e) => handleBenefitValueChange(index, e.target.checked)}
+                      />
+                      <div className="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-teal-500/50 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-600"></div>
+                    </div>
+                    <span className="ml-3 text-sm font-medium text-dashboard-text">{benefit.value ? 'Activo' : 'Inactivo'}</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveBenefit(index)}
+                    className="p-2 text-red-400 hover:text-white hover:bg-red-600/20 rounded-lg transition-all duration-300 transform hover:scale-110"
+                    title="Eliminar beneficio"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={handleAddBenefit}
+                className="w-full p-3 bg-teal-600/20 text-teal-300 font-bold rounded-xl border border-teal-600/30 hover:bg-teal-600 hover:text-white transition-all duration-300"
+              >
+                + AGREGAR BENEFICIO
+              </button>
+            </div>
           </div>
 
           <div className="border-t border-dashboard-accent/50 pt-4">
@@ -222,37 +279,3 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({ planId, onClose, onUpdate
 };
 
 export default EditPlanModal;
-
-/*
-          <div>
-            <label className="block text-sm text-dashboard-text-secondary mb-1">
-              Nueva imagen (opcional)
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full p-2 bg-dashboard-bg text-dashboard-text rounded border border-dashboard-accent"
-            />
-          </div>
-
-          <div className="flex justify-end space-x-3 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-dashboard-text hover:text-dashboard-primary">
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-dashboard-primary text-dashboard-bg font-semibold rounded hover:bg-dashboard-secondary transition-colors"
-            >
-              {loading ? 'Guardando...' : 'Guardar Cambios'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-export default EditPlanModal;
-*/

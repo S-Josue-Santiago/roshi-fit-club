@@ -12,11 +12,12 @@ export const fetchPlansForRegistration = async (): Promise<Plan[]> => {
   return res.data;
 };
 
-
-export const fetchPlansWithActiveUsers = async (filters: PlanFilters): Promise<Plan[]> => {
+export const fetchPlans = async (filters: PlanFilters): Promise<Plan[]> => {
   const params = new URLSearchParams();
   if (filters.search) params.append('search', filters.search);
-  const res = await api.get<Plan[]>(`/plans/with-active-users?${params.toString()}`);
+  // Always append 'estado' parameter, even if it's an empty string for 'Todos'
+  if (filters.estado) params.append('estado', filters.estado);
+  const res = await api.get<Plan[]>(`/plans?${params.toString()}`);
   return res.data;
 };
 
@@ -47,4 +48,13 @@ export const updatePlan = async (id: number, data: {
 }): Promise<Plan> => {
   const res = await api.patch<Plan>(`/plans/${id}`, data);
   return res.data;
+};
+
+export const togglePlanStatus = async (id: number): Promise<Plan> => {
+  const res = await api.post<Plan>(`/plans/${id}/toggle-status`);
+  return res.data;
+};
+
+export const deletePlan = async (id: number): Promise<void> => {
+  await api.delete(`/plans/${id}`);
 };

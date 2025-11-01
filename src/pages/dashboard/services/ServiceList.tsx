@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/services/ServiceList.tsx
-import React, { useState, useEffect } from 'react';
-import { fetchServices } from '../../../api/serviceApi';
+import React, { useState, useEffect, useCallback } from 'react';
+import { fetchServices, toggleServiceStatus } from '../../../api/serviceApi';
 import type { Service, ServiceFilters } from '../../../types/Service';
 import ServiceFiltersComponent from './ServiceFilters';
 import ServiceActions from './ServiceActions';
@@ -17,26 +17,46 @@ const ServiceList: React.FC = () => {
   });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingServiceId, setEditingServiceId] = useState<number | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // New state to force data reload
+
+  const loadServices = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchServices(filters);
+      setServices(data);
+    } catch (error) {
+      console.error('Error al cargar servicios:', error);
+      alert(`Error al cargar servicios: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, refreshTrigger]); // Add refreshTrigger to dependencies
 
   useEffect(() => {
-    const loadServices = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchServices(filters);
-        setServices(data);
-      } catch (error) {
-        console.error('Error al cargar servicios:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadServices();
-  }, [filters]);
+  }, [loadServices, refreshTrigger]); // Add refreshTrigger to dependencies
 
   const handleAddService = () => setIsCreateModalOpen(true);
-  const handleCreateSuccess = () => setFilters({ search: '', estado: '' });
+  const handleCreateSuccess = () => {
+    loadServices(); // Reload all services after creation
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
   const handleEdit = (id: number) => setEditingServiceId(id);
-  const handleUpdateSuccess = () => setFilters(prev => ({ ...prev }));
+  const handleUpdateSuccess = () => {
+    loadServices(); // Reload all services after update
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
+
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await toggleServiceStatus(id);
+      loadServices(); // Reload services to reflect the status change
+      setRefreshTrigger(prev => prev + 1); // Trigger refresh
+    } catch (error) {
+      console.error('Error toggling service status:', error);
+      alert(`Error al cambiar el estado del servicio: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
 
   const formatStatus = (estado: string) => {
     return estado === 'activo'
@@ -132,6 +152,7 @@ const ServiceList: React.FC = () => {
                         <ServiceActions
                           service={service}
                           onEdit={handleEdit}
+                          onToggleStatus={handleToggleStatus}
                         />
                       </td>
                     </tr>

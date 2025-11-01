@@ -13,6 +13,7 @@
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@prisma/client": "^6.16.3",
+    "@reach/dialog": "^0.18.0",
     "@react-spring/web": "^10.0.3",
     "@react-three/drei": "^10.7.6",
     "@react-three/fiber": "^9.4.0",
@@ -46,10 +47,10 @@
     "globals": "^16.4.0",
     "nodemon": "^3.1.10",
     "prisma": "^6.16.3",
+    "serve": "^14.2.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.44.0",
-    "vite": "^7.1.7",
-    "serve": "^14.2.0"
+    "vite": "^7.1.7"
   },
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "main": "eslint.config.js",

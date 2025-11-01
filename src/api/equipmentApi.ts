@@ -15,7 +15,8 @@ export const fetchEquipment = async (filters: EquipmentFilters): Promise<Equipme
   if (filters.search) params.append('search', filters.search);
   if (filters.tipo) params.append('tipo', filters.tipo);
   if (filters.estado_equipo) params.append('estado_equipo', filters.estado_equipo);
-  if (filters.estado) params.append('estado', filters.estado);
+  // Always append 'estado' parameter, even if it's an empty string for 'Todos'
+  params.append('estado', filters.estado);
   const res = await api.get<Equipment[]>(`/equipment?${params.toString()}`);
   return res.data;
 };

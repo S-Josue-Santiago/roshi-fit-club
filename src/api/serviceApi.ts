@@ -12,7 +12,8 @@ export const fetchServices = async (filters: ServiceFilters): Promise<Service[]>
   const params = new URLSearchParams();
   if (filters.search) params.append('search', filters.search);
   // if (filters.tipo_servicio) params.append('tipo_servicio', filters.tipo_servicio);
-  if (filters.estado) params.append('estado', filters.estado);
+  // Always append 'estado' parameter, even if it's an empty string for 'Todos'
+  params.append('estado', filters.estado);
   const res = await api.get<Service[]>(`/services?${params.toString()}`);
   return res.data;
 };

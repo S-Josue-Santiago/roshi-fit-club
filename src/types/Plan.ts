@@ -9,6 +9,7 @@ export interface Plan {
   duracion_dias: number;
   imagen: string | null;
   usuarios_activos: number;
+  estado: string; // Add estado field
 }
 
 export interface PlanDetail {
@@ -23,6 +24,7 @@ export interface PlanDetail {
 
 export interface PlanFilters {
   search: string;
+  estado?: string; // Add estado filter
 }
 
 export interface CreatePlanData {

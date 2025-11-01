@@ -45,17 +45,21 @@ export const getActivePlansForRegistration = async (_req: Request, res: Response
 //administrador
 
 // 1. LISTAR PLANES CON CONTEO DE USUARIOS ACTIVOS
-export const getPlansWithActiveUsers = async (_req: Request, res: Response) => {
+export const getAllPlans = async (_req: Request, res: Response) => {
   try {
-    const { search } = _req.query;
+    const { search, estado } = _req.query;
 
     const where: any = {};
     if (search && String(search).trim() !== '') {
       const term = String(search).trim();
       where.OR = [
-        { nombre: { contains: term } },
-        { descripcion: { not: null, contains: term } }
+        { nombre: { contains: term, mode: 'insensitive' } },
+        { descripcion: { not: null, contains: term, mode: 'insensitive' } }
       ];
+    }
+
+    if (estado && String(estado).trim() !== '') {
+      where.estado = String(estado).trim();
     }
 
     // Obtener planes con conteo de usuarios activos
@@ -67,6 +71,7 @@ export const getPlansWithActiveUsers = async (_req: Request, res: Response) => {
         precio_q: true,
         duracion_dias: true,
         imagen: true,
+        estado: true, // Include estado in the selection
       },
       orderBy: { nombre: 'asc' }
     });
@@ -167,6 +172,35 @@ export const updatePlan = async (req: Request, res: Response) => {
     res.json({ message: 'Plan actualizado.', plan: updated });
   } catch (error) {
     console.error('Error al actualizar plan:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// 5. TOGGLE PLAN STATUS
+export const togglePlanStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const planId = parseInt(id);
+
+    const existingPlan = await prisma.planes_suscripcion.findUnique({
+      where: { id: planId },
+    });
+
+    if (!existingPlan) {
+      return res.status(404).json({ message: 'Plan no encontrado.' });
+    }
+
+    const newStatus = existingPlan.estado === 'activo' ? 'inactivo' : 'activo';
+
+    const updatedPlan = await prisma.planes_suscripcion.update({
+      where: { id: planId },
+      data: { estado: newStatus },
+      select: { id: true, nombre: true, estado: true },
+    });
+
+    res.json({ message: `Plan ${updatedPlan.nombre} ahora está ${updatedPlan.estado}.`, plan: updatedPlan });
+  } catch (error) {
+    console.error('Error al cambiar estado del plan:', error);
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };

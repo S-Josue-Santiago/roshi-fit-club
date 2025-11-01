@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/suppliers/SupplierList.tsx
-import React, { useState, useEffect } from 'react';
-import { fetchSuppliers } from '../../../api/supplierApi';
+import React, { useState, useEffect, useCallback } from 'react';
+import { fetchSuppliers, toggleSupplierStatus } from '../../../api/supplierApi';
 import { type Supplier, type SupplierFilters } from '../../../types/Supplier';
 import SupplierFiltersComponent from './SupplierFilters';
 import SupplierActions from './SupplierActions';
@@ -15,25 +15,41 @@ const SupplierList: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingSupplierId, setEditingSupplierId] = useState<number | null>(null);
 
-  useEffect(() => {
-    const loadSuppliers = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchSuppliers(filters);
-        setSuppliers(data);
-      } catch (error) {
-        console.error('Error al cargar proveedores:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadSuppliers();
+  const loadSuppliers = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchSuppliers(filters);
+      setSuppliers(data);
+    } catch (error) {
+      console.error('Error al cargar proveedores:', error);
+      alert(`Error al cargar proveedores: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+    }
   }, [filters]);
 
+  useEffect(() => {
+    loadSuppliers();
+  }, [loadSuppliers]);
+
   const handleAddSupplier = () => setIsCreateModalOpen(true);
-  const handleCreateSuccess = () => setFilters({ search: '', estado: '' });
+  const handleCreateSuccess = () => {
+    loadSuppliers(); // Reload all suppliers after creation
+  }
   const handleEdit = (id: number) => setEditingSupplierId(id);
-  const handleUpdateSuccess = () => setFilters(prev => ({ ...prev }));
+  const handleUpdateSuccess = () => {
+    loadSuppliers(); // Reload all suppliers after update
+  }
+
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await toggleSupplierStatus(id);
+      loadSuppliers(); // Reload suppliers to reflect the status change
+    } catch (error) {
+      console.error('Error toggling supplier status:', error);
+      alert(`Error al cambiar el estado del proveedor: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
 
   const formatStatus = (estado: string) => {
     return estado === 'activo' 
@@ -181,6 +197,7 @@ const SupplierList: React.FC = () => {
                         <SupplierActions
                           supplier={supplier}
                           onEdit={handleEdit}
+                          onToggleStatus={handleToggleStatus} // Pass the new handler
                         />
                       </td>
                     </tr>

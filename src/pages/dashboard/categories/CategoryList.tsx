@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/categories/CategoryList.tsx
-import React, { useState, useEffect } from 'react';
-import { fetchCategories } from '../../../api/categoryApi';
+import React, { useState, useEffect, useCallback } from 'react';
+import { fetchCategories, toggleCategoryStatus } from '../../../api/categoryApi';
 import { type Category, type CategoryFilters } from '../../../types/Category';
 import CategoryFiltersComponent from './CategoryFilters';
 import CategoryActions from './CategoryActions';
@@ -14,26 +14,46 @@ const CategoryList: React.FC = () => {
   const [filters, setFilters] = useState<CategoryFilters>({ search: '', estado: '' });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // New state to force data reload
+
+  const loadCategories = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchCategories(filters);
+      setCategories(data);
+    } catch (error) {
+      console.error('Error al cargar categorías:', error);
+      alert(`Error al cargar categorías: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, refreshTrigger]); // Add refreshTrigger to dependencies
 
   useEffect(() => {
-    const loadCategories = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchCategories(filters);
-        setCategories(data);
-      } catch (error) {
-        console.error('Error al cargar categorías:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadCategories();
-  }, [filters]);
+  }, [loadCategories, refreshTrigger]); // Add refreshTrigger to dependencies
 
   const handleAddCategory = () => setIsCreateModalOpen(true);
-  const handleCreateSuccess = () => setFilters({ search: '', estado: '' });
+  const handleCreateSuccess = () => {
+    loadCategories(); // Reload all categories after creation
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
   const handleEdit = (id: number) => setEditingCategoryId(id);
-  const handleUpdateSuccess = () => setFilters(prev => ({ ...prev }));
+  const handleUpdateSuccess = () => {
+    loadCategories(); // Reload all categories after update
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
+
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await toggleCategoryStatus(id);
+      loadCategories(); // Reload categories to reflect the status change
+      setRefreshTrigger(prev => prev + 1); // Trigger refresh
+    } catch (error) {
+      console.error('Error toggling category status:', error);
+      alert(`Error al cambiar el estado de la categoría: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
 
   const formatStatus = (estado: string) => {
     const statusMap: Record<string, { color: string; bg: string; text: string }> = {
@@ -100,6 +120,7 @@ const CategoryList: React.FC = () => {
                         <CategoryActions
                           category={category}
                           onEdit={handleEdit}
+                          onToggleStatus={handleToggleStatus} // Pass the new handler
                         />
                       </td>
                     </tr>

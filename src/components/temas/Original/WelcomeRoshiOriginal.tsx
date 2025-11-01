@@ -62,7 +62,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
       </section>
 
       {/* Sección: Servicios */}
-      <section id="servicios" className="h-screen flex items-center py-32 px-4 relative">
+      <section id="servicios" className="min-h-[100vh] flex items-center py-24 md:py-32 lg:py-40 px-4 relative">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black to-transparent z-10"></div>
         <div className="container mx-auto text-center relative z-10">
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-yellow-500 mb-6 tracking-wider " 
@@ -90,7 +90,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
       </section>
       
             {/* Sección: Planes */}
-      <section id="planes" className="h-screen flex items-center py-150 px-4 relative">
+      <section id="planes" className="min-h-[100vh] flex items-center py-24 md:py-32 lg:py-40 px-4 relative">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black to-transparent"></div>
         <div className="container mx-auto text-center relative z-10">
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-yellow-500 mb-6 tracking-wider " 
@@ -119,7 +119,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
 
 
       {/* Sección: Productos */}
-      <section id="productos" className="h-screen flex items-center py-150 px-4 relative">
+      <section id="productos" className="min-h-[100vh] flex items-center py-24 md:py-32 lg:py-40 px-4 relative">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-transparent"></div>
         <div className="container mx-auto text-center relative z-10">
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-yellow-500 mb-6 tracking-wider " 
@@ -147,7 +147,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
       </section>
 
       {/* Sección: Equipos */}
-      <section id="equipos" className="h-screen flex items-center py-40 px-4 relative">
+      <section id="equipos" className="min-h-[100vh] flex items-center py-24 md:py-32 lg:py-40 px-4 relative">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-transparent"></div>
         <div className="container mx-auto text-center relative z-10">
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-yellow-500 mb-6 tracking-wider " 
@@ -175,7 +175,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
       </section>
 
       {/* Sección: Galería */}
-      <section id="galeria" className="h-screen flex items-center py-40 px-4 relative">
+      <section id="galeria" className="min-h-[100vh] flex items-center py-24 md:py-32 lg:py-40 px-4 relative">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-transparent"></div>
         <div className="container mx-auto text-center relative z-10">
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-yellow-500 mb-6 tracking-wider " 
@@ -203,7 +203,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
       </section>
 
       {/* Sección: Testimonios */}
-      <section id="testimonios" className="h-screen flex items-center py-40 px-4 relative">
+      <section id="testimonios" className="min-h-[100vh] flex items-center py-24 md:py-32 lg:py-40 px-4 relative">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-transparent"></div>
         <div className="container mx-auto text-center relative z-10">
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-yellow-500 mb-6 tracking-wider " 
@@ -226,7 +226,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
       </section>
 
       {/* Sección: Horarios */}
-      <section id="horarios" className="h-screen flex items-center py-40 px-4 relative">
+      <section id="horarios" className="min-h-[100vh] flex items-center py-24 md:py-32 lg:py-40 px-4 relative">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-transparent"></div>
         <div className="container mx-auto text-center relative z-10">
           <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-yellow-500 mb-6 tracking-wider " 
@@ -253,7 +253,7 @@ const WelcomeRoshiOriginal: React.FC = () => {
       </section>
 
       {/* Sección: Contacto */}
-      <section id="contacto" className="relative h-screen flex items-center py-40">
+      <section id="contacto" className="relative min-h-[100vh] flex items-center py-24 md:py-32 lg:py-40">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-transparent"></div>
         <div className="w-full">
           <ContactSection />

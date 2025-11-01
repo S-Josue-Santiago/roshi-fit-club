@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/subscriptions/PlansList.tsx
-import React, { useState, useEffect } from 'react';
-import { fetchPlansWithActiveUsers } from '../../../api/planApi';
+import React, { useState, useEffect, useCallback } from 'react';
+import { fetchPlans, togglePlanStatus } from '../../../api/planApi';
 import type { Plan, PlanFilters } from '../../../types/Plan';
 import PlansFiltersComponent from './PlansFilters';
 import PlanActions from './PlanActions';
@@ -14,26 +14,46 @@ const PlansList: React.FC = () => {
   const [filters, setFilters] = useState<PlanFilters>({ search: '' });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // New state to force data reload
+
+  const loadPlans = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchPlans(filters);
+      setPlans(data);
+    } catch (error) {
+      console.error('Error al cargar planes:', error);
+      alert(`Error al cargar planes: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, refreshTrigger]); // Add refreshTrigger to dependencies
 
   useEffect(() => {
-    const loadPlans = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchPlansWithActiveUsers(filters);
-        setPlans(data);
-      } catch (error) {
-        console.error('Error al cargar planes:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadPlans();
-  }, [filters]);
+  }, [loadPlans, refreshTrigger]); // Add refreshTrigger to dependencies
 
   const handleAddPlan = () => setIsCreateModalOpen(true);
-  const handleCreateSuccess = () => setFilters({ search: '' });
+  const handleCreateSuccess = () => {
+    loadPlans(); // Reload all plans after creation
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
   const handleEdit = (id: number) => setEditingPlanId(id);
-  const handleUpdateSuccess = () => setFilters(prev => ({ ...prev }));
+  const handleUpdateSuccess = () => {
+    loadPlans(); // Reload all plans after update
+    setRefreshTrigger(prev => prev + 1); // Trigger refresh
+  }
+
+  const handleToggleStatus = async (id: number) => {
+    try {
+      await togglePlanStatus(id);
+      loadPlans(); // Reload plans to reflect the status change
+      setRefreshTrigger(prev => prev + 1); // Trigger refresh
+    } catch (error) {
+      console.error('Error toggling plan status:', error);
+      alert(`Error al cambiar el estado del plan: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
 
   const formatPrice = (precio: number) => {
     return new Intl.NumberFormat('es-GT', {
@@ -108,7 +128,7 @@ const PlansList: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm">
-                        <PlanActions plan={plan} onEdit={handleEdit} />
+                        <PlanActions plan={plan} onEdit={handleEdit} onToggleStatus={handleToggleStatus} />
                       </td>
                     </tr>
                   ))}
