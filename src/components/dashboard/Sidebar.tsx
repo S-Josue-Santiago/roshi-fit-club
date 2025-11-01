@@ -13,6 +13,7 @@ import {
   CreditCard,
   Package,
   // TrendingUp, // Fix: Removed unused import
+  TrendingUp,
   ChevronDown,
   ChevronRight
 } from 'lucide-react';
@@ -36,7 +37,8 @@ const sidebarItems: SidebarItem[] = [
   { id: 'suscripciones', name: 'SUSCRIPCIONES', icon: <CreditCard size={20} /> },
   { id: 'ventas', name: 'VENTAS', icon: <Package size={20} /> },
   { id: 'equipos', name: 'EQUIPOS', icon: <Dumbbell size={20} /> },
-  // { id: 'reportes', name: 'REPORTES', icon: <TrendingUp size={20} /> },
+  { id: 'reportes', name: 'REPORTES', icon: <TrendingUp size={20} /> },
+  
   // { id: 'configuracion', name: 'CONFIGURACIÓN', icon: <Settings size={20} /> },
 ];
 

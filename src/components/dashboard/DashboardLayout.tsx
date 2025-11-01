@@ -14,17 +14,14 @@ import SubscriptionsList from '../../pages/dashboard/subscriptions/Subscriptions
 import PlansList from '../../pages/dashboard/subscriptions/PlansList';
 import SalesList from '../../pages/dashboard/sales/SalesList';
 import EquipmentList from '../../pages/dashboard/equipments/EquipmentList';
-// import ReportList from '../../pages/dashboard/reports/ReportList';
-//para settings
-// import SettingsLayout from '../../pages/dashboard/settings/SettingsLayout';
-// import GeneralSettings from '../../pages/dashboard/settings/GeneralSettings';
-// import EmailSettings from '../../pages/dashboard/settings/EmailSettings';
+import ReportList from '../../pages/dashboard/reports/ReportList';
+
 
 
 
 
 const DashboardLayout: React.FC = () => {
-  const [activeSection, setActiveSection] = useState('dashboard');
+  const [activeSection, setActiveSection] = useState('usuarios');
   const [isCollapsed, setIsCollapsed] = useState(false); // Moved from Sidebar
 
   // Handle window resize to adjust sidebar state (Moved from Sidebar)
@@ -90,18 +87,11 @@ const DashboardLayout: React.FC = () => {
         );
 
 
-      // case 'reportes':
-      //   return <ReportList />;
+      case 'reportes':
+        return <ReportList />;
 
 
-      // case 'configuracion':
-      //   return (
-      //     <SettingsLayout>
-      //       {activeSubSection === 'general' && <GeneralSettings />}
-      //       {/* {activeSubSection === 'email' && <EmailSettings />} */}
-      //       {/* ... */}
-      //     </SettingsLayout>
-      //   );
+
 
       default:
         if (activeSection === 'ventas') return <SalesList />;
