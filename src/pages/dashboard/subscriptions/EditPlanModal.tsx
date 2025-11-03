@@ -33,7 +33,7 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({ planId, onClose, onUpdate
           precio_q: plan.precio_q.toString(),
           duracion_dias: plan.duracion_dias.toString(),
           beneficios: plan.beneficios
-            ? Object.entries(plan.beneficios).map(([name, value]) => ({ name, value: value as boolean }))
+            ? Object.entries(plan.beneficios).map(([name, value]) => ({ name, value: !!value }))
             : [],
         });
         setCurrentImage(plan.imagen);

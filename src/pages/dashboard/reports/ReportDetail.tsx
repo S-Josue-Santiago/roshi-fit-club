@@ -21,11 +21,11 @@ import {
   fetchEquipmentReport
 } from '../../../api/reportApi';
 import type {
-  SubscriptionReportItem,
-  ProductReportItem,
+  SubscriptionReportData,
+  ProductReportData,
   // UserReport,
-  ClassReportItem,
-  EquipmentReportItem
+  ClassReportData,
+  EquipmentReportData
 } from '../../../types/Report';
 
 ChartJS.register(
@@ -105,7 +105,7 @@ const ReportDetail: React.FC<ReportDetailProps> = ({ reportType, onClose }) => {
 
     switch (reportType) {
       case 'subscriptions':
-        const subsData = data as SubscriptionReportItem[];
+        const subsData = data as SubscriptionReportData[];
         return (
           <Bar
             data={{
@@ -128,7 +128,7 @@ const ReportDetail: React.FC<ReportDetailProps> = ({ reportType, onClose }) => {
         );
 
       case 'products':
-        const productsData = data as ProductReportItem[];
+        const productsData = data as ProductReportData[];
         return (
           <Bar
             data={{
@@ -144,7 +144,7 @@ const ReportDetail: React.FC<ReportDetailProps> = ({ reportType, onClose }) => {
         );
 
       case 'classes':
-        const classesData = data as ClassReportItem[];
+        const classesData = data as ClassReportData[];
         return (
           <Line
             data={{
@@ -181,7 +181,7 @@ const ReportDetail: React.FC<ReportDetailProps> = ({ reportType, onClose }) => {
               </tr>
             </thead>
             <tbody>
-              {(data as SubscriptionReportItem[]).map((item, i) => (
+              {(data as SubscriptionReportData[]).map((item, i) => (
                 <tr key={i} className="border-b border-dashboard-accent/50">
                   <td>{item.plan}</td>
                   <td>{item.nuevas}</td>
@@ -204,7 +204,7 @@ const ReportDetail: React.FC<ReportDetailProps> = ({ reportType, onClose }) => {
               </tr>
             </thead>
             <tbody>
-              {(data as ProductReportItem[]).map((item, i) => (
+              {(data as ProductReportData[]).map((item, i) => (
                 <tr key={i} className="border-b border-dashboard-accent/50">
                   <td>{item.nombre}</td>
                   <td>{item.unidades}</td>
@@ -227,7 +227,7 @@ const ReportDetail: React.FC<ReportDetailProps> = ({ reportType, onClose }) => {
               </tr>
             </thead>
             <tbody>
-              {(data as EquipmentReportItem[]).map((item, i) => (
+              {(data as EquipmentReportData[]).map((item, i) => (
                 <tr key={i} className="border-b border-dashboard-accent/50">
                   <td>{item.nombre}</td>
                   <td>{item.estado_equipo}</td>
