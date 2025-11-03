@@ -8,9 +8,11 @@ interface CheckoutFormProps {
   usuarioId: number;
   onBack: () => void;
   onCheckout: (data: any) => void;
+  initialTotal: number; // Nuevo: total del carrito sin envío
+  deliveryFee: number; // Nuevo: costo de envío ficticio
 }
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onCheckout }) => {
+const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onCheckout, initialTotal, deliveryFee }) => {
   const [formData, setFormData] = useState({
     tipo_entrega: 'retiro' as 'retiro' | 'domicilio',
     direccion_entrega: '',
@@ -39,6 +41,18 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
     };
     loadPaymentMethods();
   }, []);
+
+  // Estado para el total que se muestra al usuario
+  const [displayTotal, setDisplayTotal] = useState(initialTotal);
+
+  // Calcular el total a mostrar cada vez que el tipo de entrega o el total inicial cambian
+  useEffect(() => {
+    let currentTotal = initialTotal;
+    if (formData.tipo_entrega === 'domicilio') {
+      currentTotal += deliveryFee;
+    }
+    setDisplayTotal(currentTotal);
+  }, [formData.tipo_entrega, initialTotal, deliveryFee]);
 
   const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newMethodId = parseInt(e.target.value);
@@ -336,6 +350,24 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
                 )}
               </div>
             )}
+
+            {/* Resumen del Total */}
+            <div className="pt-4 border-t border-dashboard-accent/50 space-y-2">
+              <div className="flex justify-between text-dashboard-text">
+                <span>Subtotal:</span>
+                <span className="font-bold">Q{initialTotal.toFixed(2)}</span>
+              </div>
+              {formData.tipo_entrega === 'domicilio' && (
+                <div className="flex justify-between text-dashboard-text">
+                  <span>Costo de Envío:</span>
+                  <span className="font-bold">Q{deliveryFee.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center text-lg font-black text-dashboard-text mt-3 pt-3 border-t border-dashboard-accent/50">
+                <span>Total a Pagar:</span>
+                <span className="text-green-500 text-2xl">Q{displayTotal.toFixed(2)}</span>
+              </div>
+            </div>
 
             {/* Botones */}
             <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-dashboard-accent/50">

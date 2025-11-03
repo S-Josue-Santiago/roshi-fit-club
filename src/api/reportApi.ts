@@ -1,6 +1,6 @@
 // roshi_fit/src/api/reportApi.ts
 import api from './axiosInstance';
-import { SubscriptionReportData, ProductReportData, UserReportData, ClassReportData, TrainingReportData, SystemActivityReportData, FinancialReportData } from '../types/Report';
+import type { SubscriptionReportData, ProductReportData, UserReportData, ClassReportData, TrainingReportData, SystemActivityReportData, FinancialReportData, EquipmentReportData } from '../types/Report';
 
 export const fetchSubscriptionReport = async (): Promise<SubscriptionReportData[]> => {
   const res = await api.get<SubscriptionReportData[]>('/reports/subscriptions');

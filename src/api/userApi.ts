@@ -70,8 +70,15 @@ export const updateUserProfile = async (
     foto_perfil?: string;
   }
 ) => {
-  const res = await api.patch(`/users/${userId}/profile`, data);
-  return res.data.user;
+  try {
+    console.log(`API: Updating user profile for ID: ${userId} with data:`, data); // DEBUG
+    const res = await api.patch(`/users/${userId}/profile`, data);
+    console.log('API: updateUserProfile response:', res.data); // DEBUG
+    return res.data.user;
+  } catch (error) {
+    console.error('API: Error updating user profile:', error);
+    throw error;
+  }
 };
 
 // CAMBIAR CONTRASEÑA → usa tipo inline
@@ -87,7 +94,14 @@ export const changeUserPassword = async (
 };
 
 // NUEVA FUNCIÓN
-export const fetchUserProfile = async (userId: number) => {
-  const res = await api.get(`/users/${userId}/profile`);
-  return res.data;
+export const fetchUserProfile = async (userId: number): Promise<User> => {
+  try {
+    console.log(`API: Fetching user profile for ID: ${userId}`); // DEBUG
+    const response = await api.get<User>(`/users/${userId}`);
+    console.log('API: fetchUserProfile response:', response.data); // DEBUG
+    return response.data;
+  } catch (error) {
+    console.error('API: Error fetching user profile:', error);
+    throw error;
+  }
 };

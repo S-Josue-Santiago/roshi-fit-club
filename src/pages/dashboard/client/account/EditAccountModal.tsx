@@ -98,11 +98,12 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({ user, onClose, onUp
             <div className="space-y-6">
               {/* Nombre */}
               <div>
-                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label htmlFor="nombre_completo" className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <User size={16} className="text-cyan-400" />
                   NOMBRE COMPLETO
                 </label>
                 <input
+                  id="nombre_completo"
                   name="nombre_completo"
                   value={formData.nombre_completo}
                   onChange={(e) => setFormData({ ...formData, nombre_completo: e.target.value })}
@@ -113,11 +114,12 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({ user, onClose, onUp
 
               {/* Teléfono */}
               <div>
-                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label htmlFor="telefono" className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Phone size={16} className="text-cyan-400" />
                   TELÉFONO
                 </label>
                 <input
+                  id="telefono"
                   name="telefono"
                   value={formData.telefono}
                   onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
@@ -127,12 +129,13 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({ user, onClose, onUp
 
               {/* Fecha de nacimiento */}
               <div>
-                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label htmlFor="fecha_nacimiento" className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Calendar size={16} className="text-cyan-400" />
                   FECHA DE NACIMIENTO
                 </label>
                 <input
                   type="date"
+                  id="fecha_nacimiento"
                   name="fecha_nacimiento"
                   value={formData.fecha_nacimiento}
                   onChange={(e) => setFormData({ ...formData, fecha_nacimiento: e.target.value })}
@@ -145,11 +148,12 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({ user, onClose, onUp
             <div className="space-y-6">
               {/* Género */}
               <div>
-                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label htmlFor="genero" className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <Users size={16} className="text-cyan-400" />
                   GÉNERO
                 </label>
                 <select
+                  id="genero"
                   name="genero"
                   value={formData.genero}
                   onChange={(e) => setFormData({ ...formData, genero: e.target.value })}
@@ -163,11 +167,12 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({ user, onClose, onUp
 
               {/* Dirección */}
               <div>
-                <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+                <label htmlFor="direccion" className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
                   <MapPin size={16} className="text-cyan-400" />
                   DIRECCIÓN
                 </label>
                 <textarea
+                  id="direccion"
                   name="direccion"
                   value={formData.direccion}
                   onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
@@ -205,11 +210,12 @@ const EditAccountModal: React.FC<EditAccountModalProps> = ({ user, onClose, onUp
                   </button>
                 ))}
               </div>
-              <label className=" text-sm font-bold text-dashboard-text mb-3">
+              <label htmlFor="profile_image_upload" className=" text-sm font-bold text-dashboard-text mb-3">
                 O SUBE TU PROPIA IMAGEN
               </label>
               <div className="p-4 bg-dashboard-bg rounded-xl border-2 border-dashboard-accent/50 border-dashed">
                 <input
+                  id="profile_image_upload"
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDashboardTheme } from '../../contexts/DashboardThemeContext';
-import { Bell, LogOut, Sun, Moon, User, ChevronDown } from 'lucide-react';
+import {  LogOut, Sun, Moon, User, ChevronDown } from 'lucide-react'; // Bell,
 import { useNavigate } from 'react-router-dom';
 
 // Hook para detectar el tema del dashboard
@@ -36,6 +36,8 @@ const Header: React.FC = () => {
 
   const userData = localStorage.getItem('userData');
   const user = userData ? JSON.parse(userData) : null;
+
+  console.log('Header: User data from localStorage:', user); // DEBUG
 
   const handleLogout = () => {
     localStorage.removeItem('userToken');
@@ -132,7 +134,7 @@ const Header: React.FC = () => {
 
       {/* Controles derecho - Mejorado */}
       <div className="flex items-center space-x-2 md:space-x-3">
-        {/* Botón de notificaciones */}
+        {/* Botón de notificaciones
         <button 
           className={`
             relative p-2.5 md:p-3 rounded-xl 
@@ -144,7 +146,7 @@ const Header: React.FC = () => {
         >
           <Bell size={20} className={styles.button.icon} />
           <span className={`absolute top-1.5 right-1.5 w-2.5 h-2.5 ${styles.notificationBadge} rounded-full animate-pulse shadow-lg`}></span>
-        </button>
+        </button> */}
 
         {/* Información del usuario - Mejorado */}
         {user && (
@@ -164,7 +166,7 @@ const Header: React.FC = () => {
               </div>
               <div className="hidden md:block text-left">
                 <p className={`${styles.userName} font-bold text-sm leading-tight`}>
-                  {user.nombre.split(' ')[0]}
+                  {user.nombre?.split(' ')[0] || 'Usuario'}
                 </p>
                 <p className={`${styles.subtitle} text-xs font-medium`}>
                   {user.tipo || 'Usuario'}

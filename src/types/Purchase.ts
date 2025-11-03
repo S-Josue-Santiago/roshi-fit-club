@@ -30,3 +30,14 @@ export interface CartResponse {
   items: CartItem[];
   total: number;
 }
+
+export interface UpdateCartItemQuantityParams {
+  usuario_id: number;
+  item_id: number; // ID del item del carrito, no del producto
+  cantidad: number;
+}
+
+export interface RemoveCartItemParams {
+  usuario_id: number;
+  item_id: number; // ID del item del carrito
+}

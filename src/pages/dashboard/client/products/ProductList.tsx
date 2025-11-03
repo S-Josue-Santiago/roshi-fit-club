@@ -6,13 +6,15 @@ import ProductCard from './ProductCard';
 import { Search, Filter, Package, Loader } from 'lucide-react';
 import { fetchCategoriesProducts } from '../../../../api/categoryApi';
 import type { Category } from '../../../../types/Category';
+import { useClientContext } from '../../../../contexts/ClientContext'; // Importar useClientContext
 
-interface ProductListProps {
-  usuarioId: number;
-  onAddToCart: () => void;
-}
+// interface ProductListProps { // Eliminado
+//   usuarioId: number;
+//   onAddToCart: () => void;
+// }
 
-const ProductList: React.FC<ProductListProps> = ({ usuarioId, onAddToCart }) => {
+const ProductList: React.FC = () => {
+  const { usuarioId, onAddToCart } = useClientContext(); // Obtener del contexto
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -75,12 +77,14 @@ const ProductList: React.FC<ProductListProps> = ({ usuarioId, onAddToCart }) => 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Búsqueda */}
           <div>
-            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+            <label htmlFor="search_product" className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
               <Search size={16} className="text-cyan-400" />
               BUSCAR PRODUCTO
             </label>
             <div className="relative">
               <input
+                id="search_product"
+                name="search_product"
                 type="text"
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
@@ -99,11 +103,13 @@ const ProductList: React.FC<ProductListProps> = ({ usuarioId, onAddToCart }) => 
 
           {/* Filtro de Categoría */}
           <div>
-            <label className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
+            <label htmlFor="filter_category" className=" text-sm font-bold text-dashboard-text mb-3 flex items-center gap-2">
               <Filter size={16} className="text-cyan-400" />
               FILTRAR POR CATEGORÍA
             </label>
             <select
+              id="filter_category"
+              name="filter_category"
               value={filters.categoria_id}
               onChange={(e) => setFilters({ ...filters, categoria_id: e.target.value })}
               className="
@@ -160,7 +166,7 @@ const ProductList: React.FC<ProductListProps> = ({ usuarioId, onAddToCart }) => 
                 <ProductCard
                   key={product.id}
                   producto={product}
-                  usuarioId={usuarioId}
+                  usuarioId={usuarioId!}
                   onAddToCart={onAddToCart}
                 />
               ))}

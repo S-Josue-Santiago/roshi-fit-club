@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/client/CartModal.tsx
 import React, { useState, useEffect } from 'react';
-import { getCart, checkout } from '../../../api/purchaseApi';
+import { getCart, checkout, updateCartItemQuantity, removeCartItem } from '../../../api/purchaseApi';
 import type { CartResponse } from '../../../types/Purchase';
 import CheckoutForm from './CheckoutForm';
 import { ShoppingCart, X, Trash2, Plus, Minus, CreditCard, AlertCircle, Package } from 'lucide-react';
@@ -56,6 +56,61 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
     };
     loadCart();
   }, [usuarioId]);
+
+  // Función para recargar el carrito
+  const refetchCart = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getCart(usuarioId);
+      setCart(data);
+    } catch (err) {
+      console.error('Error al recargar el carrito:', err);
+      setError('Error al recargar el carrito.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleIncreaseQuantity = async (itemId: number, currentQuantity: number) => {
+    try {
+      await updateCartItemQuantity({ usuario_id: usuarioId, item_id: itemId, cantidad: currentQuantity + 1 });
+      refetchCart();
+    } catch (err) {
+      console.error('Error al aumentar cantidad:', err);
+      alert('Error al aumentar la cantidad.');
+    }
+  };
+
+  const handleDecreaseQuantity = async (itemId: number, currentQuantity: number) => {
+    if (currentQuantity <= 1) {
+      // Si la cantidad es 1 o menos, preguntar si desea eliminar
+      if (window.confirm('¿Estás seguro de que quieres eliminar este producto del carrito?')) {
+        handleRemoveItem(itemId);
+      }
+      return;
+    }
+    try {
+      await updateCartItemQuantity({ usuario_id: usuarioId, item_id: itemId, cantidad: currentQuantity - 1 });
+      refetchCart();
+    } catch (err) {
+      console.error('Error al disminuir cantidad:', err);
+      alert('Error al disminuir la cantidad.');
+    }
+  };
+
+  const handleRemoveItem = async (itemId: number) => {
+    if (!window.confirm('¿Estás seguro de que quieres eliminar este producto del carrito?')) {
+      return;
+    }
+    try {
+      await removeCartItem({ usuario_id: usuarioId, item_id: itemId });
+      refetchCart();
+    } catch (err) {
+      console.error('Error al eliminar ítem:', err);
+      alert('Error al eliminar el producto del carrito.');
+    }
+  };
 
   const handleCheckout = async (checkoutData: any) => {
     try {
@@ -124,7 +179,18 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
   const styles = getStyles();
 
   if (isCheckout) {
-    return <CheckoutForm usuarioId={usuarioId} onBack={() => setIsCheckout(false)} onCheckout={handleCheckout} />;
+    // Pasa el total del carrito y el costo de envío al CheckoutForm
+    const cartTotal = cart ? cart.total : 0;
+    const deliveryCost = 35; // Costo ficticio de envío
+    return (
+      <CheckoutForm 
+        usuarioId={usuarioId} 
+        onBack={() => setIsCheckout(false)} 
+        onCheckout={handleCheckout} 
+        initialTotal={cartTotal} // Pasar el total inicial
+        deliveryFee={deliveryCost} // Pasar el costo de envío
+      />
+    );
   }
 
   return (
@@ -213,6 +279,7 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
                   {/* Controles de cantidad */}
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => handleDecreaseQuantity(item.id, item.cantidad)}
                       className={`p-2 rounded-lg border-2 transition-all duration-300 ${styles.quantityButton}`}
                       title="Disminuir cantidad"
                     >
@@ -222,6 +289,7 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
                       {item.cantidad}
                     </span>
                     <button
+                      onClick={() => handleIncreaseQuantity(item.id, item.cantidad)}
                       className={`p-2 rounded-lg border-2 transition-all duration-300 ${styles.quantityButton}`}
                       title="Aumentar cantidad"
                     >
@@ -231,6 +299,7 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
 
                   {/* Botón eliminar */}
                   <button
+                      onClick={() => handleRemoveItem(item.id)}
                     className={`p-2 rounded-lg border-2 transition-all duration-300 transform hover:scale-110 ${styles.deleteButton}`}
                     title="Eliminar producto"
                   >

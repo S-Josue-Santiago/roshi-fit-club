@@ -206,3 +206,80 @@ export const createOrder = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };
+
+// 4. ACTUALIZAR CANTIDAD DE UN ÍTEM EN EL CARRITO
+export const updateCartItemQuantity = async (req: Request, res: Response) => {
+  try {
+    const { usuario_id, item_id, cantidad } = req.body;
+
+    if (!usuario_id || !item_id || cantidad === undefined || cantidad < 0) {
+      return res.status(400).json({ message: 'Faltan datos o la cantidad es inválida.' });
+    }
+
+    const parsedUserId = parseInt(usuario_id);
+    const parsedItemId = parseInt(item_id);
+    const parsedCantidad = parseInt(cantidad);
+
+    // 1. Buscar el ítem del carrito
+    const cartItem = await prisma.carrito_compras.findFirst({
+      where: { id: parsedItemId, usuario_id: parsedUserId, estado: 'activo' },
+      include: { productos: true }
+    });
+
+    if (!cartItem) {
+      return res.status(404).json({ message: 'Ítem del carrito no encontrado o no pertenece al usuario.' });
+    }
+
+    // 2. Si la cantidad es 0, eliminar el ítem
+    if (parsedCantidad === 0) {
+      await prisma.carrito_compras.delete({
+        where: { id: parsedItemId }
+      });
+      return res.status(200).json({ message: 'Ítem eliminado del carrito.' });
+    }
+
+    // 3. Validar stock si la cantidad es mayor que 0
+    if (cartItem.productos.stock === null || cartItem.productos.stock < parsedCantidad) {
+      return res.status(400).json({ message: `Stock insuficiente para ${cartItem.productos.nombre}. Stock disponible: ${cartItem.productos.stock || 0}.` });
+    }
+
+    // 4. Actualizar la cantidad
+    await prisma.carrito_compras.update({
+      where: { id: parsedItemId },
+      data: { cantidad: parsedCantidad }
+    });
+
+    res.status(200).json({ message: 'Cantidad del ítem actualizada exitosamente.' });
+  } catch (error) {
+    console.error('Error al actualizar la cantidad del carrito:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// 5. ELIMINAR UN ÍTEM DEL CARRITO
+export const removeCartItem = async (req: Request, res: Response) => {
+  try {
+    const { usuario_id, item_id } = req.body; // DELETE requests can have body, but usually use params for IDs
+
+    if (!usuario_id || !item_id) {
+      return res.status(400).json({ message: 'Faltan datos: usuario_id, item_id.' });
+    }
+
+    const parsedUserId = parseInt(usuario_id);
+    const parsedItemId = parseInt(item_id);
+
+    // Eliminar el ítem del carrito, verificando que pertenezca al usuario
+    const deleteResult = await prisma.carrito_compras.deleteMany({
+      where: { id: parsedItemId, usuario_id: parsedUserId }
+    });
+
+    if (deleteResult.count === 0) {
+      return res.status(404).json({ message: 'Ítem del carrito no encontrado o no pertenece al usuario.' });
+    }
+
+    res.status(200).json({ message: 'Ítem eliminado del carrito exitosamente.' });
+  } catch (error) {
+    console.error('Error al eliminar ítem del carrito:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};

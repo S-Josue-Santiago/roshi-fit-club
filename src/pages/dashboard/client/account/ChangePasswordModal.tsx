@@ -203,13 +203,14 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ userId, onClo
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Contraseña actual */}
           <div>
-            <label className={`block text-sm font-bold mb-2 ${theme === 'amanecer' ? 'text-gray-700' : 'text-white'}`}>
+            <label htmlFor="currentPassword" className={`block text-sm font-bold mb-2 ${theme === 'amanecer' ? 'text-gray-700' : 'text-white'}`}>
               Contraseña Actual
             </label>
             <div className="relative">
               <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${styles.inputIcon}`} size={20} />
               <input
                 type={showCurrent ? 'text' : 'password'}
+                id="currentPassword"
                 name="currentPassword"
                 placeholder="Ingresa tu contraseña actual"
                 value={formData.currentPassword}
@@ -234,13 +235,14 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ userId, onClo
 
           {/* Nueva contraseña */}
           <div>
-            <label className={`block text-sm font-bold mb-2 ${theme === 'amanecer' ? 'text-gray-700' : 'text-white'}`}>
+            <label htmlFor="newPassword" className={`block text-sm font-bold mb-2 ${theme === 'amanecer' ? 'text-gray-700' : 'text-white'}`}>
               Nueva Contraseña
             </label>
             <div className="relative">
               <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${styles.inputIcon}`} size={20} />
               <input
                 type={showNew ? 'text' : 'password'}
+                id="newPassword"
                 name="newPassword"
                 placeholder="Mínimo 6 caracteres"
                 value={formData.newPassword}
@@ -272,13 +274,14 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ userId, onClo
 
           {/* Confirmar contraseña */}
           <div>
-            <label className={`block text-sm font-bold mb-2 ${theme === 'amanecer' ? 'text-gray-700' : 'text-white'}`}>
+            <label htmlFor="confirmPassword" className={`block text-sm font-bold mb-2 ${theme === 'amanecer' ? 'text-gray-700' : 'text-white'}`}>
               Confirmar Nueva Contraseña
             </label>
             <div className="relative">
               <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${styles.inputIcon}`} size={20} />
               <input
                 type={showConfirm ? 'text' : 'password'}
+                id="confirmPassword"
                 name="confirmPassword"
                 placeholder="Repite la nueva contraseña"
                 value={formData.confirmPassword}

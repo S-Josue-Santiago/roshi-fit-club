@@ -1,12 +1,26 @@
 // roshi_fit/src/api/settingApi.ts
 import api from './axiosInstance';
-import type { Settings } from '../types/Setting';
+import {type SiteContent } from '../types/Setting';
 
-export const fetchSettings = async (): Promise<Settings> => {
-  const res = await api.get<Settings>('/settings');
-  return res.data;
+export const fetchSiteContent = async (): Promise<SiteContent> => {
+  try {
+    const res = await api.get<SiteContent>('/settings/site-content');
+    console.log('API: fetchSiteContent response:', res.data);
+    return res.data;
+  } catch (error) {
+    console.error('API: Error fetching site content:', error);
+    throw error;
+  }
 };
 
-export const updateSetting = async (clave: string, valor: string): Promise<void> => {
-  await api.post('/settings/update', { clave, valor });
+export const updateSiteContent = async (data: SiteContent): Promise<SiteContent> => {
+  try {
+    console.log('API: updateSiteContent sending data:', data);
+    const res = await api.put<SiteContent>('/settings/site-content', data);
+    console.log('API: updateSiteContent response:', res.data);
+    return res.data;
+  } catch (error) {
+    console.error('API: Error updating site content:', error);
+    throw error;
+  }
 };

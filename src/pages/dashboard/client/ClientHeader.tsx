@@ -1,13 +1,15 @@
 // roshi_fit/src/pages/dashboard/client/ClientHeader.tsx
 import React, { useState, useEffect } from 'react';
 import { useDashboardTheme } from '../../../contexts/DashboardThemeContext';
-import { ShoppingCart, LogOut, Sun, Moon, User, ChevronDown, Package, CreditCard } from 'lucide-react';
+import { ShoppingCart, LogOut, Sun, Moon, User, ChevronDown, Package, CreditCard, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getCart } from '../../../api/purchaseApi';
 import CartModal from './CartModal';
 
 interface ClientHeaderProps {
   subscriptionStatus: string;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (isOpen: boolean) => void;
 }
 
 // Hook para detectar el tema del dashboard
@@ -35,7 +37,7 @@ const useDashboardThemeDetection = () => {
   return detectedTheme;
 };
 
-const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus }) => {
+const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus, isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const { toggleTheme } = useDashboardTheme(); // Fix: Removed 'theme' as it's not read
   const detectedTheme = useDashboardThemeDetection();
   const navigate = useNavigate();
@@ -167,24 +169,39 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus }) => {
       `}
       style={{ boxShadow: styles.headerShadow }}
     >
-      {/* Logo y Nombre */}
+      {/* Botón de hamburguesa para móviles */}
       <div className="flex items-center space-x-3">
-        <div 
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className={`
-            w-10 h-10 md:w-12 md:h-12 ${styles.logo}
-            rounded-2xl flex items-center justify-center shadow-xl
-            transform hover:scale-110 transition-all duration-300 hover:rotate-6
+            lg:hidden p-2.5 rounded-xl
+            ${styles.button.base}
+            transition-all duration-300 transform hover:scale-110
+            border-2 shadow-md hover:shadow-lg
           `}
+          title="Abrir menú"
         >
-          <span className="text-white font-black text-xl md:text-2xl">🐉</span>
-        </div>
-        <div>
-          <h1 className={`text-lg md:text-xl font-black ${styles.title} tracking-tight`}>
-            ROSHI FIT
-          </h1>
-          <p className={`text-xs ${styles.userSubtext} font-semibold`}>
-            Portal Cliente
-          </p>
+          <Menu size={20} className={styles.button.icon} />
+        </button>
+        {/* Logo y Nombre */}
+        <div className="flex items-center space-x-3 lg:ml-0">
+          <div 
+            className={`
+              w-10 h-10 md:w-12 md:h-12 ${styles.logo}
+              rounded-2xl flex items-center justify-center shadow-xl
+              transform hover:scale-110 transition-all duration-300 hover:rotate-6
+            `}
+          >
+            <span className="text-white font-black text-xl md:text-2xl">🐉</span>
+          </div>
+          <div>
+            <h1 className={`text-lg md:text-xl font-black ${styles.title} tracking-tight`}>
+              ROSHI FIT
+            </h1>
+            <p className={`text-xs ${styles.userSubtext} font-semibold`}>
+              Portal Cliente
+            </p>
+          </div>
         </div>
       </div>
 
