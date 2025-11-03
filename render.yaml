@@ -2,7 +2,7 @@ services:
   - type: web
     name: roshi-fit-club
     env: node
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --legacy-peer-deps && npm run build
     startCommand: npm start
     routes:
       - type: rewrite
