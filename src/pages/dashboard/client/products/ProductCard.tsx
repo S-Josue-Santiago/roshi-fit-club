@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/client/products/ProductCard.tsx
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus, Package, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, Package, AlertCircle } from 'lucide-react'; //, CheckCircle, TrendingUp
 import { addToCart } from '../../../../api/purchaseApi';
 
 interface ProductCardProps {
@@ -85,34 +85,34 @@ const ProductCard: React.FC<ProductCardProps> = ({ producto, usuarioId, onAddToC
     setCantidad(prev => Math.max(1, prev - 1));
   };
 
-  const getStockStatus = () => {
-    if (producto.stock === null) return { 
-      text: 'Disponible', 
-      color: theme === 'amanecer' ? 'text-green-700' : 'text-green-400', 
-      bg: theme === 'amanecer' ? 'bg-green-100' : 'bg-green-500/20',
-      border: theme === 'amanecer' ? 'border-green-400' : 'border-green-500'
-    };
-    if (producto.stock === 0) return { 
-      text: 'Agotado', 
-      color: theme === 'amanecer' ? 'text-red-700' : 'text-red-400', 
-      bg: theme === 'amanecer' ? 'bg-red-100' : 'bg-red-500/20',
-      border: theme === 'amanecer' ? 'border-red-400' : 'border-red-500'
-    };
-    if (producto.stock <= 5) return { 
-      text: `Últimas ${producto.stock}`, 
-      color: theme === 'amanecer' ? 'text-yellow-700' : 'text-yellow-400', 
-      bg: theme === 'amanecer' ? 'bg-yellow-100' : 'bg-yellow-500/20',
-      border: theme === 'amanecer' ? 'border-yellow-400' : 'border-yellow-500'
-    };
-    return { 
-      text: 'En Stock', 
-      color: theme === 'amanecer' ? 'text-green-700' : 'text-green-400', 
-      bg: theme === 'amanecer' ? 'bg-green-100' : 'bg-green-500/20',
-      border: theme === 'amanecer' ? 'border-green-400' : 'border-green-500'
-    };
-  };
+  // const getStockStatus = () => {
+  //   if (producto.stock === null) return { 
+  //     text: 'Disponible', 
+  //     color: theme === 'amanecer' ? 'text-green-700' : 'text-green-400', 
+  //     bg: theme === 'amanecer' ? 'bg-green-100' : 'bg-green-500/20',
+  //     border: theme === 'amanecer' ? 'border-green-400' : 'border-green-500'
+  //   };
+  //   if (producto.stock === 0) return { 
+  //     text: 'Agotado', 
+  //     color: theme === 'amanecer' ? 'text-red-700' : 'text-red-400', 
+  //     bg: theme === 'amanecer' ? 'bg-red-100' : 'bg-red-500/20',
+  //     border: theme === 'amanecer' ? 'border-red-400' : 'border-red-500'
+  //   };
+  //   if (producto.stock <= 5) return { 
+  //     text: `Últimas ${producto.stock}`, 
+  //     color: theme === 'amanecer' ? 'text-yellow-700' : 'text-yellow-400', 
+  //     bg: theme === 'amanecer' ? 'bg-yellow-100' : 'bg-yellow-500/20',
+  //     border: theme === 'amanecer' ? 'border-yellow-400' : 'border-yellow-500'
+  //   };
+  //   return { 
+  //     text: 'En Stock', 
+  //     color: theme === 'amanecer' ? 'text-green-700' : 'text-green-400', 
+  //     bg: theme === 'amanecer' ? 'bg-green-100' : 'bg-green-500/20',
+  //     border: theme === 'amanecer' ? 'border-green-400' : 'border-green-500'
+  //   };
+  // };
 
-  const stockStatus = getStockStatus();
+  // const stockStatus = getStockStatus();
   const isOutOfStock = producto.stock === 0;
 
   // Estilos según tema
@@ -196,7 +196,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ producto, usuarioId, onAddToC
               onError={() => setImageError(true)}
             />
             {/* Overlay gradiente */}
-            <div className={`absolute inset-0 bg-gradient-to-t ${styles.imageOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+            <div className={`absolute inset-0  ${styles.imageOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
           </>
         ) : (
           <div className={`w-full h-full flex flex-col items-center justify-center ${styles.imageBg}`}>

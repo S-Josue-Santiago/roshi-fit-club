@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchProducts } from '../../../../api/productApi';
 import type { Product } from '../../../../types/Product';
 import ProductCard from './ProductCard';
-import { Search, Filter, Package, Loader, X, ShoppingBag } from 'lucide-react';
+import { Search, Filter,  Loader, X, ShoppingBag } from 'lucide-react'; //Package
 import { fetchCategoriesProducts } from '../../../../api/categoryApi';
 import type { Category } from '../../../../types/Category';
 import { useClientContext } from '../../../../contexts/ClientContext';
