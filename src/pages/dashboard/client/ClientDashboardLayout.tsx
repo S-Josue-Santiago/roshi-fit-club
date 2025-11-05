@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardThemeProvider } from '../../../contexts/DashboardThemeContext';
 import ClientHeader from './ClientHeader';
+import { getCart } from '../../../api/purchaseApi'; // Importar getCart
 import ClientHorizontalNavbar from './ClientHorizontalNavbar'; // Importar nueva navbar horizontal
 import { ClientProvider } from '../../../contexts/ClientContext'; // Importar ClientProvider
 
@@ -17,6 +18,7 @@ const ClientDashboardLayoutContent: React.FC<ClientDashboardLayoutContentProps> 
   // const [activeSection, setActiveSection] = useState('dashboard'); // Eliminado
   const [userData, setUserData] = useState<any>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // Estado para controlar el menú móvil
+  const [cartCount, setCartCount] = useState(0); // 1. Estado del contador del carrito
 
   useEffect(() => {
     const data = localStorage.getItem('userData');
@@ -30,14 +32,30 @@ const ClientDashboardLayoutContent: React.FC<ClientDashboardLayoutContentProps> 
       setUserData(user);
       const status = user.subscriptionStatus || 'activa';
       setSubscriptionStatus(status);
+
+      // Cargar el contador inicial del carrito
+      if (user.id) {
+        getCart(user.id).then(cart => {
+          setCartCount(cart.items.reduce((sum, item) => sum + item.cantidad, 0));
+        }).catch(err => console.error("Error al cargar carrito inicial:", err));
+      }
     } catch (e) {
       navigate('/');
     }
   }, [navigate]);
 
-  const handleAddToCart = () => {
-    // Recargar carrito o mostrar notificación
-    console.log('Producto añadido al carrito');
+  // 2. Función para recargar el contador del carrito
+  const refetchCartCount = async () => {
+    if (userData?.id) {
+      try {
+        const cart = await getCart(userData.id);
+        const count = cart.items.reduce((sum, item) => sum + item.cantidad, 0);
+        setCartCount(count);
+      } catch (error) {
+        console.error('Error al recargar el contador del carrito:', error);
+        setCartCount(0); // Resetear en caso de error
+      }
+    }
   };
 
   // Eliminar renderContent, ahora el Outlet lo maneja
@@ -68,7 +86,8 @@ const ClientDashboardLayoutContent: React.FC<ClientDashboardLayoutContentProps> 
   return (
     <div className="min-h-screen bg-dashboard-bg text-dashboard-text">
       <ClientHeader 
-        subscriptionStatus={subscriptionStatus} 
+        subscriptionStatus={subscriptionStatus}
+        cartCount={cartCount} // 3. Pasar el contador al Header
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
@@ -85,7 +104,7 @@ const ClientDashboardLayoutContent: React.FC<ClientDashboardLayoutContentProps> 
       /> */}
       <main className="pt-16 lg:pt-32 px-6 pb-8"> {/* Ajustar padding superior */}
         {/* Envuelve children con ClientProvider para pasar el contexto */}
-        <ClientProvider usuarioId={userData?.id || null} onAddToCart={handleAddToCart}>
+        <ClientProvider usuarioId={userData?.id || null} onAddToCart={refetchCartCount}>
           {children} {/* Renderizar contenido desde Outlet */}
         </ClientProvider>
       </main>

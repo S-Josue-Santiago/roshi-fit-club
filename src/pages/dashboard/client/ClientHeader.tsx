@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { useDashboardTheme } from '../../../contexts/DashboardThemeContext';
 import { ShoppingCart, LogOut, Sun, Moon, User, ChevronDown, Package, CreditCard, Menu } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { getCart } from '../../../api/purchaseApi';
+import { useNavigate } from 'react-router-dom'; 
 import CartModal from './CartModal';
 
 interface ClientHeaderProps {
   subscriptionStatus: string;
+  cartCount: number; // Recibe el contador como prop
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: (isOpen: boolean) => void;
 }
@@ -37,12 +37,11 @@ const useDashboardThemeDetection = () => {
   return detectedTheme;
 };
 
-const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus, isMobileMenuOpen, setIsMobileMenuOpen }) => {
+const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus, cartCount, isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const { toggleTheme } = useDashboardTheme(); // Fix: Removed 'theme' as it's not read
   const detectedTheme = useDashboardThemeDetection();
   const navigate = useNavigate();
   const [userData, setUserData] = useState<any>(null);
-  const [cartCount, setCartCount] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -52,20 +51,6 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus, isMobil
       setUserData(JSON.parse(data));
     }
   }, []);
-
-  useEffect(() => {
-    const loadCartCount = async () => {
-      if (userData?.id) {
-        try {
-          const cart = await getCart(userData.id);
-          setCartCount(cart.items.reduce((sum, item) => sum + item.cantidad, 0));
-        } catch (error) {
-          console.error('Error al cargar el carrito:', error);
-        }
-      }
-    };
-    loadCartCount();
-  }, [userData]);
 
   const handleLogout = () => {
     localStorage.removeItem('userToken');
@@ -371,8 +356,8 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus, isMobil
           usuarioId={userData.id}
           onClose={() => setIsCartOpen(false)}
           onCheckoutSuccess={() => {
-            setIsCartOpen(false);
-            setCartCount(0);
+            // La recarga del contador ahora se maneja en el layout principal
+            setIsCartOpen(false); 
           }}
         />
       )}

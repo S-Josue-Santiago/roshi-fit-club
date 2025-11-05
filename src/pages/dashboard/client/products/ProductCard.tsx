@@ -1,6 +1,6 @@
 // roshi_fit/src/pages/dashboard/client/products/ProductCard.tsx
-import React, { useState } from 'react';
-import { ShoppingCart, Plus, Minus, Package, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShoppingCart, Plus, Minus, Package, AlertCircle, CheckCircle, TrendingUp } from 'lucide-react';
 import { addToCart } from '../../../../api/purchaseApi';
 
 interface ProductCardProps {
@@ -16,7 +16,33 @@ interface ProductCardProps {
   onAddToCart: () => void;
 }
 
+// Hook para detectar el tema del dashboard
+const useDashboardThemeDetection = () => {
+  const [detectedTheme, setDetectedTheme] = useState<'nocturno' | 'amanecer'>('nocturno');
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const bodyClass = document.body.className;
+      if (bodyClass.includes('theme-dashboard-amanecer')) {
+        setDetectedTheme('amanecer');
+      } else {
+        setDetectedTheme('nocturno');
+      }
+    };
+
+    checkTheme();
+    
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return detectedTheme;
+};
+
 const ProductCard: React.FC<ProductCardProps> = ({ producto, usuarioId, onAddToCart }) => {
+  const theme = useDashboardThemeDetection();
   const [cantidad, setCantidad] = useState(1);
   const [loading, setLoading] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -35,7 +61,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ producto, usuarioId, onAddToC
         cantidad
       });
       onAddToCart();
-      // Reset cantidad después de agregar
       setCantidad(1);
     } catch (error) {
       alert('Error al agregar al carrito.');
@@ -61,104 +86,188 @@ const ProductCard: React.FC<ProductCardProps> = ({ producto, usuarioId, onAddToC
   };
 
   const getStockStatus = () => {
-    if (producto.stock === null) return { text: 'Disponible', color: 'text-green-400', bg: 'bg-green-500/20' };
-    if (producto.stock === 0) return { text: 'Agotado', color: 'text-red-400', bg: 'bg-red-500/20' };
-    if (producto.stock <= 5) return { text: `Últimas ${producto.stock} unidades`, color: 'text-yellow-400', bg: 'bg-yellow-500/20' };
-    return { text: 'En stock', color: 'text-green-400', bg: 'bg-green-500/20' };
+    if (producto.stock === null) return { 
+      text: 'Disponible', 
+      color: theme === 'amanecer' ? 'text-green-700' : 'text-green-400', 
+      bg: theme === 'amanecer' ? 'bg-green-100' : 'bg-green-500/20',
+      border: theme === 'amanecer' ? 'border-green-400' : 'border-green-500'
+    };
+    if (producto.stock === 0) return { 
+      text: 'Agotado', 
+      color: theme === 'amanecer' ? 'text-red-700' : 'text-red-400', 
+      bg: theme === 'amanecer' ? 'bg-red-100' : 'bg-red-500/20',
+      border: theme === 'amanecer' ? 'border-red-400' : 'border-red-500'
+    };
+    if (producto.stock <= 5) return { 
+      text: `Últimas ${producto.stock}`, 
+      color: theme === 'amanecer' ? 'text-yellow-700' : 'text-yellow-400', 
+      bg: theme === 'amanecer' ? 'bg-yellow-100' : 'bg-yellow-500/20',
+      border: theme === 'amanecer' ? 'border-yellow-400' : 'border-yellow-500'
+    };
+    return { 
+      text: 'En Stock', 
+      color: theme === 'amanecer' ? 'text-green-700' : 'text-green-400', 
+      bg: theme === 'amanecer' ? 'bg-green-100' : 'bg-green-500/20',
+      border: theme === 'amanecer' ? 'border-green-400' : 'border-green-500'
+    };
   };
 
   const stockStatus = getStockStatus();
   const isOutOfStock = producto.stock === 0;
 
+  // Estilos según tema
+  const getStyles = () => {
+    if (theme === 'amanecer') {
+      return {
+        card: 'bg-white border-slate-300 hover:border-blue-400',
+        cardShadow: '0 10px 30px rgba(74, 144, 226, 0.15)',
+        imageBg: 'bg-gradient-to-br from-slate-100 to-slate-200',
+        imageOverlay: 'from-white/80 to-transparent',
+        imageIcon: 'text-gray-400',
+        title: 'text-gray-900 group-hover:text-blue-600',
+        description: 'text-gray-600',
+        price: 'text-blue-600',
+        stockBadge: 'bg-slate-100 text-gray-700 border-slate-300',
+        quantityLabel: 'text-gray-800',
+        quantityButton: 'border-slate-300 text-gray-700 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50',
+        quantityNumber: 'text-gray-900',
+        addButton: 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700',
+        addButtonShadow: '0 8px 20px rgba(59, 130, 246, 0.4)',
+        disabledButton: 'from-gray-400 to-gray-500'
+      };
+    }
+    
+    // Tema Nocturno
+    return {
+      card: 'bg-[#16213E]/50 border-purple-500/30 hover:border-cyan-500',
+      cardShadow: '0 10px 30px rgba(138, 43, 226, 0.2)',
+      imageBg: 'bg-gradient-to-br from-[#0A0E27] to-[#16213E]',
+      imageOverlay: 'from-black/80 to-transparent',
+      imageIcon: 'text-purple-500/50',
+      title: 'text-white group-hover:text-cyan-400',
+      description: 'text-[#B0BEC5]',
+      price: 'text-cyan-400',
+      stockBadge: 'bg-[#0A0E27]/80 text-[#B0BEC5] border-purple-500/30',
+      quantityLabel: 'text-white',
+      quantityButton: 'border-purple-500/30 text-white hover:border-cyan-500 hover:text-cyan-400 hover:bg-cyan-500/10',
+      quantityNumber: 'text-white',
+      addButton: 'bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-700 hover:to-cyan-800',
+      addButtonShadow: '0 8px 20px rgba(34, 211, 238, 0.4)',
+      disabledButton: 'from-gray-600 to-gray-700'
+    };
+  };
+
+  const styles = getStyles();
+
   return (
-    <div className="
-      bg-dashboard-accent/30 rounded-2xl overflow-hidden border-2 border-dashboard-accent/50
-      shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-105
-      group relative
-    ">
-      {/* Badge de stock */}
+    <div 
+      className={`
+        ${styles.card} rounded-3xl overflow-hidden border-2
+        transition-all duration-500 transform hover:scale-105
+        group relative
+      `}
+      style={{ boxShadow: styles.cardShadow }}
+    >
+      {/* Badge de stock
       <div className={`
-        absolute top-3 left-3 z-10 px-3 py-1 rounded-full text-xs font-bold border
-        ${stockStatus.bg} ${stockStatus.color} border-current
+        absolute top-4 right-4 z-10 px-3 py-1.5 rounded-xl text-xs font-black border-2
+        ${stockStatus.bg} ${stockStatus.color} ${stockStatus.border}
+        shadow-lg backdrop-blur-sm
+        flex items-center gap-1
       `}>
+        {producto.stock === 0 ? (
+          <AlertCircle size={14} />
+        ) : producto.stock && producto.stock <= 5 ? (
+          <TrendingUp size={14} />
+        ) : (
+          <CheckCircle size={14} />
+        )}
         {stockStatus.text}
-      </div>
+      </div> */}
 
       {/* Imagen del producto */}
-      <div className="h-48 bg-dashboard-bg/50 relative overflow-hidden">
+      <div className="h-56 relative overflow-hidden">
         {producto.imagen_principal && !imageError ? (
-          <img
-            src={`/assets/products/${producto.imagen_principal}`}
-            alt={producto.nombre}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            onError={() => setImageError(true)}
-          />
+          <>
+            <img
+              src={`/assets/products/${producto.imagen_principal}`}
+              alt={producto.nombre}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              onError={() => setImageError(true)}
+            />
+            {/* Overlay gradiente */}
+            <div className={`absolute inset-0 bg-gradient-to-t ${styles.imageOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+          </>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-dashboard-text-secondary bg-gradient-to-br from-dashboard-accent to-dashboard-accent/70">
-            <Package size={48} className="mb-2 opacity-50" />
-            <span className="text-sm">Imagen no disponible</span>
+          <div className={`w-full h-full flex flex-col items-center justify-center ${styles.imageBg}`}>
+            <Package size={56} className={`mb-3 ${styles.imageIcon}`} />
+            <span className={`text-sm font-semibold ${styles.imageIcon}`}>Sin imagen</span>
           </div>
         )}
-        
-        {/* Overlay gradiente */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
       </div>
 
       {/* Contenido de la tarjeta */}
-      <div className="p-5">
-        {/* Nombre y descripción */}
-        <h3 className="font-black text-dashboard-text text-lg mb-2 group-hover:text-cyan-300 transition-colors line-clamp-1">
+      <div className="p-6">
+        {/* Nombre */}
+        <h3 className={`font-black text-lg mb-2 transition-colors line-clamp-1 ${styles.title}`}>
           {producto.nombre}
         </h3>
         
-        <p className="text-sm text-dashboard-text-secondary mb-4 line-clamp-2 leading-relaxed">
-          {producto.descripcion || 'Descripción no disponible'}
+        {/* Descripción */}
+        <p className={`text-sm mb-4 line-clamp-2 leading-relaxed ${styles.description}`}>
+          {producto.descripcion || 'Producto de alta calidad para tu entrenamiento'}
         </p>
 
-        {/* Precio */}
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl font-black text-cyan-400">
-            {formatPrice(producto.precio_venta_q)}
-          </span>
-          {producto.stock !== null && producto.stock > 0 && (
-            <span className="text-xs text-dashboard-text-secondary bg-dashboard-accent/50 px-2 py-1 rounded">
-              Stock: {producto.stock}
+        {/* Precio y stock */}
+        <div className="flex items-center justify-between mb-5">
+          <div>
+            <p className="text-xs font-semibold mb-1" style={{ color: theme === 'amanecer' ? '#6b7280' : '#B0BEC5' }}>
+              PRECIO
+            </p>
+            <span className={`text-3xl font-black ${styles.price}`}>
+              {formatPrice(producto.precio_venta_q)}
             </span>
-          )}
+          </div>
+          {/* {producto.stock !== null && producto.stock > 0 && (
+            <div className={`px-3 py-2 rounded-xl text-xs font-bold ${styles.stockBadge} border`}>
+              <p className="text-[10px] mb-0.5 opacity-70">STOCK</p>
+              <p className="text-lg font-black">{producto.stock}</p>
+            </div>
+          )} */}
         </div>
 
         {/* Controles de cantidad y carrito */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {/* Selector de cantidad */}
           <div className="flex items-center justify-between">
-            <label className="text-sm font-bold text-dashboard-text">CANTIDAD:</label>
-            <div className="flex items-center space-x-2">
+            <label className={`text-xs font-black ${styles.quantityLabel}`}>CANTIDAD:</label>
+            <div className="flex items-center gap-2">
               <button
                 onClick={decrementQuantity}
                 disabled={cantidad <= 1 || isOutOfStock}
-                className="
-                  p-1 rounded-lg border border-dashboard-accent/50 
-                  hover:border-cyan-400 hover:text-cyan-400 
+                className={`
+                  p-2 rounded-xl border-2 transition-all duration-300
                   disabled:opacity-30 disabled:cursor-not-allowed
-                  transition-all duration-200
-                "
+                  transform hover:scale-110 active:scale-95
+                  ${styles.quantityButton}
+                `}
               >
                 <Minus size={16} />
               </button>
               
-              <span className="w-12 text-center font-bold text-dashboard-text text-lg">
+              <span className={`w-14 text-center font-black text-xl ${styles.quantityNumber}`}>
                 {cantidad}
               </span>
               
               <button
                 onClick={incrementQuantity}
                 disabled={isOutOfStock || (producto.stock !== null && cantidad >= producto.stock)}
-                className="
-                  p-1 rounded-lg border border-dashboard-accent/50 
-                  hover:border-cyan-400 hover:text-cyan-400 
+                className={`
+                  p-2 rounded-xl border-2 transition-all duration-300
                   disabled:opacity-30 disabled:cursor-not-allowed
-                  transition-all duration-200
-                "
+                  transform hover:scale-110 active:scale-95
+                  ${styles.quantityButton}
+                `}
               >
                 <Plus size={16} />
               </button>
@@ -169,19 +278,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ producto, usuarioId, onAddToC
           <button
             onClick={handleAddToCart}
             disabled={loading || isOutOfStock}
-            className="
-              w-full py-3 bg-gradient-to-r from-cyan-600 to-cyan-700 
-              text-white font-bold rounded-xl 
-              hover:from-cyan-700 hover:to-cyan-800
-              disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed
-              transition-all duration-300 transform hover:scale-105
+            className={`
+              w-full py-4 text-white font-black rounded-2xl 
+              ${loading || isOutOfStock ? styles.disabledButton : styles.addButton}
+              disabled:cursor-not-allowed
+              transition-all duration-300 transform hover:scale-105 active:scale-95
               flex items-center justify-center gap-2
-              group/btn
-            "
+              group/btn text-sm
+            `}
+            style={{ boxShadow: loading || isOutOfStock ? 'none' : styles.addButtonShadow }}
           >
             {loading ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                 AGREGANDO...
               </>
             ) : isOutOfStock ? (

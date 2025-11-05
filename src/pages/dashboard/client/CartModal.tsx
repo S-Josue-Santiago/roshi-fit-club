@@ -228,13 +228,12 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
         <div className="flex-1 overflow-y-auto custom-scrollbar">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-transparent" 
-                   style={{ borderColor: theme === 'amanecer' ? '#3b82f6' : '#8b5cf6', borderTopColor: 'transparent' }}></div>
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-transparent" style={{ borderColor: theme === 'amanecer' ? '#3b82f6' : '#8b5cf6' }}></div>
               <p className={`mt-4 ${styles.loadingText} font-semibold`}>Cargando carrito...</p>
             </div>
           ) : error ? (
             <div className={`flex items-start gap-3 p-4 rounded-2xl border-2 ${styles.errorContainer}`}>
-              <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+              <AlertCircle size={20} className="mt-0.5" />
               <p className="font-semibold">{error}</p>
             </div>
           ) : !cart || cart.items.length === 0 ? (
@@ -255,7 +254,7 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
                   `}
                 >
                   {/* Imagen del producto */}
-                  <div className="relative flex-shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden">
+                  <div className="relative  w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden">
                     <img
                       src={`/assets/products/${item.productos.imagen_principal || 'placeholder.jpg'}`}
                       alt={item.productos.nombre}
