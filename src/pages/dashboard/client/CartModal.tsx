@@ -248,13 +248,13 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
                 <div 
                   key={item.id} 
                   className={`
-                    flex items-center gap-4 p-4 rounded-2xl border-2
+                    flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl border-2
                     ${styles.itemCard}
                     transition-all duration-300 transform hover:scale-[1.02]
                   `}
                 >
                   {/* Imagen del producto */}
-                  <div className="relative  w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden">
+                  <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden ">
                     <img
                       src={`/assets/products/${item.productos.imagen_principal || 'placeholder.jpg'}`}
                       alt={item.productos.nombre}
@@ -266,44 +266,45 @@ const CartModal: React.FC<CartModalProps> = ({ usuarioId, onClose, onCheckoutSuc
                   </div>
 
                   {/* Info del producto */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className={`font-bold text-base md:text-lg ${styles.itemTitle} truncate`}>
-                      {item.productos.nombre}
-                    </h3>
-                    <p className={`font-black text-lg md:text-xl ${styles.itemPrice} mt-1`}>
-                      Q{parseFloat(item.productos.precio_venta_q.toString()).toFixed(2)}
-                    </p>
+                  <div className="flex-1 min-w-0 w-full">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-start">
+                      <div className="flex-1">
+                        <h3 className={`font-bold text-base md:text-lg ${styles.itemTitle} line-clamp-2`}>
+                          {item.productos.nombre}
+                        </h3>
+                        <p className={`font-black text-lg md:text-xl ${styles.itemPrice} mt-1`}>
+                          Q{parseFloat(item.productos.precio_venta_q.toString()).toFixed(2)}
+                        </p>
+                      </div>
+                      {/* Controles de cantidad y eliminar */}
+                      <div className="flex items-center gap-2 mt-3 sm:mt-0">
+                        <button
+                          onClick={() => handleDecreaseQuantity(item.id, item.cantidad)}
+                          className={`p-2 rounded-lg border-2 transition-all duration-300 ${styles.quantityButton}`}
+                          title="Disminuir cantidad"
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <span className={`font-bold text-lg px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg ${styles.itemQuantity}`}>
+                          {item.cantidad}
+                        </span>
+                        <button
+                          onClick={() => handleIncreaseQuantity(item.id, item.cantidad)}
+                          className={`p-2 rounded-lg border-2 transition-all duration-300 ${styles.quantityButton}`}
+                          title="Aumentar cantidad"
+                        >
+                          <Plus size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleRemoveItem(item.id)}
+                          className={`p-2 rounded-lg border-2 transition-all duration-300 transform hover:scale-110 ${styles.deleteButton} ml-2`}
+                          title="Eliminar producto"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-
-                  {/* Controles de cantidad */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleDecreaseQuantity(item.id, item.cantidad)}
-                      className={`p-2 rounded-lg border-2 transition-all duration-300 ${styles.quantityButton}`}
-                      title="Disminuir cantidad"
-                    >
-                      <Minus size={16} />
-                    </button>
-                    <span className={`font-bold text-lg px-4 py-2 rounded-lg ${styles.itemQuantity}`}>
-                      {item.cantidad}
-                    </span>
-                    <button
-                      onClick={() => handleIncreaseQuantity(item.id, item.cantidad)}
-                      className={`p-2 rounded-lg border-2 transition-all duration-300 ${styles.quantityButton}`}
-                      title="Aumentar cantidad"
-                    >
-                      <Plus size={16} />
-                    </button>
-                  </div>
-
-                  {/* Botón eliminar */}
-                  <button
-                      onClick={() => handleRemoveItem(item.id)}
-                    className={`p-2 rounded-lg border-2 transition-all duration-300 transform hover:scale-110 ${styles.deleteButton}`}
-                    title="Eliminar producto"
-                  >
-                    <Trash2 size={18} />
-                  </button>
                 </div>
               ))}
             </div>
