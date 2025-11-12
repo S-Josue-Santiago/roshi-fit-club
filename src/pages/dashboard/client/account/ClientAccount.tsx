@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EditAccountModal from './EditAccountModal';
 import ChangePasswordModal from './ChangePasswordModal';
+import ClientPurchaseHistory from './ClientPurchaseHistory';
 import { fetchUserProfile } from '../../../../api/userApi';
 import { 
-  User, Mail, Phone, Calendar, MapPin, User2, 
-  Edit, Lock, Camera, Check, AlertCircle 
+  User, Mail, Phone, Calendar, MapPin, User2,
+  Edit, Lock, Camera, Check, AlertCircle, ShoppingBag
 } from 'lucide-react';
 
 const AVATARS = [
@@ -45,6 +46,7 @@ const ClientAccount: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'account' | 'history'>('account');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -113,7 +115,13 @@ const ClientAccount: React.FC = () => {
         passwordButton: 'bg-white border-slate-300 text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 hover:border-purple-400 hover:text-purple-600',
         loadingText: 'text-gray-600',
         errorContainer: 'bg-red-50 border-red-300 text-red-700',
-        badge: 'bg-green-100 text-green-700 border-green-400'
+        badge: 'bg-green-100 text-green-700 border-green-400',
+        // Tabs
+        tabContainer: 'border-slate-300',
+        activeTab: 'text-blue-600 border-blue-600 bg-blue-50',
+        inactiveTab: 'text-gray-600 border-transparent hover:text-blue-500 hover:bg-blue-50/50',
+        activeIcon: 'text-blue-600',
+        inactiveIcon: 'text-gray-500'
       };
     }
     
@@ -136,7 +144,13 @@ const ClientAccount: React.FC = () => {
       passwordButton: 'bg-[#16213E] border-purple-500/30 text-white hover:bg-purple-900 hover:border-[#FFD700] hover:text-[#FFD700]',
       loadingText: 'text-[#B0BEC5]',
       errorContainer: 'bg-red-900/20 border-red-500/40 text-red-300',
-      badge: 'bg-green-500/20 text-green-400 border-green-500'
+      badge: 'bg-green-500/20 text-green-400 border-green-500',
+      // Tabs
+      tabContainer: 'border-purple-500/30',
+      activeTab: 'text-cyan-400 border-cyan-500 bg-cyan-500/10',
+      inactiveTab: 'text-[#B0BEC5] border-transparent hover:text-cyan-400 hover:bg-cyan-500/5',
+      activeIcon: 'text-cyan-400',
+      inactiveIcon: 'text-[#B0BEC5]'
     };
   };
 
@@ -172,11 +186,11 @@ const ClientAccount: React.FC = () => {
 
   return (
     <div 
-      className={`${styles.container} p-6 md:p-8 rounded-3xl border-2 max-w-4xl mx-auto`}
+      className={`${styles.container} p-6 md:p-8 rounded-3xl border-2 max-w-6xl mx-auto`}
       style={{ boxShadow: styles.containerShadow }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <h2 className={`text-3xl font-black ${styles.title}`}>Mi Cuenta</h2>
         <div className={`px-4 py-2 rounded-xl border-2 ${styles.badge} font-bold text-sm flex items-center gap-2`}>
           <Check size={16} />
@@ -184,104 +198,149 @@ const ClientAccount: React.FC = () => {
         </div>
       </div>
 
-      {/* Foto de perfil y nombre */}
-      <div className="flex flex-col md:flex-row items-center gap-6 mb-8 p-6 rounded-2xl" style={{ background: theme === 'amanecer' ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(124, 58, 237, 0.05))' : 'linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(22, 33, 62, 0.5))' }}>
-        <div className="relative group">
-          <div className={`w-32 h-32 ${styles.avatarBg} rounded-2xl p-1 shadow-2xl`}>
-            <img
-              src={getAvatarUrl(user.foto_perfil)}
-              alt="Foto de perfil"
-              className="w-full h-full rounded-xl object-cover"
-            />
-          </div>
-          <div className={`absolute inset-0 rounded-2xl ${styles.avatarOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center`}>
-            <Camera size={32} className="text-white" />
-          </div>
-        </div>
-        
-        <div className="flex-1 text-center md:text-left">
-          <h3 className={`text-2xl md:text-3xl font-black ${styles.userName} mb-2`}>
-            {user.nombre_completo}
-          </h3>
-          <p className={`${styles.userEmail} text-sm md:text-base font-semibold flex items-center justify-center md:justify-start gap-2`}>
-            <Mail size={16} />
-            {user.email}
-          </p>
-        </div>
+      {/* Pestañas */}
+      <div className={`flex gap-2 border-b-2 ${styles.tabContainer} mb-8`}>
+        <button
+          className={`
+            flex items-center gap-2 px-6 py-4 font-black text-base
+            transition-all duration-300 transform hover:scale-105
+            rounded-t-xl border-b-4
+            ${activeTab === 'account' ? styles.activeTab : styles.inactiveTab}
+          `}
+          onClick={() => setActiveTab('account')}
+        >
+          <User
+            size={20}
+            className={`transition-all duration-300 ${
+              activeTab === 'account' ? `${styles.activeIcon} scale-110` : styles.inactiveIcon
+            }`}
+          />
+          Cuenta
+        </button>
+        <button
+          className={`
+            flex items-center gap-2 px-6 py-4 font-black text-base
+            transition-all duration-300 transform hover:scale-105
+            rounded-t-xl border-b-4
+            ${activeTab === 'history' ? styles.activeTab : styles.inactiveTab}
+          `}
+          onClick={() => setActiveTab('history')}
+        >
+          <ShoppingBag
+            size={20}
+            className={`transition-all duration-300 ${
+              activeTab === 'history' ? `${styles.activeIcon} scale-110` : styles.inactiveIcon
+            }`}
+          />
+          Historial de Compras
+        </button>
       </div>
 
-      {/* Información de cuenta en grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        {infoItems.map((item, index) => {
-          const Icon = item.icon;
-          return (
-            <div 
-              key={index}
-              className={`${styles.infoCard} p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`p-3 rounded-xl ${theme === 'amanecer' ? 'bg-blue-50' : 'bg-purple-900/30'}`}>
-                  <Icon size={20} className={styles.infoIcon} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-xs font-semibold ${styles.infoLabel} mb-1`}>
-                    {item.label}
-                  </p>
-                  <p className={`font-bold ${styles.infoValue} truncate`}>
-                    {item.value}
-                  </p>
-                </div>
+      {/* Contenido según pestaña */}
+      {activeTab === 'account' ? (
+        <>
+          {/* Foto de perfil y nombre */}
+          <div className="flex flex-col md:flex-row items-center gap-6 mb-8 p-6 rounded-2xl" style={{ background: theme === 'amanecer' ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(124, 58, 237, 0.05))' : 'linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(22, 33, 62, 0.5))' }}>
+            <div className="relative group">
+              <div className={`w-32 h-32 ${styles.avatarBg} rounded-2xl p-1 shadow-2xl`}>
+                <img
+                  src={getAvatarUrl(user.foto_perfil)}
+                  alt="Foto de perfil"
+                  className="w-full h-full rounded-xl object-cover"
+                />
+              </div>
+              <div className={`absolute inset-0 rounded-2xl ${styles.avatarOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center`}>
+                <Camera size={32} className="text-white" />
               </div>
             </div>
-          );
-        })}
-      </div>
+            
+            <div className="flex-1 text-center md:text-left">
+              <h3 className={`text-2xl md:text-3xl font-black ${styles.userName} mb-2`}>
+                {user.nombre_completo}
+              </h3>
+              <p className={`${styles.userEmail} text-sm md:text-base font-semibold flex items-center justify-center md:justify-start gap-2`}>
+                <Mail size={16} />
+                {user.email}
+              </p>
+            </div>
+          </div>
 
-      {/* Botones de acción */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <button
-          onClick={() => setIsEditModalOpen(true)}
-          className={`
-            flex-1 flex items-center justify-center gap-2 px-6 py-4 
-            rounded-2xl font-black text-lg
-            ${styles.editButton}
-            transition-all duration-300 transform hover:scale-105
-            border-2 border-transparent
-          `}
-          style={{ boxShadow: styles.editButtonShadow }}
-        >
-          <Edit size={20} />
-          Editar Perfil
-        </button>
-        
-        <button
-          onClick={() => setIsPasswordModalOpen(true)}
-          className={`
-            flex-1 flex items-center justify-center gap-2 px-6 py-4 
-            rounded-2xl font-bold text-lg border-2
-            ${styles.passwordButton}
-            transition-all duration-300 transform hover:scale-105
-          `}
-        >
-          <Lock size={20} />
-          Cambiar Contraseña
-        </button>
-      </div>
+          {/* Información de cuenta en grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            {infoItems.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <div 
+                  key={index}
+                  className={`${styles.infoCard} p-4 rounded-2xl border-2 transition-all duration-300 hover:scale-105`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-xl ${theme === 'amanecer' ? 'bg-blue-50' : 'bg-purple-900/30'}`}>
+                      <Icon size={20} className={styles.infoIcon} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-xs font-semibold ${styles.infoLabel} mb-1`}>
+                        {item.label}
+                      </p>
+                      <p className={`font-bold ${styles.infoValue} truncate`}>
+                        {item.value}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-      {/* Modales */}
-      {isEditModalOpen && (
-        <EditAccountModal
-          user={user}
-          onClose={() => setIsEditModalOpen(false)}
-          onUpdateSuccess={handleUpdateSuccess}
-        />
-      )}
+          {/* Botones de acción */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className={`
+                flex-1 flex items-center justify-center gap-2 px-6 py-4 
+                rounded-2xl font-black text-lg
+                ${styles.editButton}
+                transition-all duration-300 transform hover:scale-105
+                border-2 border-transparent
+              `}
+              style={{ boxShadow: styles.editButtonShadow }}
+            >
+              <Edit size={20} />
+              Editar Perfil
+            </button>
+            
+            <button
+              onClick={() => setIsPasswordModalOpen(true)}
+              className={`
+                flex-1 flex items-center justify-center gap-2 px-6 py-4 
+                rounded-2xl font-bold text-lg border-2
+                ${styles.passwordButton}
+                transition-all duration-300 transform hover:scale-105
+              `}
+            >
+              <Lock size={20} />
+              Cambiar Contraseña
+            </button>
+          </div>
 
-      {isPasswordModalOpen && (
-        <ChangePasswordModal
-          userId={user.id}
-          onClose={() => setIsPasswordModalOpen(false)}
-        />
+          {/* Modales */}
+          {isEditModalOpen && (
+            <EditAccountModal
+              user={user}
+              onClose={() => setIsEditModalOpen(false)}
+              onUpdateSuccess={handleUpdateSuccess}
+            />
+          )}
+
+          {isPasswordModalOpen && (
+            <ChangePasswordModal
+              userId={user.id}
+              onClose={() => setIsPasswordModalOpen(false)}
+            />
+          )}
+        </>
+      ) : (
+        <ClientPurchaseHistory />
       )}
     </div>
   );

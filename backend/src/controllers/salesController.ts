@@ -120,3 +120,63 @@ export const getSaleInvoice = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };
+
+// cliente historial
+export const getClientOrders = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const orders = await prisma.ordenes.findMany({
+      where: { 
+        usuario_id: parseInt(userId),
+        estado: 'activo' 
+      },
+      orderBy: { creacion_fecha: 'desc' },
+      include: {
+        usuarios_ordenes_usuario_idTousuarios: { 
+          select: { nombre_completo: true, email: true } 
+        },
+        datos_consumidor_invitado: { 
+          select: { nombre_completo: true, email: true } 
+        },
+        metodos_pago: { 
+          select: { nombre: true } 
+        },
+        detalles_orden: { 
+          select: { 
+            cantidad: true, 
+            subtotal_q: true, 
+            productos: { select: { nombre: true } } 
+          } 
+        },
+        facturas: { 
+          select: { numero_factura: true }, 
+          orderBy: { fecha_emision: 'desc' }, 
+          take: 1 
+        },
+      }
+    });
+
+    const data = orders.map(o => {
+      const clienteNombre = o.usuarios_ordenes_usuario_idTousuarios?.nombre_completo || o.datos_consumidor_invitado?.nombre_completo || 'Invitado';
+      const clienteEmail = o.usuarios_ordenes_usuario_idTousuarios?.email || o.datos_consumidor_invitado?.email || '';
+      const productosResumen = o.detalles_orden.map(d => `${d.productos?.nombre || 'Producto'} (${d.cantidad})`).join(', ');
+      const factura = o.facturas?.[0];
+      return {
+        id: o.id,
+        orden_numero: factura?.numero_factura || `#${o.id}`,
+        cliente_nombre: clienteNombre,
+        cliente_email: clienteEmail,
+        productos_resumen: productosResumen,
+        total_q: o.total_q,
+        metodo_pago: o.metodos_pago?.nombre || '-',
+        estado_orden: o.estado_orden,
+        creacion_fecha: o.creacion_fecha,
+      };
+    });
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error al obtener historial de compras:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};

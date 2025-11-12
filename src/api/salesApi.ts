@@ -33,3 +33,9 @@ export const fetchSaleInvoice = async (id: number) => {
   const res = await api.get(`/sales/${id}/invoice`);
   return res.data;
 };
+
+// Añadir al final del archivo existente
+export const fetchClientOrders = async (userId: number): Promise<SaleListItem[]> => {
+  const res = await api.get<SaleListItem[]>(`/sales/client/${userId}`);
+  return res.data;
+};
