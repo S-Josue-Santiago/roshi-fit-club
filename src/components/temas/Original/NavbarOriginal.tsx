@@ -9,11 +9,12 @@ const navItems = [
   { name: 'Inicio', href: '#inicio' },
   { name: 'Servicios', href: '#servicios' },
   { name: 'Planes', href: '#planes' },
-  { name: 'Horarios', href: '#horarios' },
   { name: 'Productos', href: '#productos' },
   { name: 'Equipos', href: '#equipos' },
   { name: 'Galería', href: '#galeria' },
   { name: 'Testimonios', href: '#testimonios' },
+  { name: 'Horarios', href: '#horarios' },
+  { name: 'Filosofía', href: '#filosofia' },
   { name: 'Contacto', href: '#contacto' },
 ];
 
@@ -43,7 +44,7 @@ const NavbarOriginal: React.FC<NavbarThemeProps> = ({
         {/* Logo */}
         <Link 
           to="/" 
-          className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-yellow-500 transition-all duration-300 hover:scale-105"
+          className="text-2xl md:text-3xl font-black text-transparent bg-clip-text  from-primary via-orange-400 to-yellow-500 transition-all duration-300 hover:scale-105"
           style={{ 
             textShadow: '0 0 5px rgba(255, 107, 53, 0.9)',
             letterSpacing: '0.05em'
@@ -61,7 +62,7 @@ const NavbarOriginal: React.FC<NavbarThemeProps> = ({
               className="relative px-4 py-2 font-semibold text-gray-300 hover:text-primary transition-all duration-300 group"
             >
               {item.name}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-orange-400 group-hover:w-full transition-all duration-300"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5  from-primary to-orange-400 group-hover:w-full transition-all duration-300"></span>
             </a>
           ))}
         </nav>

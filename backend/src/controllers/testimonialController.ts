@@ -30,3 +30,113 @@ export const getActiveTestimonials = async (_req: Request, res: Response) => {
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };
+
+
+
+// Obtener testimonios del cliente (usuario_id)
+export const getClientTestimonials = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const testimonials = await prisma.testimonios.findMany({
+      where: { 
+        usuario_id: parseInt(userId), 
+        estado: { not: 'desabilitado' } 
+      },
+      select: {
+        id: true,
+        testimonio: true,
+        rating: true,
+        visible: true,
+        estado: true,
+        creacion_fecha: true,
+        modificacion_fecha: true
+      },
+      orderBy: { creacion_fecha: 'desc' }
+    });
+    res.json(testimonials);
+  } catch (error) {
+    console.error('Error al obtener testimonios del cliente:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// Crear testimonio
+export const createTestimonial = async (req: Request, res: Response) => {
+  try {
+    const { 
+      usuario_id, 
+      testimonio, 
+      rating 
+    } = req.body;
+
+    if (!testimonio || !rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Testimonio y rating (1-5) son obligatorios.' });
+    }
+
+    const newTestimonial = await prisma.testimonios.create({
+      data: {
+        usuario_id: parseInt(usuario_id),
+        testimonio,
+        rating: parseInt(rating),
+        estado: 'activo',
+        visible: true
+      },
+      select: {
+        id: true,
+        testimonio: true,
+        rating: true,
+        estado: true
+      }
+    });
+
+    res.status(201).json({ message: 'Testimonio creado.', testimonial: newTestimonial });
+  } catch (error) {
+    console.error('Error al crear testimonio:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// Actualizar testimonio (solo testimonio y rating)
+export const updateTestimonial = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { testimonio, rating } = req.body;
+
+    if (!testimonio || !rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Testimonio y rating (1-5) son obligatorios.' });
+    }
+
+    const updated = await prisma.testimonios.update({
+      where: { id: parseInt(id) },
+      data: { 
+        testimonio, 
+        rating: parseInt(rating) 
+      },
+      select: {
+        id: true,
+        testimonio: true,
+        rating: true
+      }
+    });
+
+    res.json({ message: 'Testimonio actualizado.', testimonial: updated });
+  } catch (error) {
+    console.error('Error al actualizar testimonio:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};
+
+// Inactivar testimonio
+export const deactivateTestimonial = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updated = await prisma.testimonios.update({
+      where: { id: parseInt(id) },
+      data: { estado: 'inactivo' }
+    });
+    res.json({ message: 'Testimonio desactivado.', testimonial: updated });
+  } catch (error) {
+    console.error('Error al desactivar testimonio:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};

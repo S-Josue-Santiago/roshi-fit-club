@@ -73,7 +73,8 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/purchase', purchaseRoutes);
 app.use('/api/training', trainingRoutes);
-
+//para clientes testimonios
+app.use('/api/testimonials', testimonialRoutes);
 
 export const prisma = new PrismaClient();
 export { Prisma };

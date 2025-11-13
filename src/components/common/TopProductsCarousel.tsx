@@ -1,6 +1,6 @@
 // roshi_fit/src/components/common/TopProductsCarousel.tsx
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { fetchTopSellingProducts } from '../../api/productApi';
 import { type TopProduct } from '../../types/Product';
 
@@ -36,6 +36,18 @@ const TopProductsCarousel: React.FC = () => {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  // Carrusel automático
+  useEffect(() => {
+    // Solo activar si hay más de 3 productos para que el carrusel esté activo
+    if (products.length > 3) {
+      const timer = setInterval(() => {
+        nextSlide();
+      }, 3000); // Cambia cada 3 segundos
+
+      return () => clearInterval(timer); // Limpiar el temporizador
+    }
+  }, [products.length]); // Se ejecuta cuando la cantidad de productos cambia
 
   const formatPrice = (precio: string | number): number => {
     if (typeof precio === 'number') return precio;
@@ -73,14 +85,16 @@ const TopProductsCarousel: React.FC = () => {
             <ProductCard key={product.id} product={product} formatPrice={formatPrice} theme={theme} />
           ))}
         </div>
-        <div className="text-center mt-8">
+
+        {/* boton para ir a productos en modo invitado */}
+        {/* <div className="text-center mt-8">
           <Link
             to="/productos"
             className="inline-block px-6 py-3 bg-primary text-text-light font-semibold rounded-lg hover:bg-gold transition-colors"
           >
             Ver más productos
           </Link>
-        </div>
+        </div> */}
       </>
     );
   }
@@ -115,23 +129,23 @@ const TopProductsCarousel: React.FC = () => {
       ? 'bg-primary scale-125 shadow-lg shadow-primary/50' 
       : 'bg-orange-300/60';
   };
+  // modo invitado
+  // const getLinkStyle = () => {
+  //   if (theme === 'futurista') {
+  //     return 'inline-block px-8 py-3 font-black text-white rounded-xl transition-all duration-300 transform hover:scale-105';
+  //   }
+  //   return 'inline-block px-6 py-3 bg-primary text-text-light font-semibold rounded-lg hover:bg-gold transition-colors';
+  // };
 
-  const getLinkStyle = () => {
-    if (theme === 'futurista') {
-      return 'inline-block px-8 py-3 font-black text-white rounded-xl transition-all duration-300 transform hover:scale-105';
-    }
-    return 'inline-block px-6 py-3 bg-primary text-text-light font-semibold rounded-lg hover:bg-gold transition-colors';
-  };
-
-  const getLinkInlineStyle = () => {
-    if (theme === 'futurista') {
-      return {
-        background: 'linear-gradient(135deg, #0078ff, #00d4ff)',
-        boxShadow: '0 6px 20px rgba(0, 120, 255, 0.3)'
-      };
-    }
-    return {};
-  };
+  // const getLinkInlineStyle = () => {
+  //   if (theme === 'futurista') {
+  //     return {
+  //       background: 'linear-gradient(135deg, #0078ff, #00d4ff)',
+  //       boxShadow: '0 6px 20px rgba(0, 120, 255, 0.3)'
+  //     };
+  //   }
+  //   return {};
+  // };
 
   return (
     <div className="relative py-6">
@@ -163,7 +177,7 @@ const TopProductsCarousel: React.FC = () => {
           <div 
             key={`${product.id}-${idx}`} 
             className={`
-              flex-shrink-0 w-full max-w-xs transform transition-all duration-300
+               w-full max-w-xs transform transition-all duration-300
               ${idx === 1 ? 'scale-105' : 'scale-100'}
             `}
           >
@@ -186,7 +200,8 @@ const TopProductsCarousel: React.FC = () => {
         ))}
       </div>
 
-      {/* Botón "Ver más" */}
+        {/* boton parra ver mas productos modo invitado */}
+      {/* Botón "Ver más"
       <div className="text-center mt-10">
         <Link
           to="/productos"
@@ -195,7 +210,7 @@ const TopProductsCarousel: React.FC = () => {
         >
           Ver más productos
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -274,13 +289,15 @@ const ProductCard: React.FC<{
         <p className={styles.description}>{product.descripcion}</p>
         <p className={styles.sku}>SKU: {product.sku || 'N/A'}</p>
         <p className={styles.price}>Q{price.toFixed(2)}</p>
-        <Link
+
+        {/* boton para ir a mas productos modo invitado */}
+        {/* <Link
           to={`/productos/${product.id}`}
           className={styles.link}
           style={styles.linkStyle}
         >
           Ir
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

@@ -2,11 +2,11 @@
 import React from 'react';
 import SubscriptionReport from './SubscriptionReport';
 import ProductReport from './ProductReport';
-import UserReport from './UserReport';
-import ClassReport from './ClassReport';
-import TrainingReport from './TrainingReport';
+// import UserReport from './UserReport';
+// import ClassReport from './ClassReport';
+// import TrainingReport from './TrainingReport';
 import EquipmentReport from './EquipmentReport';
-import SystemActivityReport from './SystemActivityReport';
+// import SystemActivityReport from './SystemActivityReport';
 import FinancialReport from './FinancialReport'; // Import the new FinancialReport component
 
 const ReportList: React.FC = () => {
@@ -19,19 +19,19 @@ const ReportList: React.FC = () => {
       <ProductReport />
 
       {/* Reporte de Usuarios */}
-      <UserReport />
+      {/* <UserReport /> */}
 
       {/* Reporte de Clases y Asistencia */}
-      <ClassReport />
+      {/* <ClassReport /> */}
 
       {/* Reporte de Entrenamiento y Progreso */}
-      <TrainingReport />
+      {/* <TrainingReport /> */}
 
       {/* Reporte de Equipos */}
       <EquipmentReport />
 
       {/* Reporte de Actividad del Sistema */}
-      <SystemActivityReport />
+      {/* <SystemActivityReport /> */}
 
       {/* Reporte Financiero Consolidado */}
       <FinancialReport />

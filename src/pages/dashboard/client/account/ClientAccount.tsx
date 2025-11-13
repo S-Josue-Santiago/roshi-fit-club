@@ -4,10 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import EditAccountModal from './EditAccountModal';
 import ChangePasswordModal from './ChangePasswordModal';
 import ClientPurchaseHistory from './ClientPurchaseHistory';
+import ClientTestimonials from './ClientTestimonials';
 import { fetchUserProfile } from '../../../../api/userApi';
 import { 
-  User, Mail, Phone, Calendar, MapPin, User2,
-  Edit, Lock, Camera, Check, AlertCircle, ShoppingBag
+  User, Mail, Phone, Calendar, MapPin, User2, 
+  Edit, Lock, Camera, Check, AlertCircle 
 } from 'lucide-react';
 
 const AVATARS = [
@@ -46,7 +47,7 @@ const ClientAccount: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'account' | 'history'>('account');
+  const [activeTab, setActiveTab] = useState<'account' | 'history' | 'testimonials'>('account');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -116,12 +117,8 @@ const ClientAccount: React.FC = () => {
         loadingText: 'text-gray-600',
         errorContainer: 'bg-red-50 border-red-300 text-red-700',
         badge: 'bg-green-100 text-green-700 border-green-400',
-        // Tabs
-        tabContainer: 'border-slate-300',
-        activeTab: 'text-blue-600 border-blue-600 bg-blue-50',
-        inactiveTab: 'text-gray-600 border-transparent hover:text-blue-500 hover:bg-blue-50/50',
-        activeIcon: 'text-blue-600',
-        inactiveIcon: 'text-gray-500'
+        tabInactive: 'text-gray-600 hover:text-gray-900 border-transparent',
+        activeItem: 'text-white border-blue-500'
       };
     }
     
@@ -145,12 +142,8 @@ const ClientAccount: React.FC = () => {
       loadingText: 'text-[#B0BEC5]',
       errorContainer: 'bg-red-900/20 border-red-500/40 text-red-300',
       badge: 'bg-green-500/20 text-green-400 border-green-500',
-      // Tabs
-      tabContainer: 'border-purple-500/30',
-      activeTab: 'text-cyan-400 border-cyan-500 bg-cyan-500/10',
-      inactiveTab: 'text-[#B0BEC5] border-transparent hover:text-cyan-400 hover:bg-cyan-500/5',
-      activeIcon: 'text-cyan-400',
-      inactiveIcon: 'text-[#B0BEC5]'
+      tabInactive: 'text-[#B0BEC5] hover:text-white border-transparent',
+      activeItem: 'text-white border-[#FFD700]'
     };
   };
 
@@ -199,40 +192,24 @@ const ClientAccount: React.FC = () => {
       </div>
 
       {/* Pestañas */}
-      <div className={`flex gap-2 border-b-2 ${styles.tabContainer} mb-8`}>
+      <div className="flex border-b border-dashboard-accent/50 mb-6">
         <button
-          className={`
-            flex items-center gap-2 px-6 py-4 font-black text-base
-            transition-all duration-300 transform hover:scale-105
-            rounded-t-xl border-b-4
-            ${activeTab === 'account' ? styles.activeTab : styles.inactiveTab}
-          `}
+          className={`px-6 py-3 font-bold ${activeTab === 'account' ? styles.activeItem : styles.tabInactive} border-b-2`}
           onClick={() => setActiveTab('account')}
         >
-          <User
-            size={20}
-            className={`transition-all duration-300 ${
-              activeTab === 'account' ? `${styles.activeIcon} scale-110` : styles.inactiveIcon
-            }`}
-          />
           Cuenta
         </button>
         <button
-          className={`
-            flex items-center gap-2 px-6 py-4 font-black text-base
-            transition-all duration-300 transform hover:scale-105
-            rounded-t-xl border-b-4
-            ${activeTab === 'history' ? styles.activeTab : styles.inactiveTab}
-          `}
+          className={`px-6 py-3 font-bold ${activeTab === 'history' ? styles.activeItem : styles.tabInactive} border-b-2`}
           onClick={() => setActiveTab('history')}
         >
-          <ShoppingBag
-            size={20}
-            className={`transition-all duration-300 ${
-              activeTab === 'history' ? `${styles.activeIcon} scale-110` : styles.inactiveIcon
-            }`}
-          />
           Historial de Compras
+        </button>
+        <button
+          className={`px-6 py-3 font-bold ${activeTab === 'testimonials' ? styles.activeItem : styles.tabInactive} border-b-2`}
+          onClick={() => setActiveTab('testimonials')}
+        >
+          Testimonios
         </button>
       </div>
 
@@ -339,8 +316,10 @@ const ClientAccount: React.FC = () => {
             />
           )}
         </>
-      ) : (
+      ) : activeTab === 'history' ? (
         <ClientPurchaseHistory />
+      ) : (
+        <ClientTestimonials />
       )}
     </div>
   );

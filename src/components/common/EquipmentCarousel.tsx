@@ -36,6 +36,18 @@ const EquipmentCarousel: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  // Carrusel automático
+  useEffect(() => {
+    // Solo activar si hay más de 3 equipos para que el carrusel esté activo
+    if (equipment.length > 3) {
+      const timer = setInterval(() => {
+        nextSlide();
+      }, 3000); // Cambia cada 3 segundos
+
+      return () => clearInterval(timer); // Limpiar el temporizador
+    }
+  }, [equipment.length]); // Se ejecuta cuando la cantidad de equipos cambia
+
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % equipment.length);
   };

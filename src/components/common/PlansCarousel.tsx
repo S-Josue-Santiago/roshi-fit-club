@@ -54,11 +54,11 @@ const PlansCarousel: React.FC = () => {
     if (plans.length <= 3) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % plans.length);
-    }, 5000);
+      nextSlide();
+    }, 3000); // Cambia cada 3 segundos
 
     return () => clearInterval(interval);
-  }, [plans.length]);
+  }, [plans.length]); // Se ejecuta cuando la cantidad de planes cambia
 
   // Navegación manual
   const nextSlide = () => {
@@ -148,7 +148,7 @@ const PlansCarousel: React.FC = () => {
             <div 
               key={`${plan.id}-${idx}`} 
               className={`
-                flex-shrink-0 w-full max-w-sm transform transition-all duration-300
+                 w-full max-w-sm transform transition-all duration-300
                 ${idx === 1 ? 'scale-105' : 'scale-100'}
               `}
             >
@@ -296,10 +296,10 @@ const PlanCard: React.FC<{
           </ul>
         )}
 
-        {/* Botón mejorado */}
+        {/* Botón mejorado
         <button className={styles.button} style={styles.buttonStyle}>
           Seleccionar Plan
-        </button>
+        </button> */}
       </div>
     </div>
   );

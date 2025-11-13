@@ -1,7 +1,7 @@
 // roshi_fit/src/pages/dashboard/client/ClientHeader.tsx
 import React, { useState, useEffect } from 'react';
 import { useDashboardTheme } from '../../../contexts/DashboardThemeContext';
-import { ShoppingCart, LogOut, Sun, Moon, User, ChevronDown, Package, CreditCard, Menu } from 'lucide-react';
+import { ShoppingCart, LogOut, Sun, Moon, User, ChevronDown, CreditCard, Menu } from 'lucide-react'; //Package
 import { useNavigate } from 'react-router-dom'; 
 import CartModal from './CartModal';
 
@@ -246,7 +246,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus, cartCou
                     </div>
                   </div>
                 </div>
-                <button
+                {/* <button
                   onClick={() => {
                     setShowUserMenu(false);
                     // Navegar a perfil
@@ -283,7 +283,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus, cartCou
                 >
                   <Package size={16} />
                   Mis Suscripciones
-                </button>
+                </button> */}
               </div>
             )}
           </div>

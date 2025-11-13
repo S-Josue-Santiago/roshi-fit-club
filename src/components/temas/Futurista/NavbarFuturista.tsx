@@ -8,11 +8,12 @@ const navItems = [
   { name: 'Inicio', href: '#inicio' },
   { name: 'Servicios', href: '#servicios' },
   { name: 'Planes', href: '#planes' },
-  { name: 'Horarios', href: '#horarios' },
   { name: 'Productos', href: '#productos' },
   { name: 'Equipos', href: '#equipos' },
   { name: 'Galería', href: '#galeria' },
   { name: 'Testimonios', href: '#testimonios' },
+  { name: 'Horarios', href: '#horarios' },
+  { name: 'Filosofía', href: '#filosofia' },
   { name: 'Contacto', href: '#contacto' },
 ];
 

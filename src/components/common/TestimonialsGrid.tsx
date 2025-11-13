@@ -26,6 +26,7 @@ const useTheme = () => {
 const TestimonialsGrid: React.FC = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const theme = useTheme();
 
   useEffect(() => {
@@ -34,6 +35,27 @@ const TestimonialsGrid: React.FC = () => {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  // Carrusel automático
+  useEffect(() => {
+    // Solo activar el carrusel automático si hay más de 3 testimonios
+    if (testimonials.length > 3) {
+      const timer = setInterval(() => {
+        // Llama a la función para pasar a la siguiente diapositiva
+        nextSlide();
+      }, 3000); // Cambia cada 3 segundos
+
+      return () => clearInterval(timer); // Limpia el temporizador si el componente se desmonta
+    }
+  }, [testimonials.length]); // Se ejecuta cuando la cantidad de testimonios cambia
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
 
   const getLoadingStyle = () => {
     return theme === 'futurista'
@@ -49,11 +71,83 @@ const TestimonialsGrid: React.FC = () => {
     return <p className={`${getLoadingStyle()} text-center py-10`}>No hay testimonios disponibles.</p>;
   }
 
+  // Mostrar todos si ≤ 3
+  if (testimonials.length <= 3) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {testimonials.map((item) => (
+          <TestimonialCard key={item.id} item={item} theme={theme} />
+        ))}
+      </div>
+    );
+  }
+
+  // Carrusel: 3 visibles
+  const visibleTestimonials = [];
+  for (let i = 0; i < 3; i++) {
+    const index = (currentIndex + i) % testimonials.length;
+    visibleTestimonials.push(testimonials[index]);
+  }
+
+  const getButtonStyle = () => {
+    if (theme === 'futurista') {
+      return {
+        background: 'linear-gradient(135deg, #0078ff, #00d4ff)',
+        boxShadow: '0 4px 15px rgba(0, 120, 255, 0.4)'
+      };
+    }
+    return {
+      background: 'linear-gradient(135deg, #ff6b35, #ff8c42)',
+      boxShadow: '0 4px 15px rgba(255, 107, 53, 0.4)'
+    };
+  };
+
+  const getIndicatorStyle = (isActive: boolean) => {
+    if (theme === 'futurista') {
+      return isActive 
+        ? 'bg-blue-500 scale-125 shadow-lg shadow-blue-500/50' 
+        : 'bg-blue-200';
+    }
+    return isActive 
+      ? 'bg-primary scale-125 shadow-lg shadow-primary/50' 
+      : 'bg-orange-300/60';
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {testimonials.map((item) => (
-        <TestimonialCard key={item.id} item={item} theme={theme} />
-      ))}
+    <div className="relative py-6">
+      {/* Flechas */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+        style={getButtonStyle()}
+        aria-label="Anterior"
+      >
+        <span className="text-xl font-bold">‹</span>
+      </button>
+      <button
+        onClick={nextSlide}
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+        style={getButtonStyle()}
+        aria-label="Siguiente"
+      >
+        <span className="text-xl font-bold">›</span>
+      </button>
+
+      {/* Carrusel */}
+      <div className="flex justify-center gap-8 overflow-hidden px-10">
+        {visibleTestimonials.map((item, idx) => (
+          <div key={`${item.id}-${idx}`} className={`flex-shrink-0 w-full max-w-sm transform transition-all duration-300 ${idx === 1 ? 'scale-105' : 'scale-100'}`}>
+            <TestimonialCard item={item} theme={theme} />
+          </div>
+        ))}
+      </div>
+
+      {/* Indicadores de posición */}
+      <div className="flex justify-center mt-6 space-x-2">
+        {testimonials.map((_, index) => (
+          <button key={index} onClick={() => setCurrentIndex(index)} className={`w-2 h-2 rounded-full transition-all duration-300 ${getIndicatorStyle(index === currentIndex)}`} />
+        ))}
+      </div>
     </div>
   );
 };

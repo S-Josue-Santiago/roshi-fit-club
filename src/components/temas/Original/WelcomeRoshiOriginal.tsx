@@ -9,6 +9,7 @@ import EquipmentCarousel from '../../common/EquipmentCarousel';
 import GalleryGrid from '../../common/GalleryGrid';
 import TestimonialsGrid from '../../common/TestimonialsGrid';
 import ContactSection from '../../common/ContactSection';
+import VisionMision from '../../common/VisionMision';
 
 const WelcomeRoshiOriginal: React.FC = () => {
   return (
@@ -249,6 +250,14 @@ const WelcomeRoshiOriginal: React.FC = () => {
                }}>
             <GeneralSchedule />
           </div>
+        </div>
+      </section>
+
+      {/* Sección: Filosofía (Visión y Misión) */}
+      <section id="filosofia" className="relative min-h-[100vh] flex items-center py-24 md:py-32 lg:py-40">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-transparent"></div>
+        <div className="w-full">
+          <VisionMision />
         </div>
       </section>
 

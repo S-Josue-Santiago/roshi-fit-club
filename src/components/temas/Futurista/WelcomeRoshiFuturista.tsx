@@ -8,6 +8,7 @@ import EquipmentCarousel from '../../common/EquipmentCarousel';
 import GalleryGrid from '../../common/GalleryGrid';
 import TestimonialsGrid from '../../common/TestimonialsGrid';
 import ContactSection from '../../common/ContactSection';
+import VisionMision from '../../common/VisionMision';
 
 const WelcomeRoshiFuturista: React.FC = () => {
   const [activeSection, setActiveSection] = useState('inicio');
@@ -326,8 +327,16 @@ const WelcomeRoshiFuturista: React.FC = () => {
           </section>
         )}
 
+        {activeSection === 'filosofia' && (
+          <section id="filosofia" className="h-full flex items-center justify-center">
+            <div className="w-full">
+              <VisionMision />
+            </div>
+          </section>
+        )}
+
         {/* Fallback por si el hash no coincide con ninguna sección */}
-        {!['inicio', 'servicios', 'planes', 'productos', 'equipos', 'galeria', 'testimonios', 'horarios', 'contacto'].includes(activeSection) && (
+        {!['inicio', 'servicios', 'planes', 'productos', 'equipos', 'galeria', 'testimonios', 'horarios', 'filosofia', 'contacto'].includes(activeSection) && (
           <div className="h-full flex items-center justify-center text-center">
             <div>
               <h2 
