@@ -11,10 +11,10 @@ import {
   Edit, Lock, Camera, Check, AlertCircle 
 } from 'lucide-react';
 
-const AVATARS = [
-  'avatar1.jpg', 'avatar2.jpg', 'avatar3.jpg',
-  'avatar4.jpg', 'avatar5.jpg', 'avatar6.jpg'
-];
+// const AVATARS = [
+//   'avatar1.jpg', 'avatar2.jpg', 'avatar3.jpg',
+//   'avatar4.jpg', 'avatar5.jpg', 'avatar6.jpg'
+// ];
 
 // Hook para detectar el tema del dashboard
 const useDashboardThemeDetection = () => {
@@ -81,13 +81,13 @@ const ClientAccount: React.FC = () => {
     setIsEditModalOpen(false);
   };
 
-  const getAvatarUrl = (filename: string | null) => {
-    if (!filename) return '/assets/avatars/avatar1.jpg';
-    if (AVATARS.includes(filename)) {
-      return `/assets/avatars/${filename}`;
-    }
-    return `/assets/profiles/${filename}`;
-  };
+  // const getAvatarUrl = (filename: string | null) => {
+  //   if (!filename) return '/assets/avatars/avatar1.jpg';
+  //   if (AVATARS.includes(filename)) {
+  //     return `/assets/avatars/${filename}`;
+  //   }
+  //   return `/assets/profiles/${filename}`;
+  // };
 
   const getGenderText = (gender: string | null) => {
     if (gender === 'masculino') return 'Masculino';
