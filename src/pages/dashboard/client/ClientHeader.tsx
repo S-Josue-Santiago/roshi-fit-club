@@ -210,7 +210,7 @@ const ClientHeader: React.FC<ClientHeaderProps> = ({ subscriptionStatus, cartCou
               </div>
               <div className="hidden md:block text-left">
                 <p className={`${styles.userName} font-bold text-sm leading-tight`}>
-                  {userData.nombre.split(' ')[0]}
+                  {userData.nombre ? userData.nombre.split(' ')[0] : 'Usuario'}
                 </p>
                 <div className={`flex items-center gap-1 ${statusConfig.color} text-xs font-semibold`}>
                   <span>{statusConfig.icon}</span>
