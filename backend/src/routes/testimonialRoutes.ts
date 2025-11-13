@@ -1,9 +1,11 @@
 // roshi_fit/backend/src/routes/testimonialRoutes.ts
 import { Router } from 'express';
-import { getActiveTestimonials,   getClientTestimonials, 
+import { getActiveTestimonials,
+  getClientTestimonials, 
   createTestimonial, 
   updateTestimonial, 
-  deactivateTestimonial  } from '../controllers/testimonialController';
+  toggleTestimonialStatus // Importar la nueva función
+} from '../controllers/testimonialController';
 
 const router = Router();
 router.get('/active', getActiveTestimonials); // GET /api/testimonials/active
@@ -11,5 +13,6 @@ router.get('/active', getActiveTestimonials); // GET /api/testimonials/active
 router.get('/client/:userId', getClientTestimonials);
 router.post('/', createTestimonial);
 router.patch('/:id', updateTestimonial);
-router.post('/:id/deactivate', deactivateTestimonial);
+router.patch('/:id/toggle-status', toggleTestimonialStatus); // <-- ¡AQUÍ ESTÁ LA RUTA QUE FALTABA!
+
 export default router;

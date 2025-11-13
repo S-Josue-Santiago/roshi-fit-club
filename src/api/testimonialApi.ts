@@ -25,6 +25,10 @@ export const updateTestimonial = async (id: number, data: UpdateTestimonialData)
   return res.data;
 };
 
-export const deactivateTestimonial = async (id: number): Promise<void> => {
-  await api.post(`/testimonials/${id}/deactivate`);
+/**
+ * Alterna el estado de un testimonio (activo/inactivo).
+ * @param id - El ID del testimonio a modificar.
+ */
+export const toggleTestimonialStatus = async (id: number): Promise<void> => {
+  await api.patch(`/testimonials/${id}/toggle-status`);
 };

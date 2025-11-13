@@ -219,13 +219,13 @@ const ClientAccount: React.FC = () => {
           {/* Foto de perfil y nombre */}
           <div className="flex flex-col md:flex-row items-center gap-6 mb-8 p-6 rounded-2xl" style={{ background: theme === 'amanecer' ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(124, 58, 237, 0.05))' : 'linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(22, 33, 62, 0.5))' }}>
             <div className="relative group">
-              <div className={`w-32 h-32 ${styles.avatarBg} rounded-2xl p-1 shadow-2xl`}>
+              {/* <div className={`w-32 h-32 ${styles.avatarBg} rounded-2xl p-1 shadow-2xl`}>
                 <img
                   src={getAvatarUrl(user.foto_perfil)}
                   alt="Foto de perfil"
                   className="w-full h-full rounded-xl object-cover"
                 />
-              </div>
+              </div> */}
               <div className={`absolute inset-0 rounded-2xl ${styles.avatarOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center`}>
                 <Camera size={32} className="text-white" />
               </div>

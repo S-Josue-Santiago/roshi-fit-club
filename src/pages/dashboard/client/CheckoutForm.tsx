@@ -4,7 +4,7 @@ import { fetchActivePaymentMethods } from '../../../api/paymentMethodApi';
 import type { PaymentMethod } from '../../../types/PaymentMethod';
 import { 
   X, Truck, CreditCard, DollarSign, MapPin, ArrowLeft, 
-  CheckCircle, Calendar, Shield, Mail, Package, Store
+  CheckCircle, Calendar, Shield, Mail, Package, Store, Hash
 } from 'lucide-react';
 
 interface CheckoutFormProps {
@@ -51,6 +51,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
     mes_expiracion: '',
     anio_expiracion: '',
     paypal_email: '',
+    numero_referencia_deposito: '',
+    fecha_deposito: '',
   });
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(false);
@@ -60,8 +62,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
   useEffect(() => {
     const loadPaymentMethods = async () => {
       try {
+        const allowedIds = [1, 3, 4]; // IDs para Tarjeta, Depósito Bancario, y PayPal
         const data = await fetchActivePaymentMethods();
-        setPaymentMethods(data);
+        const filteredData = data.filter(method => allowedIds.includes(method.id));
+        setPaymentMethods(filteredData);
       } catch (err) {
         setPaymentMethodsError('Error al cargar métodos de pago.');
       } finally {
@@ -88,7 +92,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
       setFormData(prev => ({ 
         ...prev, 
         metodo_pago_id: newMethodId,
-        paypal_email: '' 
+        paypal_email: '',
+        numero_referencia_deposito: '', fecha_deposito: ''
       }));
     } else if (newMethodId === 4) {
       setFormData(prev => ({ 
@@ -98,7 +103,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
         cvv: '', 
         mes_expiracion: '', 
         anio_expiracion: '' 
-      }));
+      })); // PayPal no necesita limpiar los de depósito porque ya están limpios
     } else {
       setFormData(prev => ({ 
         ...prev, 
@@ -108,7 +113,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
         mes_expiracion: '', 
         anio_expiracion: '',
         paypal_email: ''
-      }));
+      })); // Limpiar todo para otros métodos (como depósito)
     }
   };
 
@@ -132,6 +137,11 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
       };
     } else if (metodoId === 4) {
       detalles_pago = { paypal_email: formData.paypal_email };
+    } else if (metodoId === 3) { // Depósito Bancario
+      detalles_pago = {
+        numero_referencia: formData.numero_referencia_deposito,
+        fecha_deposito: formData.fecha_deposito,
+      };
     } else {
       detalles_pago = { metodo: 'efectivo' };
     }
@@ -453,6 +463,32 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ usuarioId, onBack, onChecko
                       className={`w-full pl-12 pr-4 py-4 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 ${styles.input}`}
                     />
                   </div>
+              )}
+
+              {selectedMethod.id === 3 && ( // Campos para Depósito Bancario
+                <div className="space-y-4">
+                  <div className="relative">
+                    <Hash className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${styles.sectionIcon}`} size={20} />
+                    <input
+                      name="numero_referencia_deposito"
+                      placeholder="No. de Boleta o Referencia"
+                      value={formData.numero_referencia_deposito}
+                      onChange={handleChange}
+                      required
+                      className={`w-full pl-12 pr-4 py-4 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 ${styles.input}`}
+                    />
+                  </div>
+                  <div className="relative">
+                    <Calendar className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${styles.sectionIcon}`} size={20} />
+                    <input
+                      name="fecha_deposito"
+                      type="date"
+                      onChange={handleChange}
+                      required
+                      className={`w-full pl-12 pr-4 py-4 rounded-xl border-2 transition-all duration-300 focus:outline-none focus:ring-2 ${styles.input}`}
+                    />
+                  </div>
+                </div>
                 )}
               </div>
             )}

@@ -140,3 +140,30 @@ export const deactivateTestimonial = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };
+
+// Alternar estado de un testimonio (activo/inactivo)
+export const toggleTestimonialStatus = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const testimonial = await prisma.testimonios.findUnique({
+      where: { id: parseInt(id) },
+      select: { estado: true }
+    });
+
+    if (!testimonial) {
+      return res.status(404).json({ message: 'Testimonio no encontrado.' });
+    }
+
+    const newStatus = testimonial.estado === 'activo' ? 'inactivo' : 'activo';
+
+    const updatedTestimonial = await prisma.testimonios.update({
+      where: { id: parseInt(id) },
+      data: { estado: newStatus }
+    });
+
+    res.json({ message: `Testimonio ahora está ${newStatus}.`, testimonial: updatedTestimonial });
+  } catch (error) {
+    console.error('Error al alternar el estado del testimonio:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
+  }
+};

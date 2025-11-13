@@ -35,10 +35,12 @@ const RenewSubscriptionModal: React.FC<Props> = ({ usuarioId, onClose, onSuccess
       try {
         const [p, m] = await Promise.all([
           api.get<Plan[]>('/plans/for-registration').then(r => r.data),
-          api.get<PaymentMethod[]>('/payment-methods/active').then(r => r.data),
+          api.get<PaymentMethod[]>('/payment-methods/active').then(r => r.data)
         ]);
+        const allowedIds = [1, 3, 4]; // IDs para Tarjeta, Depósito Bancario y PayPal
+        const filteredMethods = m.filter(method => allowedIds.includes(method.id));
         setPlans(p);
-        setMetodos(m);
+        setMetodos(filteredMethods);
         if (p.length > 0) setPlanId(String(p[0].id));
         if (m.length > 0) setMetodoPagoId(String(m[0].id));
       } catch (e) {
