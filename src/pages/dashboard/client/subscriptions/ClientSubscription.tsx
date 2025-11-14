@@ -46,7 +46,7 @@ const useDashboardThemeDetection = () => {
 
 const ClientSubscription: React.FC = () => {
   const theme = useDashboardThemeDetection();
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRenewModalOpen, setIsRenewModalOpen] = useState(false);
@@ -68,22 +68,22 @@ const ClientSubscription: React.FC = () => {
         const history = await fetchSubscriptionHistory(user.id);
 
         if (history.length > 0) {
+          const latest = history[0];
           const today = new Date();
-          const activeAndFutureSubscriptions = history
-            .filter(sub => sub.estado_suscripcion === 'activa')
-            .map(sub => {
-              const fin = new Date(sub.fecha_fin);
-              const msDiff = fin.getTime() - today.getTime();
-              const dias_restantes = Math.max(0, Math.ceil(msDiff / (1000 * 60 * 60 * 24)));
-              const computed_estado = fin < today ? 'vencida' : sub.estado_suscripcion;
-              return {
-                ...sub,
-                plan: sub.planes_suscripcion,
-                dias_restantes,
-                computed_estado,
-              };
-            });
-          setSubscriptions(activeAndFutureSubscriptions);
+          const fin = new Date(latest.fecha_fin);
+          const msDiff = fin.getTime() - today.getTime();
+          const dias_restantes = Math.max(0, Math.floor(msDiff / (1000 * 60 * 60 * 24)));
+          const computed_estado = fin < today ? 'vencida' : latest.estado_suscripcion;
+
+          setSubscription({
+            id: latest.id,
+            plan: latest.planes_suscripcion,
+            fecha_inicio: latest.fecha_inicio,
+            fecha_fin: latest.fecha_fin,
+            estado_suscripcion: latest.estado_suscripcion,
+            dias_restantes,
+            computed_estado,
+          });
         }
       } catch (err) {
         setError('Error al cargar la suscripción.');
@@ -240,142 +240,205 @@ const ClientSubscription: React.FC = () => {
     );
   }
 
-  if (subscriptions.length === 0) {
+  if (!subscription) {
     return (
-      <div 
-        className={`${styles.emptyContainer} p-10 rounded-3xl border-2 text-center`}
-        style={{ boxShadow: styles.containerShadow }}
-      >
-        <div className="text-8xl mb-6">💎</div>
-        <h2 className={`text-3xl font-black ${styles.emptyTitle} mb-4`}>
-          SIN SUSCRIPCIÓN ACTIVA
-        </h2>
-        <p className={`${styles.emptyText} text-lg mb-8 max-w-md mx-auto`}>
-          No tienes una suscripción activa. Adquiere un plan para acceder a todos los beneficios.
-        </p>
+      <>
+        <div 
+          className={`${styles.emptyContainer} p-10 rounded-3xl border-2 text-center`}
+          style={{ boxShadow: styles.containerShadow }}
+        >
+          <div className="text-8xl mb-6">💎</div>
+          <h2 className={`text-3xl font-black ${styles.emptyTitle} mb-4`}>
+            SIN SUSCRIPCIÓN ACTIVA
+          </h2>
+          <p className={`${styles.emptyText} text-lg mb-8 max-w-md mx-auto`}>
+            No tienes una suscripción activa. Adquiere un plan para acceder a todos los beneficios.
+          </p>
+          <button
+            onClick={() => setIsRenewModalOpen(true)}
+            className={`
+              px-8 py-4 text-white font-black rounded-2xl 
+              transition-all duration-300 transform hover:scale-105
+              flex items-center justify-center gap-3 mx-auto text-lg
+              ${styles.renewButton}
+            `}
+            style={{ boxShadow: styles.renewButtonShadow }}
+          >
+            <Award size={24} />
+            ADQUIRIR SUSCRIPCIÓN
+          </button>
+        </div>
+
+        {/* Modal para adquirir suscripción */}
+        {isRenewModalOpen && userId !== null && (
+          <RenewSubscriptionModal
+            usuarioId={userId}
+            onClose={() => setIsRenewModalOpen(false)}
+            onSuccess={handleRenewSuccess}
+          />
+        )}
+      </>
+    );
+  }
+
+  const statusConfig = getStatusConfig(subscription.computed_estado);
+
+  return (
+    <div 
+      className={`${styles.container} p-8 rounded-3xl border-2`}
+      style={{ boxShadow: styles.containerShadow }}
+    >
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div className="flex items-center gap-4">
+          <div className={`p-4 ${styles.headerIcon} rounded-2xl shadow-lg`}>
+            <CreditCard size={32} />
+          </div>
+          <div>
+            <h2 className={`text-3xl md:text-4xl font-black ${styles.header}`}>
+              MI SUSCRIPCIÓN
+            </h2>
+            <p className={`${styles.headerSubtext} text-sm md:text-base font-semibold mt-1`}>
+              Administra tu plan actual
+            </p>
+          </div>
+        </div>
+        
+        {/* Badge de estado */}
+        <div className={`
+          inline-flex items-center gap-2 px-5 py-3 rounded-2xl border-2 font-black text-base
+          ${statusConfig.color} shadow-lg
+        `}>
+          {statusConfig.icon}
+          {statusConfig.text}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Información del plan */}
+        <div className="space-y-6">
+          <h3 className={`text-xl font-black ${styles.sectionTitle} border-b-2 pb-3 flex items-center gap-2`}>
+            <Package size={20} />
+            INFORMACIÓN DEL PLAN
+          </h3>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div 
+              className={`${styles.infoCard} p-5 rounded-2xl border-2 transform hover:scale-105 transition-all duration-300`}
+            >
+              <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}>
+                <Award size={16} />
+                PLAN
+              </label>
+              <p className={`${styles.value} font-black text-xl`}>{subscription.plan.nombre}</p>
+            </div>
+
+            <div 
+              className={`${styles.infoCard} p-5 rounded-2xl border-2 transform hover:scale-105 transition-all duration-300`}
+            >
+              <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}>
+                <DollarSign size={16} />
+                PRECIO
+              </label>
+              <p className={`${styles.priceValue} font-black text-2xl`}>Q{subscription.plan.precio_q}</p>
+            </div>
+
+            <div 
+              className={`${styles.infoCard} p-5 rounded-2xl border-2 sm:col-span-2 transform hover:scale-105 transition-all duration-300`}
+            >
+              <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}>
+                <TrendingUp size={16} />
+                DURACIÓN
+              </label>
+              <p className={`${styles.value} font-black text-xl`}>{subscription.plan.duracion_dias} días</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Fechas y estado */}
+        <div className="space-y-6">
+          <h3 className={`text-xl font-black ${styles.sectionTitle} border-b-2 pb-3 flex items-center gap-2`}>
+            <Calendar size={20} />
+            DETALLES TEMPORALES
+          </h3>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div 
+              className={`${styles.infoCard} p-5 rounded-2xl border-2 transform hover:scale-105 transition-all duration-300`}
+            >
+              <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}>
+                <Calendar size={16} />
+                INICIO
+              </label>
+              <p className={`${styles.value} font-bold text-base`}>
+                {new Date(subscription.fecha_inicio).toLocaleDateString('es-GT', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric'
+                })}
+              </p>
+            </div>
+
+            <div 
+              className={`${styles.infoCard} p-5 rounded-2xl border-2 transform hover:scale-105 transition-all duration-300`}
+            >
+              <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}>
+                <Calendar size={16} />
+                FINALIZA
+              </label>
+              <p className={`${styles.value} font-bold text-base`}>
+                {new Date(subscription.fecha_fin).toLocaleDateString('es-GT', {
+                  day: '2-digit',
+                  month: 'short',
+                  year: 'numeric'
+                })}
+              </p>
+            </div>
+
+            <div 
+              className={`${styles.infoCard} p-5 rounded-2xl border-2 sm:col-span-2 transform hover:scale-105 transition-all duration-300`}
+            >
+              <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}>
+                <Clock size={16} />
+                DÍAS RESTANTES
+              </label>
+              <p className={`text-5xl font-black ${getDaysColor(subscription.dias_restantes)}`}>
+                {subscription.dias_restantes}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Botones de acción */}
+      <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t-2" style={{ borderColor: theme === 'amanecer' ? '#cbd5e1' : 'rgba(138, 43, 226, 0.3)' }}>
         <button
           onClick={() => setIsRenewModalOpen(true)}
           className={`
-            px-8 py-4 text-white font-black rounded-2xl 
+            flex-1 px-6 py-4 text-white font-black rounded-2xl text-lg
             transition-all duration-300 transform hover:scale-105
-            flex items-center justify-center gap-3 mx-auto text-lg
+            flex items-center justify-center gap-3
             ${styles.renewButton}
           `}
           style={{ boxShadow: styles.renewButtonShadow }}
         >
-          <Award size={24} />
-          ADQUIRIR SUSCRIPCIÓN
+          <RefreshCw size={20} />
+          RENOVAR SUSCRIPCIÓN
+        </button>
+        <button
+          onClick={() => setIsCancelModalOpen(true)}
+          className={`
+            flex-1 px-6 py-4 text-white font-black rounded-2xl text-lg
+            transition-all duration-300 transform hover:scale-105
+            flex items-center justify-center gap-3
+            ${styles.cancelButton}
+          `}
+          style={{ boxShadow: styles.cancelButtonShadow }}
+        >
+          <XCircle size={20} />
+          CANCELAR SUSCRIPCIÓN
         </button>
       </div>
-    );
-  }
-
-  return (
-    <div className="space-y-8">
-      {subscriptions.map((subscription, index) => {
-        const statusConfig = getStatusConfig(subscription.computed_estado);
-        return (
-          <div 
-            key={subscription.id}
-            className={`${styles.container} p-8 rounded-3xl border-2`}
-            style={{ boxShadow: styles.containerShadow }}
-          >
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-              <div className="flex items-center gap-4">
-                <div className={`p-4 ${styles.headerIcon} rounded-2xl shadow-lg`}>
-                  <CreditCard size={32} />
-                </div>
-                <div>
-                  <h2 className={`text-3xl md:text-4xl font-black ${styles.header}`}>
-                    {index === 0 ? "MI SUSCRIPCIÓN" : "SUSCRIPCIÓN FUTURA"}
-                  </h2>
-                  <p className={`${styles.headerSubtext} text-sm md:text-base font-semibold mt-1`}>
-                    Administra tu plan
-                  </p>
-                </div>
-              </div>
-              
-              {/* Badge de estado */}
-              <div className={`
-                inline-flex items-center gap-2 px-5 py-3 rounded-2xl border-2 font-black text-base
-                ${statusConfig.color} shadow-lg
-              `}>
-                {statusConfig.icon}
-                {statusConfig.text}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* Información del plan */}
-              <div className="space-y-6">
-                <h3 className={`text-xl font-black ${styles.sectionTitle} border-b-2 pb-3 flex items-center gap-2`}>
-                  <Package size={20} />
-                  INFORMACIÓN DEL PLAN
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className={`${styles.infoCard} p-5 rounded-2xl border-2 transform hover:scale-105 transition-all duration-300`}>
-                    <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}><Award size={16} />PLAN</label>
-                    <p className={`${styles.value} font-black text-xl`}>{subscription.plan.nombre}</p>
-                  </div>
-                  <div className={`${styles.infoCard} p-5 rounded-2xl border-2 transform hover:scale-105 transition-all duration-300`}>
-                    <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}><DollarSign size={16} />PRECIO</label>
-                    <p className={`${styles.priceValue} font-black text-2xl`}>Q{subscription.plan.precio_q}</p>
-                  </div>
-                  <div className={`${styles.infoCard} p-5 rounded-2xl border-2 sm:col-span-2 transform hover:scale-105 transition-all duration-300`}>
-                    <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}><TrendingUp size={16} />DURACIÓN</label>
-                    <p className={`${styles.value} font-black text-xl`}>{subscription.plan.duracion_dias} días</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Fechas y estado */}
-              <div className="space-y-6">
-                <h3 className={`text-xl font-black ${styles.sectionTitle} border-b-2 pb-3 flex items-center gap-2`}>
-                  <Calendar size={20} />
-                  DETALLES TEMPORALES
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className={`${styles.infoCard} p-5 rounded-2xl border-2 transform hover:scale-105 transition-all duration-300`}>
-                    <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}><Calendar size={16} />INICIO</label>
-                    <p className={`${styles.value} font-bold text-base`}>{new Date(subscription.fecha_inicio).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-                  </div>
-                  <div className={`${styles.infoCard} p-5 rounded-2xl border-2 transform hover:scale-105 transition-all duration-300`}>
-                    <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}><Calendar size={16} />FINALIZA</label>
-                    <p className={`${styles.value} font-bold text-base`}>{new Date(subscription.fecha_fin).toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-                  </div>
-                  <div className={`${styles.infoCard} p-5 rounded-2xl border-2 sm:col-span-2 transform hover:scale-105 transition-all duration-300`}>
-                    <label className={`block text-xs font-black ${styles.label} mb-3 flex items-center gap-2`}><Clock size={16} />DÍAS RESTANTES</label>
-                    <p className={`text-5xl font-black ${getDaysColor(subscription.dias_restantes)}`}>{subscription.dias_restantes}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Botones de acción (solo para la primera/actual suscripción) */}
-            {index === 0 && (
-              <div className="flex flex-col sm:flex-row gap-4 pt-8 border-t-2" style={{ borderColor: theme === 'amanecer' ? '#cbd5e1' : 'rgba(138, 43, 226, 0.3)' }}>
-                <button
-                  onClick={() => setIsRenewModalOpen(true)}
-                  className={`flex-1 px-6 py-4 text-white font-black rounded-2xl text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 ${styles.renewButton}`}
-                  style={{ boxShadow: styles.renewButtonShadow }}
-                >
-                  <RefreshCw size={20} />
-                  RENOVAR O CAMBIAR PLAN
-                </button>
-                <button
-                  onClick={() => setIsCancelModalOpen(true)}
-                  className={`flex-1 px-6 py-4 text-white font-black rounded-2xl text-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3 ${styles.cancelButton}`}
-                  style={{ boxShadow: styles.cancelButtonShadow }}
-                >
-                  <XCircle size={20} />
-                  CANCELAR SUSCRIPCIÓN
-                </button>
-              </div>
-            )}
-          </div>
-        );
-      })}
 
       {/* Modales */}
       {isRenewModalOpen && userId !== null && (
@@ -386,9 +449,9 @@ const ClientSubscription: React.FC = () => {
         />
       )}
 
-      {isCancelModalOpen && subscriptions.length > 0 && (
+      {isCancelModalOpen && (
         <CancelSubscriptionModal
-          subscriptionId={subscriptions[0].id}
+          subscriptionId={subscription.id}
           onClose={() => setIsCancelModalOpen(false)}
           onSuccess={handleCancelSuccess}
         />
